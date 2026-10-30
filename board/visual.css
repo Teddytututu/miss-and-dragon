@@ -1,0 +1,102 @@
+/* T179: the existing paper palette, portraits and geometry own their values. */
+:root{
+  --body-font:"Microsoft YaHei UI","Microsoft YaHei",-apple-system,"PingFang SC",sans-serif;
+  --display-font:var(--body-font);
+  --code-font:ui-monospace,SFMono-Regular,Consolas,"Cascadia Mono",monospace;
+  --ease:cubic-bezier(0.22,1,0.36,1);
+  --shadow-1:0 1px 2px rgba(30,50,90,.08);
+  --shadow-2:0 4px 12px rgba(30,50,90,.10);
+  --shadow-3:0 12px 32px rgba(30,50,90,.14);
+}
+html.theme-pink{
+  --display-font:var(--notebook-font);
+  --shadow-1:0 1px 2px rgba(150,60,100,.08);
+  --shadow-2:0 4px 12px rgba(150,60,100,.10);
+  --shadow-3:0 12px 32px rgba(150,60,100,.14);
+}
+body{font-family:var(--body-font);font-variant-numeric:tabular-nums}
+html.theme-default #nav a .ni{font-size:12px}
+html.theme-default #nav a .ni .ni-glyph{display:none}
+b,strong{font-weight:700}
+h1,h2,h3,h4,.hero-hi,.todo-what,.fname,.rcname,.nd.lv0,nav a,.room-heading strong{font-family:var(--display-font)}
+code,pre,kbd,samp,.room-code{font-family:var(--code-font)}
+.tt-text,.badge,.count,[class*="count"],time,.time,.ts,.cnt,.stamp,.todo-when,.patrol-strip,.rcmeta{font-variant-numeric:tabular-nums!important}
+html body #tasks #task-body .task .n{font-family:var(--body-font)!important;font-size:15px!important;font-weight:400!important}
+.active-runs{margin-top:10px}
+.legend .legend-done{background:var(--green)}
+.legend .legend-doing{background:var(--blue)}
+.legend .legend-todo{background:#e0a030}
+.avatar-crop-position{position:absolute!important;height:auto!important;max-width:none!important}
+.avatar-crop-fill{right:auto!important;bottom:auto!important;height:auto!important;transform:none!important;object-fit:fill!important}
+.avatar-crop-square{border-radius:0!important}
+button{transition:color 300ms var(--ease),background-color 300ms var(--ease),border-color 300ms var(--ease),opacity 300ms var(--ease),box-shadow 300ms var(--ease),transform 500ms var(--ease)}
+button:not(.tog):not(.dock-tab):not(.brand-person):not(.room-avatar):not(.private-avatar):not(.room-reaction):not(.room-actions-button):not(.fcopy):not(.dock-close):active{transform:scale(.98)}
+html body .nd:hover,html body .nd:active{transform:none!important}
+html body .tog,html body .tog:hover,html body .tog:active{transform:translateY(-50%)!important}
+html body .dock-tab,html body .dock-tab:hover,html body .dock-tab:active{transform:translateY(-50%)!important}
+.skip-link{position:fixed;left:12px;top:12px;z-index:1000;padding:10px 16px;border-radius:8px;background:var(--card);color:var(--blue);box-shadow:var(--shadow-2);font:600 14px/1.6 var(--body-font);transform:translateY(-160%);transition:transform 500ms var(--ease)}
+.skip-link:focus{transform:none;outline:2px solid var(--blue);outline-offset:3px}
+@media(max-width:820px){
+  html body .dock-tab,html body .dock-tab:hover,html body .dock-tab:active{transform:none!important}
+  #nav a .nav-label{display:none}
+  #nav a{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:0s!important;animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}
+}
+
+html.theme-default,html.theme-pink{
+ --body-font:"Microsoft YaHei UI","Microsoft YaHei",-apple-system,"PingFang SC",sans-serif;
+ --display-font:var(--notebook-font);
+}
+html:is(.theme-default,.theme-pink) body :is(h1,h2,h3,h4,.hero-hi,.todo-what,.fname,.rcname,.nd.lv0,nav a,.room-heading strong,.notebook-title){font-family:var(--display-font)}
+
+small{font-size:12px}h3{font-size:18px}h4{font-size:16px}h5,h6{font-size:14px}.room-markdown :is(h3,h4,h5,h6){font-size:16px}
+
+/* Compact mobile navigation shares one row with its patrol disclosure. */
+@media(max-width:820px){
+ html{--mobile-nav-safe:env(safe-area-inset-bottom,0px)}
+ html:is(.theme-default,.theme-pink) body #nav{
+  display:flex!important;flex-wrap:nowrap;align-items:stretch;justify-content:space-around;
+  gap:0;min-height:60px;height:auto;padding:6px 4px calc(6px + var(--mobile-nav-safe));overflow:visible;
+ }
+ html:is(.theme-default,.theme-pink) body #nav>a{
+  position:relative;display:flex;flex:1 1 0;min-width:0;width:0;max-width:none;
+  flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  min-height:46px;margin:0!important;padding:4px 1px;border-radius:8px;transform:none!important;
+  font-size:0!important;line-height:1;white-space:nowrap;
+ }
+ html body #nav>a .nav-label{display:none}
+ html:is(.theme-default,.theme-pink) body #nav>a .ni{
+  display:block;width:24px;height:22px;margin:0;font-size:18px;line-height:22px;grid-row:auto;grid-column:auto;
+ }
+ html:is(.theme-default,.theme-pink) body #nav>a::after{
+  display:block;position:static;font:600 12px/16px var(--body-font);letter-spacing:0;white-space:nowrap;
+ }
+ html:is(.theme-default,.theme-pink) body #nav>a .badge{
+  position:absolute;right:calc(50% - 22px);top:0;float:none;min-width:14px;height:14px;
+  padding:0 3px;font:600 12px/14px var(--body-font);transform:none;border-radius:999px;
+ }
+ html body #nav #patrol-mini{
+  position:relative!important;inset:auto!important;display:block;flex:1 1 0;min-width:0;width:0;max-width:none;
+  margin:0;padding:0;border:0;background:transparent;box-shadow:none;
+ }
+ html body #nav #patrol-mini>summary{
+  display:flex;min-height:46px;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  margin:0;padding:4px 1px;border:0;background:transparent;font-size:0!important;line-height:1;list-style:none;
+ }
+ html body #nav #patrol-mini>summary::before,html body #nav #patrol-mini[open]>summary::before{
+  content:'◷';display:block;width:24px;height:22px;margin:0;border:0;transform:none;
+  font:400 20px/22px var(--body-font);color:inherit;
+ }
+ html body #nav #patrol-mini>summary::after{content:'巡检';display:block;font:600 12px/16px var(--body-font);letter-spacing:0}
+ html body #nav #patrol-mini[open] .patrol-mini-list{
+  position:absolute;right:0;bottom:calc(100% + 12px);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;box-sizing:border-box;width:260px;max-width:calc(100vw - 16px);margin:0;padding:12px;
+  border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:var(--shadow-2);
+  font:400 12px/1.5 var(--body-font);
+ }
+ html:is(.theme-default,.theme-pink) body .dock-tab{bottom:calc(72px + var(--mobile-nav-safe))!important;top:auto!important;transform:none!important}
+ html body #msgs.dock{bottom:calc(64px + var(--mobile-nav-safe))}
+ html body main{padding-bottom:calc(88px + var(--mobile-nav-safe))}
+}
