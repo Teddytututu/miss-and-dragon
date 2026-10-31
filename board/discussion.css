@@ -200,7 +200,7 @@ html.theme-pink .room-avatar.claude{--who:#f39a62}
 html.theme-pink .room-avatar.gpt{--who:#9aa8c8}
 html.theme-pink .room-compose{position:relative;margin:14px 10px 10px;padding:22px 14px 12px;border-radius:16px;background:rgba(255,255,255,.93);border:2px solid #fff;
   box-shadow:var(--shadow-2)}
-html.theme-pink .room-compose::before{content:"owner";position:absolute;left:16px;top:-13px;padding:2px 16px;border-radius:8px 8px 8px 0;background:linear-gradient(90deg,#7fb2f0,#b39af2);color:#fff;
+html.theme-pink .room-compose::before{content:attr(data-composer-name);position:absolute;left:16px;top:-13px;padding:2px 16px;border-radius:8px 8px 8px 0;background:linear-gradient(90deg,#7fb2f0,#b39af2);color:#fff;
   font:700 13px/1.5 var(--body-font);letter-spacing:1px;box-shadow:var(--shadow-2)}
 html.theme-pink .room-input-wrap textarea{background:transparent!important;border:0!important;box-shadow:none!important;font:15px/1.7 var(--body-font);color:#4a2638}
 html.theme-pink .room-input-wrap textarea::placeholder{color:#c9a3b5}

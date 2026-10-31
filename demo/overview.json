@@ -1,59 +1,227 @@
 {
   "updated": "2026-11-12",
   "todo": [
-    {"what": "给导师发本周周报", "when": "周五 18:00 前", "how": "三行：做了什么、数字、下周计划", "note": "把 4 档压缩的曲线图附上"},
-    {"what": "读完两篇 KV 缓存压缩论文", "when": "周四晚上", "how": "各写一句：做法和关键数字", "note": "SnapKV、H2O"},
-    {"what": "确认组会讲 10 分钟", "when": "明天中午", "how": "回复师兄的消息", "note": ""}
+    {
+      "what": "给导师发本周周报",
+      "when": "周五 18:00 前",
+      "how": "三行：做了什么、数字、下周计划",
+      "note": "把 4 档压缩的曲线图附上"
+    },
+    {
+      "what": "读完两篇 KV 缓存压缩论文",
+      "when": "周四晚上",
+      "how": "各写一句：做法和关键数字",
+      "note": "SnapKV、H2O"
+    },
+    {
+      "what": "确认组会讲 10 分钟",
+      "when": "明天中午",
+      "how": "回复师兄的消息",
+      "note": ""
+    },
+    {
+      "what": "把组会幻灯片压到 6 页",
+      "when": "明早 9 点前",
+      "how": "只留基线、四档曲线、掉分题三张图",
+      "note": ""
+    }
   ],
   "schedule": [
-    {"date": "11-12", "relative_day": 0, "items": [
-      {"time": "09:00", "what": "机器学习课", "kind": "课"},
-      {"time": "13:30", "what": "看压缩 4 档的第一批结果", "kind": "研究"},
-      {"time": "16:00", "what": "去操场走两圈", "kind": "休息"},
-      {"time": "20:00", "what": "读 SnapKV", "kind": "复习"}
-    ]},
-    {"date": "11-13", "relative_day": 1, "items": [
-      {"time": "10:00", "what": "组会：讲长文档问答的基线", "kind": "研究"},
-      {"time": "15:00", "what": "操作系统作业 3", "kind": "复习"}
-    ]},
-    {"date": "11-14", "relative_day": 2, "items": [
-      {"time": "14:00", "what": "整理周报和曲线图", "kind": "研究"}
-    ]}
+    {
+      "date": "11-12",
+      "relative_day": 0,
+      "items": [
+        {
+          "time": "09:00",
+          "what": "机器学习课",
+          "kind": "课"
+        },
+        {
+          "time": "13:30",
+          "what": "看压缩 4 档的第一批结果",
+          "kind": "研究"
+        },
+        {
+          "time": "16:00",
+          "what": "去操场走两圈",
+          "kind": "休息"
+        },
+        {
+          "time": "20:00",
+          "what": "读 SnapKV",
+          "kind": "复习"
+        }
+      ]
+    },
+    {
+      "date": "11-13",
+      "relative_day": 1,
+      "items": [
+        {
+          "time": "10:00",
+          "what": "组会：讲长文档问答的基线",
+          "kind": "研究"
+        },
+        {
+          "time": "15:00",
+          "what": "操作系统作业 3",
+          "kind": "复习"
+        }
+      ]
+    },
+    {
+      "date": "11-14",
+      "relative_day": 2,
+      "items": [
+        {
+          "time": "14:00",
+          "what": "整理周报和曲线图",
+          "kind": "研究"
+        }
+      ]
+    }
   ],
   "progress_lines": [
-    {"line": "研究问题", "text": "手机上的小模型读长文档时，KV 缓存能压到多小还不掉问答准确率。"},
-    {"line": "目前进展", "text": "保留 25% 缓存时准确率只掉 1.8 个点；压到 10% 开始明显下降，正在找原因。"},
-    {"line": "下一步", "text": "按段落重要性分配缓存，再和均匀压缩比一次。"}
+    {
+      "line": "研究问题",
+      "text": "手机上的小模型读长文档时，KV 缓存能压到多小还不掉问答准确率。"
+    },
+    {
+      "line": "目前进展",
+      "text": "保留 25% 缓存时准确率只掉 1.8 个点；压到 10% 开始明显下降，正在找原因。"
+    },
+    {
+      "line": "下一步",
+      "text": "按段落重要性分配缓存，再和均匀压缩比一次。"
+    }
   ],
   "runs": [
-    {"id": "kv-four-levels", "task_id": "T012", "name": "KV 压缩 4 档对照", "done": 6, "total": 10, "status": "进行中", "line": "压缩率与准确率"},
-    {"id": "longqa-baseline", "task_id": "T011", "name": "长文档问答基线", "done": 200, "total": 200, "status": "已完成", "line": "基线"}
+    {
+      "id": "kv-four-levels",
+      "task_id": "T012",
+      "name": "KV 压缩 4 档对照",
+      "done": 6,
+      "total": 10,
+      "status": "进行中",
+      "line": "压缩率与准确率"
+    },
+    {
+      "id": "longqa-baseline",
+      "task_id": "T011",
+      "name": "长文档问答基线",
+      "done": 200,
+      "total": 200,
+      "status": "已完成",
+      "line": "基线"
+    }
   ],
   "tree": [
-    {"title": "小模型读长文档：缓存能压多小", "status": "doing", "summary": "保留 25% KV 缓存时问答准确率 61.4%，不压缩是 63.2%。", "children": [
-      {"title": "基线：不压缩的准确率", "status": "done", "summary": "200 道长文档问答，1.5B 模型 63.2%。", "tasks": ["T011"], "children": []},
-      {"title": "四档压缩的曲线", "status": "doing", "summary": "50% 和 25% 几乎不掉；10% 掉到 52.0%，6/10 组已跑完。", "tasks": ["T012"], "children": []},
-      {"title": "按段落重要性分配缓存", "status": "todo", "summary": "等四档曲线跑完再开。", "children": []}
-    ]}
+    {
+      "title": "小模型读长文档：缓存能压多小",
+      "status": "doing",
+      "summary": "保留 25% KV 缓存时问答准确率 61.4%，不压缩是 63.2%。",
+      "children": [
+        {
+          "title": "基线：不压缩的准确率",
+          "status": "done",
+          "summary": "200 道长文档问答，1.5B 模型 63.2%。",
+          "tasks": [
+            "T011"
+          ],
+          "children": []
+        },
+        {
+          "title": "四档压缩的曲线",
+          "status": "doing",
+          "summary": "50% 和 25% 几乎不掉；10% 掉到 52.0%，6/10 组已跑完。",
+          "tasks": [
+            "T012"
+          ],
+          "children": []
+        },
+        {
+          "title": "按段落重要性分配缓存",
+          "status": "todo",
+          "summary": "等四档曲线跑完再开。",
+          "children": []
+        }
+      ]
+    }
   ],
   "task_groups": [
-    {"group": "研究", "tasks": [
-      {"id": "T011", "name": "长文档问答基线", "who": "GPT", "description": "200 道题，不压缩缓存，记准确率和显存。", "deliverable": "准确率、显存、每题耗时三张表。"},
-      {"id": "T012", "name": "KV 压缩 4 档对照", "who": "GPT", "description": "保留 50%、25%、10%、5% 缓存，各跑 200 题。", "deliverable": "压缩率—准确率曲线和逐题结果。"},
-      {"id": "T013", "name": "审四档曲线", "who": "Claude", "description": "核对掉点是否集中在长距离引用的题。", "deliverable": "一句结论和下一步实验。"}
-    ]},
-    {"group": "学习", "tasks": [
-      {"id": "T014", "name": "SnapKV 读书笔记", "who": "GPT", "description": "整理做法、实验设置和关键数字。", "deliverable": "一页笔记。"}
-    ]},
-    {"group": "其他", "tasks": [
-      {"id": "T015", "name": "本周周报", "who": "Claude", "description": "按导师要的三段写。", "deliverable": "可以直接发的周报草稿。"}
-    ]}
+    {
+      "group": "研究",
+      "tasks": [
+        {
+          "id": "T011",
+          "name": "长文档问答基线",
+          "who": "GPT",
+          "description": "200 道题，不压缩缓存，记准确率和显存。",
+          "deliverable": "准确率、显存、每题耗时三张表。"
+        },
+        {
+          "id": "T012",
+          "name": "KV 压缩 4 档对照",
+          "who": "GPT",
+          "description": "保留 50%、25%、10%、5% 缓存，各跑 200 题。",
+          "deliverable": "压缩率—准确率曲线和逐题结果。"
+        },
+        {
+          "id": "T013",
+          "name": "审四档曲线",
+          "who": "Claude",
+          "description": "核对掉点是否集中在长距离引用的题。",
+          "deliverable": "一句结论和下一步实验。"
+        }
+      ]
+    },
+    {
+      "group": "学习",
+      "tasks": [
+        {
+          "id": "T014",
+          "name": "SnapKV 读书笔记",
+          "who": "GPT",
+          "description": "整理做法、实验设置和关键数字。",
+          "deliverable": "一页笔记。"
+        }
+      ]
+    },
+    {
+      "group": "其他",
+      "tasks": [
+        {
+          "id": "T015",
+          "name": "本周周报",
+          "who": "Claude",
+          "description": "按导师要的三段写。",
+          "deliverable": "可以直接发的周报草稿。"
+        }
+      ]
+    }
   ],
   "links": [
-    {"title": "使用说明", "path": "/help", "cat": "项目", "archived": false}
+    {
+      "title": "使用说明",
+      "path": "/help",
+      "cat": "项目",
+      "archived": false
+    }
   ],
   "important_dates": [
-    {"kind": "meeting", "date": "2026-11-13", "public_name": "组会", "name": "组会", "relative_day": 1},
-    {"kind": "exam", "date": "2026-11-26", "public_name": "操作系统期中", "name": "操作系统期中", "relative_day": 14}
+    {
+      "kind": "meeting",
+      "date": "2026-11-13",
+      "public_name": "组会",
+      "name": "组会",
+      "relative_day": 1
+    },
+    {
+      "kind": "exam",
+      "date": "2026-11-26",
+      "public_name": "操作系统期中",
+      "name": "操作系统期中",
+      "relative_day": 14
+    }
   ]
 }

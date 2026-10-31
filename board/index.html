@@ -890,7 +890,9 @@ html.theme-pink #nav .brand .brand-person img{transform:scale(1.45);transform-or
   html.theme-pink main{padding-top:78px}
   html.theme-pink section{scroll-margin-top:76px}
 }
+#quota-fold>summary{list-style:none;cursor:pointer}#quota-fold>summary::-webkit-details-marker{display:none}#quota-fold>summary h2{display:inline-flex;align-items:center;gap:8px}
 </style>
+<script>addEventListener('DOMContentLoaded',()=>{const tag=()=>{const fs=document.querySelectorAll('.room-compose');const n=window.BoardIdentity&&BoardIdentity.name?BoardIdentity.name('owner'):'';if(fs.length&&n&&n!=='owner'){fs.forEach(f=>f.setAttribute('data-composer-name',n));return true}return false};if(!tag()){let k=0;const i=setInterval(()=>{if(tag()||++k>40)clearInterval(i)},250)}const d=document.getElementById('quota-fold');if(!d)return;try{d.open=localStorage.getItem('quota-fold')==='1'}catch(_){}d.addEventListener('toggle',()=>{try{localStorage.setItem('quota-fold',d.open?'1':'0')}catch(_){}})});</script>
 <link rel="stylesheet" href="/room-collection.css">
 <link rel="stylesheet" href="/fanart.css">
 <link rel="stylesheet" href="/lifecycle-view.css">
@@ -919,7 +921,7 @@ html.theme-pink #nav .brand .brand-person img{transform:scale(1.45);transform-or
 <main id="main-content" tabindex="-1">
 <h1 class="sr-only">__SITE_TITLE__</h1>
   <header class="hero" id="hero"><div class="hero-hi" id="hero-hi">owner，你好呀</div><div class="hero-sub" id="hero-sub"></div><div class="hero-deco theme-only" aria-hidden="true">✦ ✿ ♡</div></header>
-<section id="agent-panel" aria-labelledby="quota-title"><h2 id="quota-title">协作额度</h2><div id="quota-body" class="quota-grid" aria-live="polite"></div></section>
+<section id="agent-panel" aria-labelledby="quota-title"><details id="quota-fold"><summary><h2 id="quota-title">协作额度</h2></summary><div id="quota-body" class="quota-grid" aria-live="polite"></div></details></section>
 <details id="project-settings" class="card project-settings"><summary>项目</summary>
  <p>Claude 负责研究设计与审核，GPT 负责实现与实验。讨论室里的开工消息由助手在实际会话中发送；示例与历史初始化说明分别标明。</p>
  <form id="setup-form"><h3>研究目标</h3><label>一句研究问题<textarea id="setup-question" required maxlength="2000"></textarea></label>
@@ -1041,6 +1043,8 @@ function renderProgress(o) {
   const L = $('#lines'); L.replaceChildren();
   for (const p of o.progress_lines || []) { const r = el('div', 'line'); r.append(el('b', null, p.line), el('span', null, p.text)); L.append(r); }
   const names = taskNames(o.task_groups), R = $('#runs'); R.replaceChildren();
+  // Running experiments already show in the results tree and the task list; the separate run panel is retired.
+  if (!o.show_runs) return;
   const runs = (o.runs || []).map(r => { const id = (r.name.match(/T\d{3}/) || [])[0];
     return {...r, label: (id && names[id]) || r.name.replace(CODE, '').trim()}; });
   const active = runs.filter(r => r.done < r.total), done = runs.filter(r => r.done >= r.total);

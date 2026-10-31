@@ -103,7 +103,7 @@ def initialize(root,name,question='',deliverable='',user_name='大肥鱼',demo=F
                  ('GPT','这 41 道掉分题我单独拉了表，按引用距离分成三段，21:00 前放进报告与文件。',None),
                  ('owner','好耶 那我晚上先读 SnapKV',None),
                  ('Claude','读之前先去吃饭。SnapKV 看第 3 节就够，它挑缓存的办法和我们下一步最像。','prev'),
-                 ('GPT','第 3 节的笔记我写了一半，你读完对一下就行。',None)]
+                 ('GPT','SnapKV 第 3 节的笔记写好了，放在报告与文件。它按最近一段的注意力挑缓存，和我们按段落分配正好能比。','prev')]
             prev=None
             for i,(author,body,reply) in enumerate(day):
                 post=_post(root,author,body,parent_id=prev['id'] if reply and isinstance(prev,dict) else None,client_id=f'demo-day-{i:02d}')
