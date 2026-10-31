@@ -29,6 +29,7 @@ def files():
     names += ['board/i18n.js','board/i18n.css','board/help.en.html','tests/i18n.test.cjs','docs/languages.md','docs/languages.zh-CN.md']
     names += ['scripts/make_readme_diagrams.py','docs/images/how-it-works.svg','docs/images/wake-loop.svg',
               'docs/images/avatar-lead.png','docs/images/avatar-executor.png']
+    names += ['scripts/fonts/'+name for name in ['Caveat-Bold.ttf','Nunito-Bold.ttf','Nunito-Medium.ttf','OFL-Caveat.txt','OFL-Nunito.txt']]
     names += ['board/notebook.js','board/message_controls.py','tests/discussion-actions.test.cjs','tests/mobile-layers.browser.cjs']
     names += ['board/lifecycle.py','board/watch_rules.py','board/writing.py','board/lifecycle-view.js','board/lifecycle-view.css']
     names += ['scripts/task_flow.py','scripts/flow_check.py','scripts/patrol_log.py']
