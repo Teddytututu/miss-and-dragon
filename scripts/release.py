@@ -42,7 +42,7 @@ def files():
     names += ['board/private_notes.py','board/private-notes.css','board/private-notes.js','scripts/private_chat.py','docs/private-chat.md','tests/private-chat.browser.cjs']
     names += ['scripts/agent.py','docs/agent-commands.md','docs/optional-gpu-dispatcher.md','skills/board-agent/SKILL.md']
     names += ['docs/ARCHITECTURE.md','docs/architecture/index.html']
-    names += ['docs/images/'+name for name in ['readme-hero.png','social-preview.png','wake-cycle.png','human-in-the-loop.png','mistakes-to-programs.png','alternatives/readme-hero-a.png','alternatives/readme-hero-c.png']]
+    names += ['docs/images/'+name for name in ['readme-hero.png','social-preview.png','wake-cycle.png','human-in-the-loop.png','mistakes-to-programs.png','alternatives/readme-hero-a.png','alternatives/readme-hero-b.png']]
     names += ['docs/badges/license.svg','docs/badges/python.svg']
     names += ['docs/architecture/'+name+'.svg' for name in ['01-overview','02-channels','03-question','04-cadence','05-authority','06-wake-loop']]
     names += ['board/exchange.py','board/stability.py','scripts/check_eol.py']
