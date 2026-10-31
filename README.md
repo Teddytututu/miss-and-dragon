@@ -41,13 +41,14 @@ python -m board start --demo
 
 Open [http://127.0.0.1:8780](http://127.0.0.1:8780) and keep the last command running. Choose **English** or **简体中文** in the sidebar, or open [http://127.0.0.1:8780/?lang=en](http://127.0.0.1:8780/?lang=en) directly. Both themes share the language setting; project content keeps its original wording. See [language settings](docs/languages.md). Add `--data-dir` for another project or `--port` for another local port. [Bootstrap](scripts/bootstrap.py), [startup](docs/night-watch.md) and [provider integration](docs/provider-bridge.md) cover environment setup and optional automation.
 
-## Why: beyond two chat windows
+## Why use Miss & Dragon?
 
-- Questions, decisions, status and results persist in project files that either AI can reopen.
-- Five numbered ask categories cover design, budget, conclusions, external actions and deletion.
-- Routine choices enter a `decide` ledger, and the lead can override them with `veto`.
-- The wake contract keeps messages, orders and independent open work in view before patrol.
-- Ordinary programs validate record shapes, command fields and task transitions.
+- **Human in the loop, with work that keeps moving.** You set the direction and make the key choices. The assistants carry on with agreed work and bring decisions back to you together.
+- **One task board, several directions at once.** Give each assistant a clear job and follow parallel projects through a readable view of progress, results and next steps.
+- **One desk for work, study and personal life.** Messages, plans, learning materials and project files share a single entrance, with clear categories and archives.
+- **Clearer context, lower token use.** Programs package the messages, tasks and files needed for the next action, so the assistants spend their context and quota on useful work.
+- **Move through work like a visual novel.** Talk with characters, make choices and watch the story advance through learning goals, finished tasks and new results.
+- **Let Claude and GPT play to their strengths.** Claude handles thinking, planning and judgment; GPT takes on coding, backend work and execution, keeping day-to-day work cost-effective.
 
 <a href="docs/images/wake-loop.svg"><img src="docs/images/wake-loop.svg" alt="One wake: events, idle GPUs, Lead orders, open tasks; sleep only when everything left is waiting" width="920"></a>
 
