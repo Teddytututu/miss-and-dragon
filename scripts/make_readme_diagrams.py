@@ -166,14 +166,19 @@ NOTE[RED] = '#fff0ed'
 AUDIT = {}
 
 
-def ink_text(x, y, text, size=16, color=MUTED, anchor='middle', hand=False):
+def ink_text(x, y, text, size=14, color=MUTED, anchor='middle', hand=False):
     return (f"<text x='{x}' y='{y}' text-anchor='{anchor}' font-family=\"{HAND if hand else SANS}\" "
             f"font-size='{size}' fill='{color}'>{text}</text>")
 
 
+STICKY_TITLE = 21
+CAPTION = (14, 18, 7.4)  # architecture diagrams; the README one uses a larger size
+
+
 def caption(x, y, w, text, color=MUTED):
-    return ''.join(ink_text(x + w/2, y + i*21, line, color=color)
-                   for i, line in enumerate(textwrap.wrap(text, max(16, int(w/8.4)))))
+    size, step, per = CAPTION
+    return ''.join(ink_text(x + w/2, y + i*step, line, size=size, color=color)
+                   for i, line in enumerate(textwrap.wrap(text, max(16, int(w/per)))))
 
 
 def sticky(key, x, y, w, color, title, detail, unit='', rot=0):
@@ -181,7 +186,7 @@ def sticky(key, x, y, w, color, title, detail, unit='', rot=0):
     assert len((' '.join([title, *lines])).split()) <= 6, title
     AUDIT.setdefault(key, []).append(dict(title=title, lines=lines, detail=detail))
     height = 84 if unit else 68
-    return (note(x, y, w, height, color, title, lines, rot=rot, title_size=25)
+    return (note(x, y, w, height, color, title, lines, rot=rot, title_size=STICKY_TITLE)
             + caption(x, y + height + 21, w, detail))
 
 
@@ -296,6 +301,8 @@ def gpu_job_life():
 
 
 def mistake_to_program():
+    global CAPTION, STICKY_TITLE
+    CAPTION, STICKY_TITLE = (17, 21, 8.6), 25
     key='mistake-to-program';AUDIT[key]=[]
     body=[diagram_heading('Mistake → program', 'Repeated operational mistakes become executable checks.'),
           band(20,105,400,972,RED,'The recurring mistake'),band(540,105,400,972,TEAL,'The rule in code')]
@@ -314,6 +321,7 @@ def mistake_to_program():
                  sticky(key,558,y,364,TEAL,new,new_detail,rot=(.6 if i%2 else -.6))]
     body += [ink_text(480,1120,'Prompts hold judgment; programs hold rules.',28,INK,hand=True),
              doodles([('star',915,41,TEAL),('heart',40,1114,ROSE)])]
+    CAPTION, STICKY_TITLE = (14, 18, 7.4), 21
     return svg(960,1146,''.join(body),'Six recurring mistakes become six executable safeguards')
 
 
