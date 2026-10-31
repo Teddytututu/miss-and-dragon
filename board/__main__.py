@@ -35,11 +35,15 @@ def main():
     if existing:
         if a.project and existing['name']!=a.project:p.error('Choose another --data-dir for a separate project')
     else:
-        name=a.project or ('示例研究' if a.demo else '新研究项目')
-        if sys.stdin.isatty() and not (a.question and a.deliverable):
+        name=a.project or ('小模型读长文档' if a.demo else '新研究项目')
+        if sys.stdin.isatty() and not a.demo and not (a.question and a.deliverable):
             a.question=input('一句研究问题 / Research question: ').strip();a.deliverable=input('想要的成果 / Desired deliverable: ').strip()
+        if a.demo and not (a.question and a.deliverable):
+            a.question='手机上的小模型读长文档时，KV 缓存能压到多小还不掉准确率';a.deliverable='压缩率—准确率曲线和一份组会报告'
         project.initialize(root,name,a.question,a.deliverable,a.user_name,a.demo)
-    if a.question and a.deliverable:project.configure(root,a.question,a.deliverable)
+        existing=None
+    # A fresh demo keeps its seeded day; configure only updates real projects.
+    if a.question and a.deliverable and not (a.demo and existing is None):project.configure(root,a.question,a.deliverable)
     scheduler.refresh(root)
     if a.init_only:print(json.dumps(dict(initialized=True,project=storage.read(root/'project.json')['name']),ensure_ascii=False));return
     try:server=create_server(root,a.port)

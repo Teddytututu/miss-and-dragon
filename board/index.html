@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<script id="theme-boot">document.documentElement.className = "theme-" + ((localStorage.getItem("boardTheme") || "default").replace("ztmy", "pink"));</script>
+<script id="theme-boot">(() => { const q = new URLSearchParams(location.search).get("theme"); if (q === "pink" || q === "default") localStorage.setItem("boardTheme", q); document.documentElement.className = "theme-" + ((localStorage.getItem("boardTheme") || "default").replace("ztmy", "pink")); })();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>__SITE_TITLE__</title>

@@ -33,8 +33,8 @@ def message_metadata(row):
     kind='assistant' if row.get('author') in ['Claude','GPT'] else 'user'
     if kind=='assistant':
         if row.get('client_id') in ['project-kickoff-v2','builder-kickoff-v2']:kind='initialization'
-        elif row.get('client_id') in ['demo-project-kickoff-v2','demo-builder-kickoff-v2']:kind='demo'
-    return dict(message_kind=kind,source_label={'initialization':'初始化说明','demo':'示例'}.get(kind))
+        elif row.get('client_id') in ['demo-project-kickoff-v2','demo-builder-kickoff-v2','demo-claude-answer-v1']:kind='demo'
+    return dict(message_kind=kind,source_label={'initialization':'初始化说明'}.get(kind))
 
 def session_message(row):return message_metadata(row)['message_kind']=='assistant'
 
@@ -94,8 +94,10 @@ def initialize(root,name,question='',deliverable='',user_name='大肥鱼',demo=F
         path=ledger(root);path.parent.mkdir(parents=True,exist_ok=True)
         if not path.exists():path.touch()
         if demo:
-            _post(root,'Claude','示例：研究负责人说明研究问题、比较方式与验收标准。',client_id='demo-project-kickoff-v2')
-            _post(root,'GPT','示例：执行助手回复约定方案，并交付可审查的实现与结果。',client_id='demo-builder-kickoff-v2')
+            _post(root,'Claude','基线定了：1.5B 模型不压缩 63.2%。今天先看 4 档压缩，掉点集中在哪类题我来审。',client_id='demo-project-kickoff-v2')
+            _post(root,'GPT','4 档压缩已跑完 6/10 组，保留 25% 缓存时 61.4%，剩下 4 组约 17:30 出。',client_id='demo-builder-kickoff-v2')
+            first=_post(root,'owner','10% 那档掉得有点多 组会前能看出是哪类题掉的吗',client_id='demo-owner-question-v1')
+            _post(root,'Claude','能。掉的题七成要引用 2000 字以前的内容，长距离引用最吃亏。下一步按段落重要性分配缓存，组会讲这一条就够。',parent_id=first['id'] if isinstance(first,dict) else None,client_id='demo-claude-answer-v1')
         return value
 
 def configure(root,question,deliverable,user_name=None):

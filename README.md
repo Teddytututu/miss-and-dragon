@@ -14,14 +14,25 @@ A local web board and command line for running a research project with two AI ag
 
 [简体中文](README.zh-CN.md) · [Architecture](docs/ARCHITECTURE.md) · [Interactive diagrams](docs/architecture/index.html)
 
+## Interface
+
+<img src="docs/images/screen-pink.jpg" alt="Pink notebook theme" width="920">
+
+<details><summary>Blue theme</summary>
+
+<img src="docs/images/screen-blue.jpg" alt="Blue workbench theme" width="920">
+
+</details>
+
+A day in a fictional student's project: notes to self, today's schedule, the research question and results tree, with the Lead and Executor talking in the room on the right. Pink notebook and blue workbench themes share the same data.
+
 ## Quick start
 
-Python 3.11 or newer. From the repository folder, install the dependency, create fictional demo data, and start the board:
+Python 3.11 or newer. From the repository folder, install the dependency and start the board with a fictional student's research day:
 
 ```sh
 python -m pip install -r requirements.txt
-python -m board start "Example study" --demo --init-only --question "Which method helps?" --deliverable "A reproducible comparison"
-python -m board start "Example study"
+python -m board start --demo
 ```
 
 Open **http://127.0.0.1:8780** and keep the last command running. Choose **English** or **简体中文** in the sidebar, or open **http://127.0.0.1:8780/?lang=en** directly. Both themes share the language setting; project content keeps its original wording. See [language settings](docs/languages.md). Add `--data-dir` for another project or `--port` for another local port. [Bootstrap](scripts/bootstrap.py), [startup](docs/night-watch.md) and [provider integration](docs/provider-bridge.md) cover environment setup and optional automation.
@@ -42,7 +53,7 @@ Open **http://127.0.0.1:8780** and keep the last command running. Choose **Engli
 
 The owner sets direction; **Lead** designs and accepts; **Executor** carries out the agreed work. Everything they say to each other lands in plain files, and small programs without a model watch those files, wake the right chat and flag broken rules. The [architecture guide](docs/ARCHITECTURE.md) has six detailed diagrams: channels, a question's life, daily cadence, authority and the wake loop.
 
-## Design principles## Design principles
+## Design principles
 
 1. Programs validate rules; people and AI roles judge the research.
 2. Turn a repeated failure into an executable check.

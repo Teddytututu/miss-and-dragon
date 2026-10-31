@@ -14,16 +14,25 @@
 
 [English](README.md) · [Architecture](docs/ARCHITECTURE.md) · [Interactive diagrams](docs/architecture/index.html)
 
+## 界面
+
+<img src="docs/images/screen-pink.jpg" alt="Pink notebook theme" width="920">
+
+<details><summary>蓝色主题</summary>
+
+<img src="docs/images/screen-blue.jpg" alt="Blue workbench theme" width="920">
+
+</details>
+
+一个虚构学生的研究日常：要做的事、今天的安排、研究问题和结果树，右边是 Lead 和 Executor 在讨论室里的对话。粉色手账和蓝色工作台两套主题用同一份数据。
+
 ## 启动
 
-在仓库根目录运行这三条命令。侧栏可选择 **简体中文** 或 **English**，英文入口为 **http://127.0.0.1:8780/?lang=en**。两种主题共用语言偏好，项目内容保留原文。详见[语言设置](docs/languages.zh-CN.md)。
-
-在解压后的源码目录使用 Python 3.11 或更新版本。三条命令依次安装依赖、创建虚构演示数据并启动看板：
+需要 Python 3.11 或更新版本。在仓库根目录运行两条命令：安装依赖，然后带着一个虚构学生的研究日常启动看板。 侧栏可以选 **简体中文** 或 **English**，英文入口是 **http://127.0.0.1:8780/?lang=en**，详见[语言设置](docs/languages.zh-CN.md)。
 
 ```sh
 python -m pip install -r requirements.txt
-python -m board start "Example study" --demo --init-only --question "Which method helps?" --deliverable "A reproducible comparison"
-python -m board start "Example study"
+python -m board start --demo
 ```
 
 打开 **http://127.0.0.1:8780**，让最后一条命令持续运行。使用 `--data-dir` 指定另一个项目，使用 `--port` 指定本机端口。[Bootstrap](scripts/bootstrap.py)、[启动与巡检](docs/night-watch.md)和[模型提供方连接](docs/provider-bridge.md)说明环境准备和可选自动化。
@@ -44,7 +53,7 @@ python -m board start "Example study"
 
 Owner 定方向，**Lead** 设计和验收，**Executor** 做约定好的事。两者之间说的每句话都落在普通文件里，几个不用模型的小程序看着这些文件：把变化变成事件、叫醒对的会话、发现规矩被破坏就报出来。[架构说明](docs/ARCHITECTURE.md)里有六张细图：通道、一个问题的一生、每日节奏、决定权和醒来循环。
 
-## 设计原则## 设计原则
+## 设计原则
 
 1. 程序校验规矩，人和 AI 角色判断研究。
 2. 重复出现的错误进入可执行检查。

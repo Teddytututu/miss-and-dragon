@@ -1,9 +1,10 @@
-# Fictional task board
+# 小模型读长文档
 
 | ID | Task | Status | Owner |
 | --- | --- | --- | --- |
-| T001 | Define the example question | 已完成 | Claude |
-| T002 | Run a small comparison | 进行中 | GPT |
-| T003 | Review the comparison | 待验收 | Claude |
-| T004 | Prepare the final handout | 暂停，等待审阅 | GPT |
-| T005 | Retired exploratory setting | 取消 | GPT |
+| T010 | 定研究问题和评测集 | 已完成 | Claude |
+| T011 | 长文档问答基线 | 已完成 | GPT |
+| T012 | KV 压缩 4 档对照 | 进行中 6/10 · 约 17:30 | GPT |
+| T013 | 审四档曲线 | 排队：等 T012 跑完 | Claude |
+| T014 | SnapKV 读书笔记 | 待验收 | GPT |
+| T015 | 本周周报 | 排队：周四写 | Claude |

@@ -1,144 +1,59 @@
 {
-  "updated": "2026-01-11",
+  "updated": "2026-11-12",
   "todo": [
-    {
-      "what": "Review the example question",
-      "when": "Next meeting",
-      "how": "Read the short task card",
-      "note": "Agree on the evaluation criterion"
-    },
-    {
-      "what": "Pick the next experiment",
-      "when": "After review",
-      "how": "Compare two proposed settings",
-      "note": "Keep the first result as a reference"
-    }
+    {"what": "给导师发本周周报", "when": "周五 18:00 前", "how": "三行：做了什么、数字、下周计划", "note": "把 4 档压缩的曲线图附上"},
+    {"what": "读完两篇 KV 缓存压缩论文", "when": "周四晚上", "how": "各写一句：做法和关键数字", "note": "SnapKV、H2O"},
+    {"what": "确认组会讲 10 分钟", "when": "明天中午", "how": "回复师兄的消息", "note": ""}
   ],
   "schedule": [
-    {
-      "date": "01-11",
-      "items": [
-        {
-          "time": "09:00",
-          "what": "Read the example task and its criterion",
-          "kind": "复习"
-        },
-        {
-          "time": "14:00",
-          "what": "Compare the demonstration results",
-          "kind": "研究"
-        }
-      ],
-      "relative_day": 0
-    },
-    {
-      "date": "01-12",
-      "items": [
-        {
-          "time": "10:00",
-          "what": "Review the next task",
-          "kind": "研究"
-        }
-      ],
-      "relative_day": 1
-    }
+    {"date": "11-12", "relative_day": 0, "items": [
+      {"time": "09:00", "what": "机器学习课", "kind": "课"},
+      {"time": "13:30", "what": "看压缩 4 档的第一批结果", "kind": "研究"},
+      {"time": "16:00", "what": "去操场走两圈", "kind": "休息"},
+      {"time": "20:00", "what": "读 SnapKV", "kind": "复习"}
+    ]},
+    {"date": "11-13", "relative_day": 1, "items": [
+      {"time": "10:00", "what": "组会：讲长文档问答的基线", "kind": "研究"},
+      {"time": "15:00", "what": "操作系统作业 3", "kind": "复习"}
+    ]},
+    {"date": "11-14", "relative_day": 2, "items": [
+      {"time": "14:00", "what": "整理周报和曲线图", "kind": "研究"}
+    ]}
   ],
   "progress_lines": [
-    {
-      "line": "A small reproducible workflow",
-      "text": "The example shows a task progressing from a question to execution and review."
-    },
-    {
-      "line": "Evaluation",
-      "text": "Each result stays linked to the task, the criterion and the next decision."
-    }
+    {"line": "研究问题", "text": "手机上的小模型读长文档时，KV 缓存能压到多小还不掉问答准确率。"},
+    {"line": "目前进展", "text": "保留 25% 缓存时准确率只掉 1.8 个点；压到 10% 开始明显下降，正在找原因。"},
+    {"line": "下一步", "text": "按段落重要性分配缓存，再和均匀压缩比一次。"}
   ],
   "runs": [
-    {
-      "id": "demo-run",
-      "task_id": "T002",
-      "name": "Small demonstration",
-      "done": 6,
-      "total": 10,
-      "status": "进行中",
-      "line": "Example research"
-    },
-    {
-      "id": "demo-setup",
-      "name": "Environment preparation",
-      "done": 4,
-      "total": 4,
-      "status": "已完成",
-      "line": "Preparation"
-    }
+    {"id": "kv-four-levels", "task_id": "T012", "name": "KV 压缩 4 档对照", "done": 6, "total": 10, "status": "进行中", "line": "压缩率与准确率"},
+    {"id": "longqa-baseline", "task_id": "T011", "name": "长文档问答基线", "done": 200, "total": 200, "status": "已完成", "line": "基线"}
   ],
   "tree": [
-    {
-      "title": "Example research",
-      "status": "doing",
-      "summary": "A fictional project used to demonstrate the collaboration board.",
-      "children": [
-        {
-          "title": "Question and criterion",
-          "status": "done",
-          "summary": "A concrete comparison is defined before execution.",
-          "children": []
-        },
-        {
-          "title": "Demonstration",
-          "status": "doing",
-          "summary": "Six of ten example items are complete.",
-          "tasks": [
-            "T002"
-          ],
-          "children": []
-        }
-      ]
-    }
+    {"title": "小模型读长文档：缓存能压多小", "status": "doing", "summary": "保留 25% KV 缓存时问答准确率 61.4%，不压缩是 63.2%。", "children": [
+      {"title": "基线：不压缩的准确率", "status": "done", "summary": "200 道长文档问答，1.5B 模型 63.2%。", "tasks": ["T011"], "children": []},
+      {"title": "四档压缩的曲线", "status": "doing", "summary": "50% 和 25% 几乎不掉；10% 掉到 52.0%，6/10 组已跑完。", "tasks": ["T012"], "children": []},
+      {"title": "按段落重要性分配缓存", "status": "todo", "summary": "等四档曲线跑完再开。", "children": []}
+    ]}
   ],
   "task_groups": [
-    {
-      "group": "示例研究",
-      "tasks": [
-        {
-          "id": "T002",
-          "name": "运行小对照",
-          "who": "GPT",
-          "description": "比较两种工作流程的表现。",
-          "deliverable": "一份可复现结果与工作量记录。"
-        },
-        {
-          "id": "T003",
-          "name": "审阅对照结果",
-          "who": "Claude",
-          "description": "核对结果是否满足事先约定的标准。",
-          "deliverable": "明确的验收决定与下一步。"
-        },
-        {
-          "id": "T004",
-          "name": "整理交付文档",
-          "who": "GPT",
-          "description": "审阅完成后组织正式材料。",
-          "deliverable": "简洁的读者报告。"
-        }
-      ]
-    }
+    {"group": "研究", "tasks": [
+      {"id": "T011", "name": "长文档问答基线", "who": "GPT", "description": "200 道题，不压缩缓存，记准确率和显存。", "deliverable": "准确率、显存、每题耗时三张表。"},
+      {"id": "T012", "name": "KV 压缩 4 档对照", "who": "GPT", "description": "保留 50%、25%、10%、5% 缓存，各跑 200 题。", "deliverable": "压缩率—准确率曲线和逐题结果。"},
+      {"id": "T013", "name": "审四档曲线", "who": "Claude", "description": "核对掉点是否集中在长距离引用的题。", "deliverable": "一句结论和下一步实验。"}
+    ]},
+    {"group": "学习", "tasks": [
+      {"id": "T014", "name": "SnapKV 读书笔记", "who": "GPT", "description": "整理做法、实验设置和关键数字。", "deliverable": "一页笔记。"}
+    ]},
+    {"group": "其他", "tasks": [
+      {"id": "T015", "name": "本周周报", "who": "Claude", "description": "按导师要的三段写。", "deliverable": "可以直接发的周报草稿。"}
+    ]}
   ],
   "links": [
-    {
-      "title": "Usage and setup",
-      "path": "/help",
-      "cat": "项目",
-      "archived": false
-    }
+    {"title": "使用说明", "path": "/help", "cat": "项目", "archived": false}
   ],
   "important_dates": [
-    {
-      "kind": "exam",
-      "date": "2026-01-20",
-      "public_name": "Example review",
-      "name": "Example review",
-      "relative_day": 7
-    }
+    {"kind": "meeting", "date": "2026-11-13", "public_name": "组会", "name": "组会", "relative_day": 1},
+    {"kind": "exam", "date": "2026-11-26", "public_name": "操作系统期中", "name": "操作系统期中", "relative_day": 14}
   ]
 }

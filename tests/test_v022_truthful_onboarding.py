@@ -21,9 +21,9 @@ class TruthfulFirstUse(unittest.TestCase):
         self.assertEqual(project.ledger(self.root).read_bytes(),b'')
     def test_demo_examples_are_explicit_and_separate_from_session_opening(self):
         other=self.root/'demo';project.initialize(other,'Fictional demo',demo=True)
-        rows=conversation(other)['items'];self.assertEqual(len(rows),2)
-        self.assertTrue(all(p.get('message_kind')=='demo' and p.get('source_label')=='示例' for p in rows))
-        self.assertTrue(all('示例' in p['body'] for p in rows))
+        rows=[p for p in conversation(other)['items'] if p['author'] in ('Claude','GPT')];self.assertEqual(len(rows),3)
+        # Demo posts read like a real student's day; they stay marked as demo in data, without a visible label.
+        self.assertTrue(all(p.get('message_kind')=='demo' and not p.get('source_label') for p in rows))
         self.assertFalse(onboarding.status(other,'Claude')['checks']['opening'])
     def test_legacy_seed_gets_a_display_label_and_preserves_ledger_bytes(self):
         self.legacy_seed();path=project.ledger(self.root);before=path.read_bytes()
