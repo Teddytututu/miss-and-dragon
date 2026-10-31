@@ -6,6 +6,12 @@
 
 [![MIT](docs/badges/license.svg)](LICENSE) ![Python 3.11+](docs/badges/python.svg)
 
+<table><tr>
+<td align="center" width="140"><img src="docs/images/avatar-lead.png" width="72" alt="Lead"><br><b>Lead</b><br><sub>设计 · 拍板 · 验收</sub></td>
+<td align="center" width="140"><img src="docs/images/avatar-executor.png" width="72" alt="Executor"><br><b>Executor</b><br><sub>执行 · 搭建 · 汇报</sub></td>
+<td width="420"><sub>你是 <b>Owner</b>：方向、预算、对外和删除归你；其余事情由两个 AI 之间提问、决定并记账。</sub></td>
+</tr></table>
+
 [English](README.md) · [Architecture](docs/ARCHITECTURE.md) · [Interactive diagrams](docs/architecture/index.html)
 
 ## 启动
@@ -30,27 +36,15 @@ python -m board start "Example study"
 - 醒来合同要求巡检前继续查看消息、指令和可独立推进的任务。
 - 普通程序检查记录格式、命令字段和任务状态流转。
 
-![一轮醒来：推进可做的工作，遇到真实依赖后休息](docs/images/wake-cycle.png)
+<img src="docs/images/wake-loop.svg" alt="一轮醒来：事件、空卡、Lead 指令、开着的任务，只剩等待才休息" width="920">
 
 ## 怎样协作
 
-本人确定研究方向与授权。**Lead** 设计和验收，**Executor** 执行已经约定的工作；看板和命令行把提问、决定、状态与结果保存在文件中。
+<img src="docs/images/how-it-works.svg" alt="Owner、Lead、Executor 共用文件记录；普通程序看着记录并叫醒 Executor" width="920">
 
-![本人作个人决定，Lead 判断，Executor 执行](docs/images/human-in-the-loop.png)
+Owner 定方向，**Lead** 设计和验收，**Executor** 做约定好的事。两者之间说的每句话都落在普通文件里，几个不用模型的小程序看着这些文件：把变化变成事件、叫醒对的会话、发现规矩被破坏就报出来。[架构说明](docs/ARCHITECTURE.md)里有六张细图：通道、一个问题的一生、每日节奏、决定权和醒来循环。
 
-<img src="docs/architecture/01-overview.svg" alt="人、AI角色、普通程序与文件" width="920">
-
-仓库提供看板、命令工具和记录检查。模型叫醒、GPU 队列、资源守卫与服务保活通过部署适配器连接；参考部署将执行会话分为 Front desk、Experiment 和 Chores。
-
-<img src="docs/architecture/02-channels.svg" alt="沟通通道与持久记录" width="920">
-
-交流记录传递问题与答案，`decide` 和 `veto` 保留执行选择与否决。两条私聊分别连接本人和对应 AI 角色。
-
-<img src="docs/architecture/04-cadence.svg" alt="模型会话与普通程序的检查节奏" width="920">
-
-橙色和紫色泳道表示模型会话，青色泳道表示普通程序。参考节奏由模型提供方的日程和部署适配器实现。
-
-## 设计原则
+## 设计原则## 设计原则
 
 1. 程序校验规矩，人和 AI 角色判断研究。
 2. 重复出现的错误进入可执行检查。
@@ -58,7 +52,6 @@ python -m board start "Example study"
 4. GPU 部署以实际利用率衡量计算活动。
 5. 汇报完成结果和具体依赖。
 
-![同一个错误再次出现，就把经验变成程序检查](docs/images/mistakes-to-programs.png)
 
 ## 常用命令
 

@@ -6,6 +6,12 @@ A local web board and command line for running a research project with two AI ag
 
 [![MIT](docs/badges/license.svg)](LICENSE) ![Python 3.11+](docs/badges/python.svg)
 
+<table><tr>
+<td align="center" width="140"><img src="docs/images/avatar-lead.png" width="72" alt="Lead"><br><b>Lead</b><br><sub>designs · decides · reviews</sub></td>
+<td align="center" width="140"><img src="docs/images/avatar-executor.png" width="72" alt="Executor"><br><b>Executor</b><br><sub>runs · builds · reports</sub></td>
+<td width="420"><sub>You stay the <b>Owner</b>: direction, budget, external actions and deletion are yours. Everything else is asked, decided and logged between the two agents.</sub></td>
+</tr></table>
+
 [简体中文](README.zh-CN.md) · [Architecture](docs/ARCHITECTURE.md) · [Interactive diagrams](docs/architecture/index.html)
 
 ## Quick start
@@ -28,27 +34,15 @@ Open **http://127.0.0.1:8780** and keep the last command running. Most interface
 - The wake contract keeps messages, orders and independent open work in view before patrol.
 - Ordinary programs validate record shapes, command fields and task transitions.
 
-![A complete wake from actionable work to a real dependency](docs/images/wake-cycle.png)
+<img src="docs/images/wake-loop.svg" alt="One wake: events, idle GPUs, Lead orders, open tasks; sleep only when everything left is waiting" width="920">
 
 ## How it works
 
-The owner sets direction and authorization. **Lead** designs and accepts results; **Executor** implements the agreed work. The board and CLI retain their questions, decisions, status and results in files.
+<img src="docs/images/how-it-works.svg" alt="Owner, Lead and Executor share plain-file records; plain programs watch the records and wake the Executor" width="920">
 
-![Human decisions, lead review and executor work](docs/images/human-in-the-loop.png)
+The owner sets direction; **Lead** designs and accepts; **Executor** carries out the agreed work. Everything they say to each other lands in plain files, and small programs without a model watch those files, wake the right chat and flag broken rules. The [architecture guide](docs/ARCHITECTURE.md) has six detailed diagrams: channels, a question's life, daily cadence, authority and the wake loop.
 
-<img src="docs/architecture/01-overview.svg" alt="People, AI roles, ordinary programs and files" width="920">
-
-The repository ships the board, command tools and record validation. Deployment adapters connect provider wakes, GPU queues, resource guards and service recovery; the reference deployment separates Front desk, Experiment and Chores chats.
-
-<img src="docs/architecture/02-channels.svg" alt="Communication channels and persistent records" width="920">
-
-Exchange notes carry questions and answers; `decide` and `veto` preserve routine choices and overrides. Private conversations connect the owner to each AI role.
-
-<img src="docs/architecture/04-cadence.svg" alt="Model chats and ordinary program checks" width="920">
-
-Orange and purple lanes represent model chats; teal lanes represent ordinary programs. Provider schedules and deployment adapters supply the reference cadence.
-
-## Design principles
+## Design principles## Design principles
 
 1. Programs validate rules; people and AI roles judge the research.
 2. Turn a repeated failure into an executable check.
@@ -56,7 +50,6 @@ Orange and purple lanes represent model chats; teal lanes represent ordinary pro
 4. Measure GPU activity through utilization in the deployment adapter.
 5. Report completed outcomes and concrete dependencies.
 
-![Repeated mistakes become executable checks](docs/images/mistakes-to-programs.png)
 
 ## Commands
 
