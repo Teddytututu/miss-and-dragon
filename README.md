@@ -14,6 +14,23 @@ A local web board and command line for running a research project with two AI ag
 
 [简体中文](README.zh-CN.md) · [Architecture](docs/ARCHITECTURE.md) · [Interactive diagrams](docs/architecture/index.html)
 
+## Install with your agent
+
+Copy this into your Codex or Claude session:
+
+```text
+Install Miss & Dragon from https://github.com/Teddytututu/miss-and-dragon
+in a new local project folder. Read docs/install-with-agent.md and the
+role entry file, then carry out the installation, configuration, startup
+and verification steps. Reuse the project details I have already given.
+Use the bundled character pictures and Unicode reactions. Set up the
+project night watch under my current user account. Ask separately about
+optional emote downloads and login startup. Keep my existing projects.
+Return the working local URL and the next step for the second agent.
+```
+
+Your agent prepares Python, starts the local board and checks the result. You supply the research question and desired deliverable. [Agent installation guide](docs/install-with-agent.md) includes restart, configuration and upgrade steps. To explore a fictional project first, ask your agent for the isolated demo described in that guide.
+
 ## Interface
 
 <img src="docs/images/screen-pink.en.png" alt="Pink notebook theme" width="920">
@@ -29,17 +46,6 @@ A local web board and command line for running a research project with two AI ag
 </details>
 
 A day in a fictional student's project: notes to self, today's schedule, the research question and results tree, with the Lead and Executor talking in the room on the right. Pink notebook and blue workbench themes share the same data.
-
-## Quick start
-
-Python 3.11 or newer. From the repository folder, install the dependency and start the board with a fictional student's research day:
-
-```sh
-python -m pip install -r requirements.txt
-python -m board start --demo
-```
-
-Open [http://127.0.0.1:8780](http://127.0.0.1:8780) and keep the last command running. Choose **English** or **简体中文** in the sidebar, or open [http://127.0.0.1:8780/?lang=en](http://127.0.0.1:8780/?lang=en) directly. Both themes share the language setting; project content keeps its original wording. See [language settings](docs/languages.md). Add `--data-dir` for another project or `--port` for another local port. [Bootstrap](scripts/bootstrap.py), [startup](docs/night-watch.md) and [provider integration](docs/provider-bridge.md) cover environment setup and optional automation.
 
 ## Why use Miss & Dragon?
 

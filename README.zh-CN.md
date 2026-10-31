@@ -14,6 +14,22 @@
 
 [English](README.md) · [Architecture](docs/ARCHITECTURE.md) · [Interactive diagrams](docs/architecture/index.html)
 
+## 交给 agent 安装
+
+把下面这段复制给 Codex 或 Claude：
+
+```text
+请在新的本机项目文件夹安装 Miss & Dragon：
+https://github.com/Teddytututu/miss-and-dragon
+先读 docs/install-with-agent.zh-CN.md 和你的角色入口文件，
+接着完成安装、配置、启动和验证。复用我已经提供的项目资料，
+使用随包角色图和 Unicode 表情，在当前用户下接入项目守夜人。
+可选表情包下载与登录自启动分别征求我的选择，保留现有项目。
+完成后给我可打开的本机网址，以及第二个 agent 的接入步骤。
+```
+
+agent 负责准备 Python、启动看板并打开确认；你提供研究问题和希望得到的成果。[agent 安装指南](docs/install-with-agent.zh-CN.md)写明配置、重启和升级流程。想先试用时，把“先启动独立演示项目”加到上面的请求里。
+
 ## 界面
 
 <img src="docs/images/screen-pink.zh-CN.png" alt="粉色手账界面" width="920">
@@ -29,17 +45,6 @@
 </details>
 
 一个虚构学生的研究日常：要做的事、今天的安排、研究问题和结果树，右边是 Lead 和 Executor 在讨论室里的对话。粉色手账和蓝色工作台两套主题用同一份数据。
-
-## 启动
-
-需要 Python 3.11 或更新版本。在仓库根目录运行两条命令：安装依赖，然后带着一个虚构学生的研究日常启动看板。 侧栏可以选 **简体中文** 或 **English**，英文入口是 `http://127.0.0.1:8780/?lang=en`，详见[语言设置](docs/languages.zh-CN.md)。
-
-```sh
-python -m pip install -r requirements.txt
-python -m board start --demo
-```
-
-打开 [http://127.0.0.1:8780](http://127.0.0.1:8780)，让最后一条命令持续运行。使用 `--data-dir` 指定另一个项目，使用 `--port` 指定本机端口。[Bootstrap](scripts/bootstrap.py)、[启动与巡检](docs/night-watch.md)和[模型提供方连接](docs/provider-bridge.md)说明环境准备和可选自动化。
 
 ## 用起来有什么好处
 

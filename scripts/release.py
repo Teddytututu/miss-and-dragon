@@ -44,6 +44,7 @@ def files():
     names += ['docs/ARCHITECTURE.md','docs/architecture/index.html']
     names += ['docs/images/'+name for name in ['readme-hero.png','social-preview.png','wake-cycle.png','human-in-the-loop.png','mistakes-to-programs.png','alternatives/readme-hero-a.png','alternatives/readme-hero-b.png']]
     names += ['docs/badges/license.svg','docs/badges/python.svg']
+    names += ['docs/install-with-agent.md','docs/install-with-agent.zh-CN.md']
     names += ['docs/architecture/'+name+'.svg' for name in ['01-overview','02-channels','03-question','04-cadence','05-authority','06-wake-loop']]
     names += ['board/exchange.py','board/stability.py','scripts/check_eol.py']
     for folder in ['personas','protocol','templates']:
