@@ -7,9 +7,9 @@
 [![MIT](docs/badges/license.svg)](LICENSE) ![Python 3.11+](docs/badges/python.svg)
 
 <table><tr>
-<td align="center" width="140"><img src="docs/images/avatar-owner.png" width="72" alt="Owner"><br><b>Owner · 大肥鱼</b><br><sub>方向 · 预算 · 最终拍板</sub></td>
-<td align="center" width="140"><img src="docs/images/avatar-lead.png" width="72" alt="Lead"><br><b>Lead · Miss</b><br><sub>设计 · 拍板 · 验收</sub></td>
-<td align="center" width="140"><img src="docs/images/avatar-executor.png" width="72" alt="Executor"><br><b>Executor · Dragon</b><br><sub>执行 · 搭建 · 汇报</sub></td>
+<td align="center" valign="top" width="200"><img src="docs/images/avatar-owner.png" width="72" height="72" alt="大肥鱼"><br><b>大肥鱼</b><br><sub>发起人</sub><br><br><sub>方向<br>预算<br>最终拍板</sub></td>
+<td align="center" valign="top" width="200"><img src="docs/images/avatar-lead.png" width="72" height="72" alt="大小姐"><br><b>大小姐</b><br><sub>主线</sub><br><br><sub>设计<br>决定<br>验收</sub></td>
+<td align="center" valign="top" width="200"><img src="docs/images/avatar-executor.png" width="72" height="72" alt="龙娘"><br><b>龙娘</b><br><sub>执行</sub><br><br><sub>执行<br>搭建<br>汇报</sub></td>
 </tr></table>
 
 [English](README.md) · [Architecture](docs/ARCHITECTURE.md) · [Interactive diagrams](docs/architecture/index.html)
@@ -39,7 +39,7 @@ python -m pip install -r requirements.txt
 python -m board start --demo
 ```
 
-打开 **http://127.0.0.1:8780**，让最后一条命令持续运行。使用 `--data-dir` 指定另一个项目，使用 `--port` 指定本机端口。[Bootstrap](scripts/bootstrap.py)、[启动与巡检](docs/night-watch.md)和[模型提供方连接](docs/provider-bridge.md)说明环境准备和可选自动化。
+打开 [http://127.0.0.1:8780](http://127.0.0.1:8780)，让最后一条命令持续运行。使用 `--data-dir` 指定另一个项目，使用 `--port` 指定本机端口。[Bootstrap](scripts/bootstrap.py)、[启动与巡检](docs/night-watch.md)和[模型提供方连接](docs/provider-bridge.md)说明环境准备和可选自动化。
 
 ## 和直接开两个聊天窗口有什么不同
 

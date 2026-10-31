@@ -7,9 +7,9 @@ A local web board and command line for running a research project with two AI ag
 [![MIT](docs/badges/license.svg)](LICENSE) ![Python 3.11+](docs/badges/python.svg)
 
 <table><tr>
-<td align="center" width="140"><img src="docs/images/avatar-owner.png" width="72" alt="Owner"><br><b>Owner · 大肥鱼</b><br><sub>direction · budget · final say</sub></td>
-<td align="center" width="140"><img src="docs/images/avatar-lead.png" width="72" alt="Lead"><br><b>Lead · Miss</b><br><sub>designs · decides · reviews</sub></td>
-<td align="center" width="140"><img src="docs/images/avatar-executor.png" width="72" alt="Executor"><br><b>Executor · Dragon</b><br><sub>runs · builds · reports</sub></td>
+<td align="center" valign="top" width="200"><img src="docs/images/avatar-owner.png" width="72" height="72" alt="Big Fish"><br><b>Big&nbsp;Fish</b><br><sub>Owner</sub><br><br><sub>Direction<br>Budget<br>Final say</sub></td>
+<td align="center" valign="top" width="200"><img src="docs/images/avatar-lead.png" width="72" height="72" alt="Miss"><br><b>Miss</b><br><sub>Lead</sub><br><br><sub>Design<br>Decisions<br>Review</sub></td>
+<td align="center" valign="top" width="200"><img src="docs/images/avatar-executor.png" width="72" height="72" alt="Dragon"><br><b>Dragon</b><br><sub>Executor</sub><br><br><sub>Run<br>Build<br>Report</sub></td>
 </tr></table>
 
 [简体中文](README.zh-CN.md) · [Architecture](docs/ARCHITECTURE.md) · [Interactive diagrams](docs/architecture/index.html)
@@ -39,7 +39,7 @@ python -m pip install -r requirements.txt
 python -m board start --demo
 ```
 
-Open **http://127.0.0.1:8780** and keep the last command running. Choose **English** or **简体中文** in the sidebar, or open **http://127.0.0.1:8780/?lang=en** directly. Both themes share the language setting; project content keeps its original wording. See [language settings](docs/languages.md). Add `--data-dir` for another project or `--port` for another local port. [Bootstrap](scripts/bootstrap.py), [startup](docs/night-watch.md) and [provider integration](docs/provider-bridge.md) cover environment setup and optional automation.
+Open [http://127.0.0.1:8780](http://127.0.0.1:8780) and keep the last command running. Choose **English** or **简体中文** in the sidebar, or open [http://127.0.0.1:8780/?lang=en](http://127.0.0.1:8780/?lang=en) directly. Both themes share the language setting; project content keeps its original wording. See [language settings](docs/languages.md). Add `--data-dir` for another project or `--port` for another local port. [Bootstrap](scripts/bootstrap.py), [startup](docs/night-watch.md) and [provider integration](docs/provider-bridge.md) cover environment setup and optional automation.
 
 ## Why: beyond two chat windows
 
