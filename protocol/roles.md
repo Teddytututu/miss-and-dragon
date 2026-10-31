@@ -17,7 +17,7 @@ Reference deployments use three existing chats with independent inbox cursors an
 
 | Chat | Scope | Wake cadence |
 | --- | --- | --- |
-| Front desk | Owner messages, factual answers, dispatch and scoped local repairs | Events and a ten-minute fallback |
+| Front desk | Owner messages, factual answers, dispatch and scoped local repairs | Events and a sixty-minute fallback |
 | Experiment | Research jobs, scoring, GPU hosts and result collection | Events and a sixty-minute fallback |
 | Chores | Web pages, documentation, learning materials, open source and shared tools | Events and a two-hour fallback |
 
