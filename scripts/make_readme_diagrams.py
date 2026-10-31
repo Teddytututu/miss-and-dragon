@@ -15,14 +15,14 @@ def tape(cx, y, color, w=58, rot=-4):
             f"fill='{color}' opacity='.38'/><rect x='{cx - w / 2}' y='{y - 8}' width='{w}' height='16' rx='2' fill='url(#stripe)' opacity='.5'/></g>")
 
 
-def note(x, y, w, h, color, title, lines=(), rot=0, title_size=19):
+def note(x, y, w, h, color, title, lines=(), rot=0, title_size=22):
     cx = x + w / 2
     s = [f"<g transform='rotate({rot} {cx} {y + h / 2})'>",
          f"<rect x='{x + 3}' y='{y + 4}' width='{w}' height='{h}' rx='6' fill='#000' opacity='.06'/>",
          f"<rect x='{x}' y='{y}' width='{w}' height='{h}' rx='6' fill='{NOTE[color]}' stroke='{color}' stroke-width='1.3'/>",
-         f"<text x='{cx}' y='{y + 32}' text-anchor='middle' font-family=\"{HAND}\" font-size='{title_size}' font-weight='700' fill='{color}'>{title}</text>"]
+         f"<text x='{cx}' y='{y + 35}' text-anchor='middle' font-family=\"{HAND}\" font-size='{title_size}' font-weight='700' fill='{color}'>{title}</text>"]
     for i, line in enumerate(lines):
-        s.append(f"<text x='{cx}' y='{y + 54 + i * 18}' text-anchor='middle' font-family=\"{SANS}\" font-size='12.5' fill='{INK}'>{line}</text>")
+        s.append(f"<text x='{cx}' y='{y + 60 + i * 20}' text-anchor='middle' font-family=\"{SANS}\" font-size='15' fill='{INK}'>{line}</text>")
     s.append('</g>')
     s.append(tape(cx, y, color))
     return ''.join(s)
@@ -34,24 +34,24 @@ def curve(x1, y1, x2, y2, bend=-18, label='', ly=None, lx=None, color=INK, dash=
     s = f"<path d='M{x1} {y1} Q {mx} {my} {x2} {y2}' fill='none' stroke='{color}' stroke-width='1.6' stroke-linecap='round' marker-end='url(#a)'{d}/>"
     if label:
         s += (f"<text x='{lx if lx is not None else mx}' y='{ly if ly is not None else my - 4}' text-anchor='{anchor}' "
-              f"font-family=\"{HAND}\" font-size='13' fill='{MUTED}'>{label}</text>")
+              f"font-family=\"{HAND}\" font-size='15' fill='{MUTED}'>{label}</text>")
     return s
 
 
 def band(x, y, w, h, color, title):
     return (f"<rect x='{x}' y='{y}' width='{w}' height='{h}' rx='10' fill='{NOTE[color]}' fill-opacity='.55' stroke='{color}' "
             f"stroke-width='1.4' stroke-dasharray='7 5'/>"
-            f"<rect x='{x + 18}' y='{y + 14}' width='{len(title) * 8.6}' height='11' fill='{color}' opacity='.22'/>"
-            f"<text x='{x + 20}' y='{y + 24}' font-family=\"{HAND}\" font-size='16' font-weight='700' fill='{color}'>{title}</text>")
+            f"<rect x='{x + 18}' y='{y + 14}' width='{len(title) * 10.2}' height='13' fill='{color}' opacity='.22'/>"
+            f"<text x='{x + 20}' y='{y + 28}' font-family=\"{HAND}\" font-size='19' font-weight='700' fill='{color}'>{title}</text>")
 
 
 def chip(x, y, w, color, text, sub=None):
-    h = 46 if sub else 32
+    h = 54 if sub else 38
     s = (f"<rect x='{x}' y='{y}' width='{w}' height='{h}' rx='8' fill='#fffdfb' stroke='{color}' stroke-width='1.1'/>"
-         f"<text x='{x + w / 2}' y='{y + (19 if sub else 21)}' text-anchor='middle' font-family=\"{SANS}\" font-size='13' "
+         f"<text x='{x + w / 2}' y='{y + (23 if sub else 25)}' text-anchor='middle' font-family=\"{SANS}\" font-size='15' "
          f"font-weight='600' fill='{INK}'>{text}</text>")
     if sub:
-        s += f"<text x='{x + w / 2}' y='{y + 37}' text-anchor='middle' font-family=\"{SANS}\" font-size='11.5' fill='{MUTED}'>{sub}</text>"
+        s += f"<text x='{x + w / 2}' y='{y + 44}' text-anchor='middle' font-family=\"{SANS}\" font-size='13.5' fill='{MUTED}'>{sub}</text>"
     return s
 
 
@@ -79,27 +79,27 @@ def svg(w, h, body, label):
 
 
 def how_it_works():
-    b = [note(30, 36, 236, 104, ROSE, 'Owner', ['sets direction and budget', 'approves external actions, deletion'], rot=-1.2),
-         note(362, 36, 236, 104, ORANGE, 'Lead', ['designs experiments, decides,', 'reviews every delivery'], rot=0.8),
-         note(694, 36, 236, 104, LAV, 'Executor', ['runs jobs, builds pages,', 'reports results first'], rot=-0.8),
-         curve(270, 70, 358, 70, label='direction'),
-         curve(358, 112, 270, 112, bend=18, label='conclusions', ly=140),
-         curve(602, 70, 690, 70, label='orders'),
-         curve(690, 112, 602, 112, bend=18, label='asks · deliveries', ly=140),
-         band(30, 186, 900, 88, SAND, 'Shared records — plain files')]
-    for i, t in enumerate(['task board', 'exchange notes', 'decide / veto ledger', 'events', 'findings']):
-        b.append(chip(50 + i * 176, 228, 160, SAND, t))
-    b += [curve(480, 144, 480, 184, bend=0, label='read / write', lx=490, ly=168, anchor='start'),
-          curve(812, 144, 812, 184, bend=0, label='read / write', lx=822, ly=168, anchor='start'),
-          band(30, 320, 900, 104, TEAL, 'Plain programs — no model, no quota')]
+    b = [note(30, 36, 236, 132, ROSE, 'Owner', ['sets direction and budget', 'approves external actions', 'and deletion'], rot=-1.2),
+         note(362, 36, 236, 132, ORANGE, 'Lead', ['designs experiments,', 'decides, reviews', 'every delivery'], rot=0.8),
+         note(694, 36, 236, 132, LAV, 'Executor', ['runs jobs, builds pages,', 'reports results first'], rot=-0.8),
+         curve(270, 78, 358, 78, label='direction'),
+         curve(358, 128, 270, 128, bend=18, label='conclusions', ly=160),
+         curve(602, 78, 690, 78, label='orders'),
+         curve(690, 128, 602, 128, bend=18, label='asks, deliveries', ly=160),
+         band(30, 214, 900, 104, SAND, 'Shared records: plain files')]
+    for i, t in enumerate(['task board', 'exchange notes', 'decide / veto log', 'events', 'findings']):
+        b.append(chip(50 + i * 176, 260, 160, SAND, t))
+    b += [curve(480, 172, 480, 212, bend=0, label='read / write', lx=490, ly=196, anchor='start'),
+          curve(812, 172, 812, 212, bend=0, label='read / write', lx=822, ly=196, anchor='start'),
+          band(30, 362, 900, 118, TEAL, 'Plain programs: no model, no quota')]
     for i, (t, sub) in enumerate([('night watch', 'turns changes into events'), ('event bridge', 'wakes the right chat'),
                                   ('checks', 'flow, idle GPUs, model'), ('guardian', 'restarts local services')]):
-        b.append(chip(50 + i * 220, 362, 204, TEAL, t, sub))
-    b += [curve(480, 318, 480, 278, bend=0, label='watch', lx=490, ly=302, anchor='start'),
-          f"<path d='M928 330 C 968 260, 968 170, 936 136' fill='none' stroke='{INK}' stroke-width='1.6' stroke-dasharray='6 5' marker-end='url(#a)'/>"
-          f"<text x='958' y='238' font-family=\"{HAND}\" font-size='13' fill='{MUTED}' transform='rotate(-90 958 238)' text-anchor='middle'>wake</text>",
-          doodles([('heart', 22, 30, ROSE), ('star', 652, 162, ORANGE), ('star', 918, 300, TEAL)])]
-    return svg(980, 446, ''.join(b), 'Owner, Lead and Executor share plain-file records; plain programs watch the records and wake the Executor')
+        b.append(chip(50 + i * 220, 410, 204, TEAL, t, sub))
+    b += [curve(480, 360, 480, 322, bend=0, label='watch', lx=490, ly=346, anchor='start'),
+          f"<path d='M928 372 C 970 290, 970 190, 936 150' fill='none' stroke='{INK}' stroke-width='1.6' stroke-dasharray='6 5' marker-end='url(#a)'/>"
+          f"<text x='962' y='270' font-family=\"{HAND}\" font-size='15' fill='{MUTED}' transform='rotate(-90 962 270)' text-anchor='middle'>wake</text>",
+          doodles([('heart', 22, 30, ROSE), ('star', 652, 180, ORANGE), ('star', 918, 340, TEAL)])]
+    return svg(990, 498, ''.join(b), 'Owner, Lead and Executor share plain-file records; plain programs watch the records and wake the Executor')
 
 
 def wake_loop():
@@ -107,21 +107,21 @@ def wake_loop():
              ('3 · Lead orders', LAV, 'do each one'), ('4 · open tasks', LAV, 'move each a step'), ('only waiting?', ORANGE, 'patrol, then sleep')]
     rots = [-1.5, 1, -0.8, 1.2, -1, 0.8]
     b = []
-    w, gap, y = 136, 20, 44
+    w, gap, y = 150, 18, 44
     for i, (t, c, sub) in enumerate(steps):
         x = 24 + i * (w + gap)
-        b.append(note(x, y, w, 74, c, t, [sub], rot=rots[i], title_size=15))
+        b.append(note(x, y, w, 86, c, t, [sub], rot=rots[i], title_size=18))
         if i:
-            b.append(curve(x - gap + 2, y + 40, x - 3, y + 40, bend=-8))
+            b.append(curve(x - gap + 2, y + 44, x - 3, y + 44, bend=-8))
     x1 = 24 + (w + gap) + w / 2
     xe = 24 + 5 * (w + gap) + 30
-    b.append(f"<path d='M{x1} 122 C {x1 + 10} 168, {xe - 40} 172, {xe} 126' fill='none' stroke='{RED}' stroke-width='1.6' stroke-dasharray='6 5'/>"
-             f"<g stroke='{RED}' stroke-width='2.4' stroke-linecap='round'><line x1='{(x1 + xe) / 2 - 8}' y1='{156}' x2='{(x1 + xe) / 2 + 8}' y2='{172}'/>"
-             f"<line x1='{(x1 + xe) / 2 + 8}' y1='{156}' x2='{(x1 + xe) / 2 - 8}' y2='{172}'/></g>"
-             f"<text x='{(x1 + xe) / 2}' y='196' text-anchor='middle' font-family=\"{HAND}\" font-size='13.5' fill='{RED}'>"
+    b.append(f"<path d='M{x1} 134 C {x1 + 10} 180, {xe - 40} 184, {xe} 138' fill='none' stroke='{RED}' stroke-width='1.6' stroke-dasharray='6 5'/>"
+             f"<g stroke='{RED}' stroke-width='2.4' stroke-linecap='round'><line x1='{(x1 + xe) / 2 - 8}' y1='{168}' x2='{(x1 + xe) / 2 + 8}' y2='{184}'/>"
+             f"<line x1='{(x1 + xe) / 2 + 8}' y1='{168}' x2='{(x1 + xe) / 2 - 8}' y2='{184}'/></g>"
+             f"<text x='{(x1 + xe) / 2}' y='212' text-anchor='middle' font-family=\"{HAND}\" font-size='15.5' fill='{RED}'>"
              "old loop: slept right after the event while GPUs sat idle — the wake contract now refuses it</text>")
-    b.append(doodles([('heart', 930, 30, ROSE), ('star', 18, 140, LAV)]))
-    return svg(960, 214, ''.join(b), 'One wake: events, idle GPUs, Lead orders, open tasks; sleep only when everything left is waiting')
+    b.append(doodles([('heart', 1000, 30, ROSE), ('star', 18, 150, LAV)]))
+    return svg(1040, 232, ''.join(b), 'One wake: events, idle GPUs, Lead orders, open tasks; sleep only when everything left is waiting')
 
 
 (OUT / 'how-it-works.svg').write_text(how_it_works(), encoding='utf-8')
