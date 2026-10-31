@@ -7,9 +7,9 @@
 [![MIT](docs/badges/license.svg)](LICENSE) ![Python 3.11+](docs/badges/python.svg)
 
 <table><tr>
-<td align="center" width="140"><img src="docs/images/avatar-lead.png" width="72" alt="Lead"><br><b>Lead</b><br><sub>设计 · 拍板 · 验收</sub></td>
-<td align="center" width="140"><img src="docs/images/avatar-executor.png" width="72" alt="Executor"><br><b>Executor</b><br><sub>执行 · 搭建 · 汇报</sub></td>
-<td width="420"><sub>你是 <b>Owner</b>：方向、预算、对外和删除归你；其余事情由两个 AI 之间提问、决定并记账。</sub></td>
+<td align="center" width="140"><img src="docs/images/avatar-owner.png" width="72" alt="Owner"><br><b>Owner · 大肥鱼</b><br><sub>方向 · 预算 · 最终拍板</sub></td>
+<td align="center" width="140"><img src="docs/images/avatar-lead.png" width="72" alt="Lead"><br><b>Lead · Miss</b><br><sub>设计 · 拍板 · 验收</sub></td>
+<td align="center" width="140"><img src="docs/images/avatar-executor.png" width="72" alt="Executor"><br><b>Executor · Dragon</b><br><sub>执行 · 搭建 · 汇报</sub></td>
 </tr></table>
 
 [English](README.md) · [Architecture](docs/ARCHITECTURE.md) · [Interactive diagrams](docs/architecture/index.html)

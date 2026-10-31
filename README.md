@@ -7,9 +7,9 @@ A local web board and command line for running a research project with two AI ag
 [![MIT](docs/badges/license.svg)](LICENSE) ![Python 3.11+](docs/badges/python.svg)
 
 <table><tr>
-<td align="center" width="140"><img src="docs/images/avatar-lead.png" width="72" alt="Lead"><br><b>Lead</b><br><sub>designs · decides · reviews</sub></td>
-<td align="center" width="140"><img src="docs/images/avatar-executor.png" width="72" alt="Executor"><br><b>Executor</b><br><sub>runs · builds · reports</sub></td>
-<td width="420"><sub>You stay the <b>Owner</b>: direction, budget, external actions and deletion are yours. Everything else is asked, decided and logged between the two agents.</sub></td>
+<td align="center" width="140"><img src="docs/images/avatar-owner.png" width="72" alt="Owner"><br><b>Owner · 大肥鱼</b><br><sub>direction · budget · final say</sub></td>
+<td align="center" width="140"><img src="docs/images/avatar-lead.png" width="72" alt="Lead"><br><b>Lead · Miss</b><br><sub>designs · decides · reviews</sub></td>
+<td align="center" width="140"><img src="docs/images/avatar-executor.png" width="72" alt="Executor"><br><b>Executor · Dragon</b><br><sub>runs · builds · reports</sub></td>
 </tr></table>
 
 [简体中文](README.zh-CN.md) · [Architecture](docs/ARCHITECTURE.md) · [Interactive diagrams](docs/architecture/index.html)

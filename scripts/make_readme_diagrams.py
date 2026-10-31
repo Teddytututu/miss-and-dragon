@@ -32,6 +32,15 @@ def note(x, y, w, h, color, title, lines=(), rot=0, title_size=27):
     return ''.join(s)
 
 
+def avatar(cx, cy, file, r=24):
+    """Small round character sticker (the real board avatars) embedded as PNG."""
+    from PIL import Image
+    im = Image.open(OUT / file).convert('RGBA').resize((96, 96), Image.LANCZOS)
+    buf = io.BytesIO(); im.save(buf, 'PNG', optimize=True)
+    data = base64.b64encode(buf.getvalue()).decode()
+    return f"<image x='{cx - r}' y='{cy - r}' width='{2 * r}' height='{2 * r}' href='data:image/png;base64,{data}'/>"
+
+
 def curve(x1, y1, x2, y2, bend=-18, label='', ly=None, lx=None, color=INK, dash=False, anchor='middle'):
     mx, my = (x1 + x2) / 2, (y1 + y2) / 2 + bend
     d = " stroke-dasharray='6 5'" if dash else ''
@@ -100,9 +109,10 @@ def svg(w, h, body, label):
 
 
 def how_it_works():
-    b = [note(30, 36, 236, 132, ROSE, 'Owner', ['sets direction and budget', 'approves external actions', 'and deletion'], rot=-1.2),
-         note(362, 36, 236, 132, ORANGE, 'Lead', ['designs experiments,', 'decides, reviews', 'every delivery'], rot=0.8),
-         note(694, 36, 236, 132, LAV, 'Executor', ['runs jobs, builds pages,', 'reports results first'], rot=-0.8),
+    b = [note(30, 36, 236, 132, ROSE, 'Owner · Big Fish', ['sets direction and budget', 'approves external actions', 'and deletion'], rot=-1.2),
+         note(362, 36, 236, 132, ORANGE, 'Lead · Miss', ['designs experiments,', 'decides, reviews', 'every delivery'], rot=0.8),
+         note(694, 36, 236, 132, LAV, 'Executor · Dragon', ['runs jobs, builds pages,', 'reports results first'], rot=-0.8),
+         avatar(34, 40, 'avatar-owner.png', 26), avatar(366, 40, 'avatar-lead.png', 26), avatar(698, 40, 'avatar-executor.png', 26),
          curve(270, 78, 358, 78, label='direction'),
          curve(358, 128, 270, 128, bend=18, label='conclusions', ly=160),
          curve(602, 78, 690, 78, label='orders'),
