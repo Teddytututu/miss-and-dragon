@@ -33,7 +33,7 @@ def message_metadata(row):
     kind='assistant' if row.get('author') in ['Claude','GPT'] else 'user'
     if kind=='assistant':
         if row.get('client_id') in ['project-kickoff-v2','builder-kickoff-v2']:kind='initialization'
-        elif row.get('client_id') in ['demo-project-kickoff-v2','demo-builder-kickoff-v2','demo-claude-answer-v1']:kind='demo'
+        elif str(row.get('client_id') or '').startswith('demo-'):kind='demo'
     return dict(message_kind=kind,source_label={'initialization':'初始化说明'}.get(kind))
 
 def session_message(row):return message_metadata(row)['message_kind']=='assistant'
@@ -94,10 +94,20 @@ def initialize(root,name,question='',deliverable='',user_name='大肥鱼',demo=F
         path=ledger(root);path.parent.mkdir(parents=True,exist_ok=True)
         if not path.exists():path.touch()
         if demo:
-            _post(root,'Claude','基线定了：1.5B 模型不压缩 63.2%。今天先看 4 档压缩，掉点集中在哪类题我来审。',client_id='demo-project-kickoff-v2')
-            _post(root,'GPT','4 档压缩已跑完 6/10 组，保留 25% 缓存时 61.4%，剩下 4 组约 17:30 出。',client_id='demo-builder-kickoff-v2')
-            first=_post(root,'owner','10% 那档掉得有点多 组会前能看出是哪类题掉的吗',client_id='demo-owner-question-v1')
-            _post(root,'Claude','能。掉的题七成要引用 2000 字以前的内容，长距离引用最吃亏。下一步按段落重要性分配缓存，组会讲这一条就够。',parent_id=first['id'] if isinstance(first,dict) else None,client_id='demo-claude-answer-v1')
+            # A fictional student's day in the room; each voice follows its persona card.
+            day=[('owner','早 今天机器学习课要点名 下午才能看结果',None),
+                 ('Claude','去上课。本小姐先把基线看完了：不压缩 63.2%，这个数站得住，下午直接看 4 档。',None),
+                 ('GPT','4 档跑完 6/10 组。保留 25% 缓存是 61.4%，只掉 1.8 个点；10% 那档掉到 52.0%。剩下 4 组 17:30 前出。',None),
+                 ('owner','10% 那档掉得有点多 组会前能看出是哪类题掉的吗','prev'),
+                 ('Claude','能。掉的题七成要引用 2000 字以前的内容，压掉的刚好是那些远处的缓存。组会就讲这一条，别把四档挨个念一遍。','prev'),
+                 ('GPT','这 41 道掉分题我单独拉了表，按引用距离分成三段，21:00 前放进报告与文件。',None),
+                 ('owner','好耶 那我晚上先读 SnapKV',None),
+                 ('Claude','读之前先去吃饭。SnapKV 看第 3 节就够，它挑缓存的办法和我们下一步最像。','prev'),
+                 ('GPT','第 3 节的笔记我写了一半，你读完对一下就行。',None)]
+            prev=None
+            for i,(author,body,reply) in enumerate(day):
+                post=_post(root,author,body,parent_id=prev['id'] if reply and isinstance(prev,dict) else None,client_id=f'demo-day-{i:02d}')
+                prev=post
         return value
 
 def configure(root,question,deliverable,user_name=None):

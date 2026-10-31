@@ -137,7 +137,7 @@ window.DiscussionRoom = (() => {
   function composer() {
     const parent = items.find(item => item.id === draft.parent_id);
     $('#room-reply-context').hidden = !draft.parent_id;
-    $('#room-reply-label').textContent = parent?.deleted ? '原消息已撤回' : parent ? '回复 '+parent.author+'：'+excerpt(parent.body) : '回复所选消息';
+    $('#room-reply-label').textContent = parent?.deleted ? '原消息已撤回' : parent ? '回复 '+BoardIdentity.name(parent.author)+'：'+excerpt(parent.body) : '回复所选消息';
     $('#room-submit').setAttribute('aria-label', draft.parent_id ? '发送回复' : '发送消息');
   }
   function resizeInput() {
@@ -253,7 +253,7 @@ window.DiscussionRoom = (() => {
     if (item.parent_id || item.parent_deleted) {
       const parent = byId.get(item.parent_id), quote = node('button','room-quote'); quote.type = 'button';
       const gone=item.parent_deleted===true||parent?.deleted;
-      quote.append(node('span','room-quote-author',gone ? '回复' : parent ? parent.author : '回复'),node('span',null,gone ? '原消息已撤回' : parent ? excerpt(parent.body) : '查看原消息'));
+      quote.append(node('span','room-quote-author',gone ? '回复' : parent ? BoardIdentity.name(parent.author) : '回复'),node('span',null,gone ? '原消息已撤回' : parent ? excerpt(parent.body) : '查看原消息'));
       quote.setAttribute('aria-label','查看回复的原消息');quote.disabled=!item.parent_id;quote.onclick = () => {if(item.parent_id)jumpTo(item.parent_id);};bubble.append(quote);
     }
     const text = String(item.body || ''), long = text.length > 700, open = expanded.has(item.id);

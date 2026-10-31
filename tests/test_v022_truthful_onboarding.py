@@ -21,7 +21,7 @@ class TruthfulFirstUse(unittest.TestCase):
         self.assertEqual(project.ledger(self.root).read_bytes(),b'')
     def test_demo_examples_are_explicit_and_separate_from_session_opening(self):
         other=self.root/'demo';project.initialize(other,'Fictional demo',demo=True)
-        rows=[p for p in conversation(other)['items'] if p['author'] in ('Claude','GPT')];self.assertEqual(len(rows),3)
+        rows=[p for p in conversation(other)['items'] if p['author'] in ('Claude','GPT')];self.assertEqual(len(rows),6)
         # Demo posts read like a real student's day; they stay marked as demo in data, without a visible label.
         self.assertTrue(all(p.get('message_kind')=='demo' and not p.get('source_label') for p in rows))
         self.assertFalse(onboarding.status(other,'Claude')['checks']['opening'])
