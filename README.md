@@ -24,7 +24,7 @@ python -m board start "Example study" --demo --init-only --question "Which metho
 python -m board start "Example study"
 ```
 
-Open **http://127.0.0.1:8780** and keep the last command running. Most interface labels are in Chinese for now. Add `--data-dir` for another project or `--port` for another local port. [Bootstrap](scripts/bootstrap.py), [startup](docs/night-watch.md) and [provider integration](docs/provider-bridge.md) cover environment setup and optional automation.
+Open **http://127.0.0.1:8780** and keep the last command running. Choose **English** or **简体中文** in the sidebar, or open **http://127.0.0.1:8780/?lang=en** directly. Both themes share the language setting; project content keeps its original wording. See [language settings](docs/languages.md). Add `--data-dir` for another project or `--port` for another local port. [Bootstrap](scripts/bootstrap.py), [startup](docs/night-watch.md) and [provider integration](docs/provider-bridge.md) cover environment setup and optional automation.
 
 ## Why: beyond two chat windows
 

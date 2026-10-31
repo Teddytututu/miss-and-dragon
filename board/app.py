@@ -10,6 +10,7 @@ from . import project,storage,scheduler,contacts,task_eta,assets,onboarding
 ASSETS=Path(__file__).resolve().parent
 STATIC={n for n in ['index.html','discussion.js','discussion.css','identity.js','identity.css','room-extras.js','room-markdown.js','room-features.css','room-collection.js','mood.js','room-collection.css','v02.js','v02.css','eta-view.js','eta-view.css','fanart.css','help.html']}
 STATIC.update({'lifecycle-view.js','lifecycle-view.css','index-tabs.js','index-tabs.css','private-notes.js','private-notes.css'})
+STATIC.update({'i18n.js','i18n.css','help.en.html'})
 STATIC.update({'notebook.css','notebook.js','XiaolaiSC-subset.woff2','visual.css','favicon-32.png','apple-touch-icon.png'})
 REACTIONS={'👍':'done','❤️':'care','😂':'smile','🎉':'celebrate','👀':'review','💡':'idea'}
 REACTION_KEYS=list(dict.fromkeys([*REACTIONS,*(x['key'] for x in assets.emote_manifest())]))

@@ -901,11 +901,13 @@ html.theme-pink #nav .brand .brand-person img{transform:scale(1.45);transform-or
 <link rel="stylesheet" href="/visual.css">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/i18n.css">
+<script src="/i18n.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main-content">跳到正文</a>
 <nav id="nav">
-  <div class="brand"><span class="brand-people" role="group" aria-label="Claude头像"></span><b class="t-pink notebook-title">Miss’s Notebook</b><b class="t-blue notebook-title">Miss &amp; Dragon<br>研究工作台</b><small title="__SITE_TITLE__">__SITE_TITLE__</small></div>
+  <div class="brand"><span class="brand-people" role="group" aria-label="Claude头像"></span><b class="t-pink notebook-title">Miss &amp; Dragon</b><b class="t-blue notebook-title">Miss &amp; Dragon<br>研究工作台</b><small title="__SITE_TITLE__">__SITE_TITLE__</small></div>
   <a href="#todo"><i class="ni"><span class="ni-glyph">♡</span></i><span class="nav-label">需要你做的</span><span class="badge" id="todo-n"></span></a>
   <a href="#plan"><i class="ni"><span class="ni-glyph">✿</span></i><span class="nav-label">你的安排</span></a>
   <a href="#progress"><i class="ni"><span class="ni-glyph">✦</span></i><span class="nav-label">研究进度</span></a>
@@ -913,7 +915,6 @@ html.theme-pink #nav .brand .brand-person img{transform:scale(1.45);transform-or
   <a href="#tasks"><i class="ni"><span class="ni-glyph">☁</span></i><span class="nav-label">正在做</span></a>
   <a href="#files"><i class="ni"><span class="ni-glyph">✎</span></i><span class="nav-label">报告与文件</span></a>
   <div class="theme-switch" role="group" aria-label="页面风格"><button type="button" data-t="default">蓝色</button><button type="button" data-t="pink">粉色</button></div>
-  <div class="stamp" id="stamp"></div>
 </nav>
 <main id="main-content" tabindex="-1">
 <h1 class="sr-only">__SITE_TITLE__</h1>
@@ -1322,7 +1323,6 @@ async function load() {
     const requestedChannel=BoardIdentity.channel;
     const d = await (await fetch('/api/board', {cache: 'no-store'})).json();
     if(requestedChannel!==BoardIdentity.channel)return;
-    $('#stamp').textContent = '已同步 ' + new Date().toTimeString().slice(0, 5);
     if (d.revision === lastRev) return; lastRev = d.revision;
     const o = d.overview || {};
     window.dispatchEvent(new CustomEvent("overview",{detail:{overview:o,tasks:d.tasks||[]}}));
@@ -1331,7 +1331,7 @@ async function load() {
     renderProgress(o); renderTree(o);
     renderTasks(o, d.tasks || []); renderFiles(o.links);
     DiscussionRoom.update(d.discussion); window.dockUnread && window.dockUnread((d.discussion || {}).items);
-  } catch (e) { $('#stamp').textContent = '连接中断，稍后重试'; }
+  } catch (e) { console.warn('Board refresh failed', e); }
 }
 const secs = [...document.querySelectorAll('main section')];
 function spy() { let cur = secs[0].id; for (const s of secs) if (!s.classList.contains('dock') && s.getBoundingClientRect().top < 120) cur = s.id;

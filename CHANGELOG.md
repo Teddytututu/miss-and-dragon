@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1
+
+- Add English and Simplified Chinese interface selection, persistent browser preference and bilingual help.
+- Preserve original project content and drafts while switching language.
+- Use Miss & Dragon across themes and remove the sidebar synchronization timestamp.
+
 ## 0.4.0
 
 - Numbered questions with five decision categories, peer answers, factual questions, execution decisions and lead vetoes.
