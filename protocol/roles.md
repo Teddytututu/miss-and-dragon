@@ -22,3 +22,7 @@ Reference deployments use three existing chats with independent inbox cursors an
 | Chores | Web pages, documentation, learning materials, open source and shared tools | Events and a two-hour fallback |
 
 After handling an event, continue through lead orders, open work and returned items; Experiment also checks eligible resources. Close with a patrol only when actual dependencies remain. Shared-code changes retain write ownership and a recoverable before state. [Architecture](../docs/ARCHITECTURE.md) shows the complete loop.
+
+In deployments with multiple executor chats, route a reply event back to the role that asked the original question. The provider adapter shares that correlation between event dispatch and wake summaries, using the question reference and its time. The owning role acknowledges execution results; dispatch handoffs keep their own receipts, preserving the original work item for its owner.
+
+多个执行会话共用身份时，答复事件沿原问题编号与时间回到提问角色，事件派发与唤醒摘要共用同一套关联。实施结果由实际负责角色确认，交接另记回执，原任务继续由所属会话推进。
