@@ -45,6 +45,10 @@ python scripts/night_watch.py --project-root "/path/to/project"
 
 The default source is `data/attachments/state.json`, with run/task maps keyed by task ID. Each observation uses `done` and `total`, with `completed` and `total_cases` accepted as aliases. A row may provide `progress_file`, `phase`, `state`, `process_alive`, `process_generation`, `waiting_dependency`, and `estimated_seconds_remaining`.
 
+The business runner owns each raw progress file. The watch reads that input and updates derived fields in the separate project state and its own checkpoints under the project lock, preserving other fields. Deployment observers follow the same single-writer boundary. Use bounded retries for brief metadata-lock contention; model, frozen-data and resource protection locks retain their existing strict ownership and failure rules.
+
+原始进度文件由业务进程单独写入，观察进程只读该输入；守夜人在项目锁下维护独立状态投影与自身检查点，并保留其他字段。短时元数据锁争用采用限时重试，模型、冻结数据与资源保护锁沿原有严格归属和失败规则执行。
+
 Optional configuration lives in `data/attachments/night-watch.json`:
 
 ```json
