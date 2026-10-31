@@ -1248,7 +1248,7 @@ function renderFiles(links) {
     text.append(name, sub); card.title = l.path; card.tabIndex = 0; card.setAttribute('role', 'button');
     const flash = (msg, ok) => { sub.textContent = msg; sub.classList.toggle('ok', ok); sub.classList.toggle('bad', !ok);
       setTimeout(() => { sub.textContent = tail(l.path); sub.classList.remove('ok', 'bad'); }, 1600); };
-    const open = () => (cls === 'k-web' || l.path === '/help') ? window.open(l.path, '_blank', 'noopener')
+    const open = () => (cls === 'k-web' || l.path === '/help') ? window.open(l.path === '/help' ? (window.BoardI18n?.language === 'en' ? '/help.en.html' : '/help.html') : l.path, '_blank', 'noopener')
       : fetch('/api/open', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({i})})
           .then(r => flash(r.ok ? (cls === 'k-dir' ? '已在资源管理器打开' : '已打开') : r.status === 403 ? '只能在电脑上打开' : '找不到这个文件', r.ok))
           .catch(() => flash('打开失败', false));

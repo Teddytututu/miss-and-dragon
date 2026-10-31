@@ -6,4 +6,4 @@ Pillow is installed from its upstream package and uses the HPND license. Their p
 
 ## README diagram fonts
 
-The README diagrams embed subsets of **Caveat** (Copyright 2014 The Caveat Project Authors) and **Nunito** (Copyright 2014 The Nunito Project Authors), both under the SIL Open Font License 1.1. The source weights and license texts are in `scripts/fonts/`.
+The README diagrams use glyph outlines from **Caveat** (Copyright 2014 The Caveat Project Authors), **Nunito** (Copyright 2014 The Nunito Project Authors) and **Xiaolai**, under the SIL Open Font License 1.1. The source weights, Chinese subset and license texts are in `scripts/fonts/`. The optional FontTools build tool is installed separately under its MIT license; its source distribution supplies the license text.

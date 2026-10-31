@@ -11,6 +11,11 @@ class Dependencies(unittest.TestCase):
         with self.assertRaises(ValueError):self.installer()['project_temp'](dir=str(ROOT.parent/'outside-test-project'))
     def test_temporary_basename_rejects_path_traversal(self):
         with self.assertRaises(ValueError):self.installer()['project_temp'](prefix='../../outside-',dir=str(ROOT/'work/tests'))
+    def test_default_temporary_basename_leaves_room_for_nested_windows_packages(self):
+        folder=Path(self.installer()['project_temp']())
+        self.addCleanup(shutil.rmtree,folder)
+        self.assertLessEqual(len(folder.name),15)
+        self.assertTrue(folder.is_relative_to(ROOT/'work'))
     def test_new_venv_installs_pip_and_declared_runtime_dependencies(self):
         with tempfile.TemporaryDirectory() as folder:
             package=Path(folder)/'fresh-package';package.mkdir()

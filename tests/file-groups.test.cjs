@@ -2,7 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 
 function harness(saved={}){
- const storage=new Map(Object.entries(saved)),ids=new Map(),requests=[],navigationCalls=[];
+ const storage=new Map(Object.entries(saved)),ids=new Map(),requests=[],navigationCalls=[],opened=[];
  class Element{
   constructor(tag,cls='',text=''){
    this.tagName=tag;this.className=cls;this.textContent=text;this.children=[];this.style={};this.handlers={};this.open=false;this.hidden=false;this.isConnected=false;
@@ -21,12 +21,12 @@ function harness(saved={}){
   el:(tag,cls,text)=>new Element(tag,cls||'',text||''),localStorage:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,v)},
   // These regressions exercise the original card/group renderer in isolation.
   // The navigation enhancement has its own browser interaction coverage.
-  window:{open:()=>{},FileIndexTabs:{beforeRender:()=>navigationCalls.push('before'),enhance:()=>navigationCalls.push('after')}},navigator:{clipboard:{writeText:()=>Promise.resolve()}},
+  window:{open:(...args)=>opened.push(args),FileIndexTabs:{beforeRender:()=>navigationCalls.push('before'),enhance:()=>navigationCalls.push('after')}},navigator:{clipboard:{writeText:()=>Promise.resolve()}},
   fetch:async(url,args)=>{requests.push(JSON.parse(args.body));return {ok:true};},setTimeout:()=>{}};
  const html=fs.readFileSync(path.join(__dirname,'../board/index.html'),'utf8'),start=html.indexOf('function renderFiles(');
  vm.runInNewContext(html.slice(start,html.indexOf('let lastRev',start))+'\nthis.render=renderFiles;',context);
  const find=(node,cls)=>node.children.flatMap(c=>[...(c.className.split(' ').includes(cls)?[c]:[]),...find(c,cls)]);
- return {context,box,filter,storage,requests,navigationCalls,find,groups:()=>find(box,'factive-group')};
+ return {context,box,filter,storage,requests,navigationCalls,opened,find,groups:()=>find(box,'factive-group')};
 }
 const links=[
  {title:'Demo report',cat:'研究',path:'demo/report.md'},
@@ -54,4 +54,12 @@ test('title filter restores fa folding, keeps fg state and retains original open
  await h.find(study,'fcard').filter(n=>!n.hidden)[1].onclick();assert.deepEqual(h.requests,[{i:3}]);
  h.filter.value='';h.filter.oninput();assert.equal(study.open,false);assert.equal(h.storage.get('fg:学习'),'1');
  study.open=true;study.handlers.toggle();assert.equal(h.storage.get('fa:学习'),'1');
+});
+
+test('the help card follows the current language even after a language switch',()=>{
+ const h=harness();h.context.window.BoardI18n={language:'en'};
+ h.context.render([{title:'Help',cat:'项目',path:'/help'}]);
+ const card=h.find(h.box,'fcard')[0];card.onclick();
+ h.context.window.BoardI18n.language='zh-CN';card.onclick();
+ assert.deepEqual(h.opened,[['/help.en.html','_blank','noopener'],['/help.html','_blank','noopener']]);
 });

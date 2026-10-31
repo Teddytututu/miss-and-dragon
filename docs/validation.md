@@ -15,3 +15,14 @@ The candidate includes the existing 33 character PNGs, a 225-item public emote s
 ## 0.4 command acceptance
 
 Exercise numbered questions and peer answers, execution choices and lead vetoes, exact event acknowledgment results, expired cards, dated schedules and assistant-owned efficiency observations. Concurrent answers close a question once. Missing GPU observations return a count of zero and an idle value of null. Verify custom project names and unrelated JSON fields survive updates.
+
+## Rebuild the README diagrams
+
+The generated SVGs ship with the source package and display directly in a browser. To edit and regenerate them, install the optional development tool in the project environment:
+
+```sh
+python -m pip install "fonttools>=4.61,<5"
+python scripts/make_readme_diagrams.py
+```
+
+Pillow remains the application runtime dependency. The generator uses the bundled font files and licenses in `scripts/fonts/` and writes English and Simplified Chinese diagrams with accessible glyph outlines.

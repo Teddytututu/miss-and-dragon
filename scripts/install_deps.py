@@ -9,11 +9,13 @@ import os, runpy, sys, tempfile, uuid
 ROOT=Path(__file__).resolve().parents[1]
 
 def project_temp(suffix=None,prefix=None,dir=None):
-    folder=Path(os.fsdecode(dir)) if dir else ROOT/'work/dependency-temp'
+    folder=Path(os.fsdecode(dir)) if dir else ROOT/'work/tmp'
     folder=folder.resolve()
     if not folder.is_relative_to(ROOT):raise ValueError('Dependency temporary directory stays in the project')
     folder.mkdir(parents=True,exist_ok=True)
-    name=os.fsdecode(prefix or 'tmp')+uuid.uuid4().hex+os.fsdecode(suffix or '')
+    # Standard tempfile uses short random names too; nested wheel paths need the
+    # remaining Windows path budget in a deeply extracted source package.
+    name=os.fsdecode(prefix or 'tmp')+uuid.uuid4().hex[:12]+os.fsdecode(suffix or '')
     result=folder/name
     if result.parent.resolve()!=folder or not result.resolve().is_relative_to(ROOT):raise ValueError('Project-local temporary basename required')
     os.mkdir(result,0o777)
