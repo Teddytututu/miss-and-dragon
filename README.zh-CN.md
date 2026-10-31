@@ -18,13 +18,13 @@
 
 <img src="docs/images/screen-pink.zh-CN.png" alt="粉色手账界面" width="920">
 
-[↗ 查看高清原图](docs/images/screen-pink.zh-CN.png)
+[↗ 查看高清原图](docs/images/screen-pink.zh-CN.png?raw=true)
 
 <details><summary>蓝色主题</summary>
 
 <img src="docs/images/screen-blue.zh-CN.png" alt="蓝色工作台界面" width="920">
 
-[↗ 查看高清原图](docs/images/screen-blue.zh-CN.png)
+[↗ 查看高清原图](docs/images/screen-blue.zh-CN.png?raw=true)
 
 </details>
 
@@ -32,7 +32,7 @@
 
 ## 启动
 
-需要 Python 3.11 或更新版本。在仓库根目录运行两条命令：安装依赖，然后带着一个虚构学生的研究日常启动看板。 侧栏可以选 **简体中文** 或 **English**，英文入口是 **http://127.0.0.1:8780/?lang=en**，详见[语言设置](docs/languages.zh-CN.md)。
+需要 Python 3.11 或更新版本。在仓库根目录运行两条命令：安装依赖，然后带着一个虚构学生的研究日常启动看板。 侧栏可以选 **简体中文** 或 **English**，英文入口是 `http://127.0.0.1:8780/?lang=en`，详见[语言设置](docs/languages.zh-CN.md)。
 
 ```sh
 python -m pip install -r requirements.txt

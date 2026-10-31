@@ -18,13 +18,13 @@ A local web board and command line for running a research project with two AI ag
 
 <img src="docs/images/screen-pink.en.png" alt="Pink notebook theme" width="920">
 
-[↗ Open full-size image](docs/images/screen-pink.en.png)
+[↗ Open full-size image](docs/images/screen-pink.en.png?raw=true)
 
 <details><summary>Blue theme</summary>
 
 <img src="docs/images/screen-blue.en.png" alt="Blue workbench theme" width="920">
 
-[↗ Open full-size image](docs/images/screen-blue.en.png)
+[↗ Open full-size image](docs/images/screen-blue.en.png?raw=true)
 
 </details>
 
