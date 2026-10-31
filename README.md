@@ -101,6 +101,8 @@ data/        Local project records created at first run
 
 ## Lessons learned
 
+<img src="docs/images/mistake-to-program.svg" alt="Repeated mistakes become executable safeguards" width="1200">
+
 Reference operations exposed three measurable failures. Their fixes shaped record validation, decision routing and work preparation.
 
 | Observed failure | Cause | Current constraint |

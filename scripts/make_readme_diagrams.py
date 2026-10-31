@@ -153,6 +153,182 @@ def wake_loop():
     return svg(1040, 232, ''.join(b), 'One wake: events, idle GPUs, Lead orders, open tasks; sleep only when everything left is waiting')
 
 
+# The new diagrams reuse all existing notebook primitives and embedded fonts.
+import textwrap
+import json
+import xml.etree.ElementTree as ET
+
+NOTE[RED] = '#fff0ed'
+AUDIT = {}
+
+
+def ink_text(x, y, text, size=14, color=MUTED, anchor='middle', hand=False):
+    return (f"<text x='{x}' y='{y}' text-anchor='{anchor}' font-family=\"{HAND if hand else SANS}\" "
+            f"font-size='{size}' fill='{color}'>{text}</text>")
+
+
+def caption(x, y, w, text, color=MUTED):
+    return ''.join(ink_text(x + w/2, y + i*18, line, color=color)
+                   for i, line in enumerate(textwrap.wrap(text, max(16, int(w/7.4)))))
+
+
+def sticky(key, x, y, w, color, title, detail, unit='', rot=0):
+    lines = [unit] if unit else []
+    assert len((' '.join([title, *lines])).split()) <= 6, title
+    AUDIT.setdefault(key, []).append(dict(title=title, lines=lines, detail=detail))
+    height = 84 if unit else 68
+    return (note(x, y, w, height, color, title, lines, rot=rot, title_size=21)
+            + caption(x, y + height + 21, w, detail))
+
+
+def diagram_heading(title, subtitle):
+    return ink_text(32, 43, title, 32, INK, 'start', True) + ink_text(34, 72, subtitle, 15, MUTED, 'start')
+
+
+def elbow(points, color=INK, dash=False, label='', label_xy=None):
+    parts = ['M'+str(points[0][0])+' '+str(points[0][1])]
+    for x, y in points[1:]:parts.append('L'+str(x)+' '+str(y))
+    stroke = " stroke-dasharray='7 5'" if dash else ''
+    body = f"<path d='{' '.join(parts)}' fill='none' stroke='{color}' stroke-width='1.6' stroke-linejoin='round' marker-end='url(#a)'{stroke}/>"
+    if label and label_xy:body += ink_text(*label_xy, label, 16, color, hand=True)
+    return body
+
+
+def question_life():
+    key='question-life';AUDIT[key]=[]
+    body=[diagram_heading("A question's life", 'Follow the numbered records through five roles; time grows from seconds to hours.')]
+    lanes=[('Owner',ROSE),('Lead',ORANGE),('Executor',LAV),('Plain programs',TEAL),('Files',SAND)]
+    for i,(title,color) in enumerate(lanes):body.append(band(18,94+i*174,1164,154,color,title))
+    # Edges sit behind the notes, with separate return corridors between columns.
+    body += [curve(203,255,203,818,bend=0),curve(274,860,309,686,bend=12),
+             curve(454,686,489,686,bend=-8),elbow([(634,686),(650,686),(650,512),(634,512)]),
+             curve(563,470,672,338,bend=-12),elbow([(814,338),(830,338),(830,512),(814,512)]),
+             elbow([(672,512),(654,512),(654,608),(840,608),(840,686),(852,686)]),curve(994,686,1029,686,bend=-8),
+             elbow([(1174,686),(1188,686),(1188,512),(1174,512)]),elbow([(1103,470),(1103,448),(1188,448),(1188,338),(1174,338)]),
+             elbow([(1032,338),(1018,338),(1018,860),(994,860)]),
+             elbow([(923,818),(923,790),(1008,790),(1008,164),(1032,164)]),
+             elbow([(1032,364),(1000,364),(1000,432),(743,432),(743,470)],RED,True,'reject',(868,424))]
+    data=[(132,122,ROSE,'Owner asks','Did tuning skip a model?','seconds',-1),
+          (132,818,SAND,'Record message','Original message stays.','seconds',.7),
+          (312,644,TEAL,'Night watch','Create an event from the message.','seconds',-.5),
+          (492,644,TEAL,'Bridge wakes','Wake the Executor chat.','seconds',.8),
+          (492,470,LAV,'ask #2884','Question kind: design.','minutes',-.8),
+          (672,296,ORANGE,'answer #2884','Lead answers in exchange notes.','minutes',.7),
+          (672,470,LAV,'Task + queue','Create contract; queue work.','minutes',-.6),
+          (852,644,TEAL,'Dispatcher','Run on an available GPU.','hours',.7),
+          (1032,644,TEAL,'Job done','Create the completion event.','hours',-.7),
+          (1032,470,LAV,'Deliver: 3','First line is a number.','minutes',.6),
+          (1032,296,ORANGE,'Review','Accept or send work back.','minutes',-.8),
+          (852,818,SAND,'Write finding','Retain the accepted result.','seconds',.8),
+          (1032,122,ROSE,'Result arrives','One result sentence in discussion.','seconds',-.6)]
+    body += [sticky(key,x,y,142,color,title,detail,unit,rot) for x,y,color,title,detail,unit,rot in data]
+    body += [ink_text(34,976,'A rejected delivery returns to Executor; the original question and evidence remain linked.',15,MUTED,'start'),
+             doodles([('heart',1154,39,ROSE),('star',1133,969,TEAL)])]
+    return svg(1200,1000,''.join(body),'Question life across Owner, Lead, Executor, programs and files')
+
+
+def who_decides():
+    key='who-decides';AUDIT[key]=[]
+    body=[diagram_heading('Who decides what', 'Routine choices stay with Executor; consequential choices cross a recorded gate.'),
+          band(28,104,350,558,SAND,'Three levels of authority'),
+          band(432,290,290,280,ORANGE,'Five ask kinds'),
+          band(790,104,380,266,ROSE,'Only Owner can act'),
+          band(790,450,380,214,SAND,'Decision ledger')]
+    body += [curve(200,280,200,306,bend=0),curve(200,440,200,466,bend=0),
+             curve(338,490,429,490,label='ask',ly=464),
+             elbow([(432,350),(400,350),(338,350)],ORANGE),
+             elbow([(338,336),(398,336),(398,248),(790,248)],ROSE,False,'only-owner step',(590,235)),
+             elbow([(338,510),(398,510),(398,630),(790,630)],SAND,False,'decide',(590,620)),
+             elbow([(790,650),(700,650),(700,713),(356,713),(356,508),(338,508)],RED,True,'veto',(486,704))]
+    body += [sticky(key,58,146,280,ROSE,'Owner','Pays, sends, deletes, consents.','Only-owner actions',-.7),
+             sticky(key,58,306,280,ORANGE,'Lead','Budget, conclusions, research decisions.','Design + acceptance',.7),
+             sticky(key,58,466,280,LAV,'Executor','Log routine choices with decide.','Everything else',-.6)]
+    for i,(left,right) in enumerate([('design','budget'),('conclusions','external'),('deletion',None)]):
+        y=342+i*67
+        body.append(chip(452,y,118,ORANGE,left))
+        if right:body.append(chip(584,y,118,ORANGE,right))
+    for i,title in enumerate(['A license page','A rental extension','An external email']):
+        body.append(chip(812,154+i*61,336,ROSE,title))
+    body += [chip(812,502,336,SAND,'decide keeps the choice'),chip(812,558,336,ORANGE,'Lead audits; may veto'),
+             ink_text(34,766,'Questions and overrides stay in the ledger, alongside their original choices.',16,MUTED,'start'),
+             doodles([('heart',1152,42,ROSE),('star',753,390,ORANGE)])]
+    return svg(1200,794,''.join(body),'Authority levels, five question kinds, decision records and only-owner escalation')
+
+
+def gpu_job_life():
+    key='gpu-job-life';AUDIT[key]=[]
+    body=[diagram_heading("A GPU job's life", 'Completion, time limits and crashes take distinct paths through the deployment adapter.'),
+          band(24,104,1152,472,TEAL,'Dispatch and outcomes'),band(24,606,710,246,LAV,'Idle watch'),
+          band(24,900,1152,140,ROSE,'Before paying for a rental')]
+    body += [curve(200,188,257,188),curve(420,188,477,188),curve(640,188,757,188),
+             curve(640,198,757,328,bend=10),curve(640,208,757,488,bend=24),
+             curve(920,188,997,188),elbow([(1160,180),(1176,180),(1176,342),(1160,342)]),
+             elbow([(760,354),(716,354),(716,562),(28,562),(28,180),(40,180)],TEAL,False,'save + requeue',(386,550)),
+             curve(920,488,997,488),
+             elbow([(1080,454),(1080,432),(650,432),(650,180),(640,180)],RED,True,'retry',(682,422)),
+             elbow([(1160,488),(1176,488),(1176,686),(1160,686)],RED,False,'after 3 retries',(1060,620)),
+             elbow([(1160,350),(1188,350),(1188,822),(1160,822)]),
+             curve(240,710,277,710),curve(458,710,495,710)]
+    data=[(40,146,160,TEAL,'Queue','A ready job waits.'),
+          (260,146,160,TEAL,'Dispatcher','GPU preference; flexible placement.'),
+          (480,146,160,LAV,'Running','Retain the exact job identity.'),
+          (760,146,160,TEAL,'Done','Completed work advances.'),
+          (1000,146,160,TEAL,'Score','Official + independent evaluation.'),
+          (1000,308,160,SAND,'Return locally','Verify file checksums.'),
+          (760,312,160,TEAL,'Time limit','Save items; requeue; zero failures.'),
+          (760,454,160,RED,'Crashed','Keep the failure receipt.'),
+          (1000,454,160,RED,'Retry up to 3','A bounded recovery path.'),
+          (1000,652,160,RED,'Failed','Retain all attempt records.'),
+          (1000,790,160,ORANGE,'Lead review','Accept or return the result.'),
+          (60,670,180,TEAL,'10-min average','Utilization below 10%.'),
+          (278,670,180,LAV,'30 minutes','Executor investigates.'),
+          (496,670,180,ORANGE,'60 minutes','Lead steps in.')]
+    for index,(x,y,w,color,title,detail) in enumerate(data):body.append(sticky(key,x,y,w,color,title,detail,rot=(-.8 if index%2 else .7)))
+    body.append(ink_text(378,827,'Memory allocation alone is a separate observation.',15,MUTED))
+    for i,title in enumerate(['Queue ready','Dry run passed','Scorer has own GPU','Stop timer set']):
+        body.append(chip(46+i*280,956,260,ROSE,title))
+    body.append(doodles([('star',1154,40,TEAL),('heart',1150,1017,ROSE)]))
+    return svg(1200,1060,''.join(body),'GPU job lifecycle with completion, time-limit requeue, bounded retries, idle watch and rental checklist')
+
+
+def mistake_to_program():
+    key='mistake-to-program';AUDIT[key]=[]
+    body=[diagram_heading('Mistake → program', 'Repeated operational mistakes become executable checks.'),
+          band(24,105,470,922,RED,'The recurring mistake'),band(706,105,470,922,TEAL,'The rule in code')]
+    pairs=[('One event, then sleep','GPUs sat idle.','Wake lists all work','Events, orders, tasks, idle cards.'),
+           ('GPU memory held','Computation stayed idle.','Watch utilization','Idle uses the 10-minute average.'),
+           ('Time limit became failure','Finished items were discarded.','Save and requeue','Time limits retain completed items.'),
+           ('Promises replaced results','The update was only a promise.','Check message content','Refuse promises; require concrete results.'),
+           ('Model silently weakened','The chat used another model.','Owner chooses each model','Each chat uses the selected model.'),
+           ('Reports became cloud-only','Linked evidence left local storage.','Keep linked files local','Board-linked files retain readable bytes.')]
+    for i,(old,old_detail,new,new_detail) in enumerate(pairs):
+        y=158+i*143
+        body += [curve(468,y+34,728,y+34,bend=-10),
+                 ink_text(600,y+12,'seen twice',17,MUTED,hand=True),
+                 ink_text(600,y+67,'move into code',17,MUTED,hand=True),
+                 sticky(key,50,y,418,RED,old,old_detail,rot=(-.7 if i%2 else .7)),
+                 sticky(key,732,y,418,TEAL,new,new_detail,rot=(.6 if i%2 else -.6))]
+    body += [ink_text(600,1068,'Prompts hold judgment; programs hold rules.',26,INK,hand=True),
+             doodles([('star',1155,41,TEAL),('heart',42,1064,ROSE)])]
+    return svg(1200,1096,''.join(body),'Six recurring mistakes become six executable safeguards')
+
+
+def write_extended_diagrams():
+    diagrams={'question-life':question_life,'who-decides':who_decides,
+              'gpu-job-life':gpu_job_life,'mistake-to-program':mistake_to_program}
+    audit={}
+    for name,render in diagrams.items():
+        raw=render();ET.fromstring(raw)
+        (OUT/(name+'.svg')).write_text(outlined(raw,'en'),encoding='utf-8')
+        if name=='mistake-to-program':
+            (OUT/(name+'.zh-CN.svg')).write_text(outlined(raw,'zh-CN'),encoding='utf-8')
+        texts=[node.text for node in ET.fromstring(raw).iter() if node.tag.endswith('}text')]
+        audit[name]=dict(texts=texts,notes=AUDIT[name],min_body_px=14,title_px=32,width=1200)
+    work=OUT.parents[1]/'work/t214-shots';work.mkdir(parents=True,exist_ok=True)
+    (work/'diagram-text-audit.json').write_text(json.dumps(audit,ensure_ascii=False,indent=2),encoding='utf-8')
+
+
+
 if __name__ == '__main__':
     from diagram_labels import outlined
     for name, render in [('how-it-works', how_it_works), ('wake-loop', wake_loop)]:
@@ -161,3 +337,4 @@ if __name__ == '__main__':
             suffix = '' if language == 'en' else '.zh-CN'
             (OUT / (name + suffix + '.svg')).write_text(outlined(raw, language), encoding='utf-8')
     print('four language-specific SVGs exported with accessible glyph outlines')
+    write_extended_diagrams()

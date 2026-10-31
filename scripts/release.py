@@ -27,9 +27,10 @@ def files():
     names += ['board/visual.css','board/favicon-32.png','board/apple-touch-icon.png']
     names += ['board/agent_tools.py','board/notebook.css','board/XiaolaiSC-subset.woff2','board/Xiaolai-OFL.txt','CHANGELOG.md','CHANGELOG.zh-CN.md','docs/optional-event-bridge.md','docs/optional-resource-guard.md','docs/system-map.svg','docs/system-map-captions.md','docs/v04-pink.png','docs/v04-blue.png']
     names += ['board/i18n.js','board/i18n.css','board/help.en.html','tests/i18n.test.cjs','docs/languages.md','docs/languages.zh-CN.md']
+    names += ['docs/images/'+name+'.svg' for name in ['question-life','who-decides','gpu-job-life','mistake-to-program']]
     names += ['scripts/make_readme_diagrams.py','docs/images/how-it-works.svg','docs/images/wake-loop.svg',
               'docs/images/avatar-lead.png','docs/images/avatar-executor.png','docs/images/avatar-owner.png',*[f'docs/images/screen-{theme}.{lang}.png' for theme in ['pink','blue'] for lang in ['en','zh-CN']]]
-    names += ['scripts/diagram_labels.py','docs/images/how-it-works.zh-CN.svg','docs/images/wake-loop.zh-CN.svg']
+    names += ['scripts/diagram_labels.py','docs/images/mistake-to-program.zh-CN.svg','docs/images/how-it-works.zh-CN.svg','docs/images/wake-loop.zh-CN.svg']
     names += ['scripts/fonts/'+name for name in ['Caveat-Bold.ttf','Nunito-Bold.ttf','Nunito-Medium.ttf','OFL-Caveat.txt','OFL-Nunito.txt','Xiaolai-Diagrams.ttf','OFL-Xiaolai.txt']]
     names += ['board/notebook.js','board/message_controls.py','tests/discussion-actions.test.cjs','tests/mobile-layers.browser.cjs']
     names += ['board/lifecycle.py','board/watch_rules.py','board/writing.py','board/lifecycle-view.js','board/lifecycle-view.css']

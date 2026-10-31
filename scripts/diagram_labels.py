@@ -40,6 +40,8 @@ ZH = {
 }
 
 
+ZH.update({'Mistake → program': '反复犯错 → 写进程序', 'Repeated operational mistakes become executable checks.': '反复出现的执行错误，写成程序检查。', 'The recurring mistake': '反复出现的问题', 'The rule in code': '程序里的规矩', 'seen twice': '出现两次', 'move into code': '写进程序', 'One event, then sleep': '处理一个事件就休息', 'GPUs sat idle.': '空卡还在闲着。', 'Wake lists all work': '醒来列出完整工作', 'Events, orders, tasks, idle cards.': '事件、指令、任务与空卡。', 'GPU memory held': '显存占着，计算闲着', 'Computation stayed idle.': '计算仍处于空闲。', 'Watch utilization': '观察实际利用率', 'Idle uses the 10-minute average.': '按最近十分钟的平均利用率判断。', 'Time limit became failure': '到时限被当成失败', 'Finished items were discarded.': '已完成的项目丢了。', 'Save and requeue': '保存进度，再排队', 'Time limits retain completed items.': '到时限保留已完成的项目。', 'Promises replaced results': '承诺代替了结果', 'The update was only a promise.': '汇报里只有一句承诺。', 'Check message content': '检查发言内容', 'Refuse promises; require concrete results.': '汇报写已经做出的具体结果。', 'Model silently weakened': '会话模型悄悄变弱', 'The chat used another model.': '会话使用了另一款模型。', 'Owner chooses each model': '用户选择每个会话模型', 'Each chat uses the selected model.': '每个会话沿用户选择的模型。', 'Reports became cloud-only': '报告变成仅云端文件', 'Linked evidence left local storage.': '链接里的文件离开了本机。', 'Keep linked files local': '链接文件留在本机', 'Board-linked files retain readable bytes.': '看板链接的文件保留可读内容。', 'Prompts hold judgment; programs hold rules.': '提示词负责判断，程序负责规矩。', 'Six recurring mistakes become six executable safeguards': '六类反复出现的问题与对应的执行保障'})
+
 @lru_cache(None)
 def font(name):
     f = TTFont(FONTS / name)
@@ -50,6 +52,10 @@ def font(name):
 def glyph(name, char):
     f, glyphs, cmap = font(name)
     key = cmap.get(ord(char))
+    if key is None and name != 'Xiaolai-Diagrams.ttf':
+        fallback, _, cmap_fallback = font('Xiaolai-Diagrams.ttf')
+        if ord(char) in cmap_fallback and f['head'].unitsPerEm == fallback['head'].unitsPerEm:
+            return glyph('Xiaolai-Diagrams.ttf', char)
     if key is None:
         raise ValueError(f'Missing diagram glyph: {name} U+{ord(char):04X}')
     pen = SVGPathPen(glyphs)

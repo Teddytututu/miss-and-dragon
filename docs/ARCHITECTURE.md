@@ -4,6 +4,30 @@
 
 The local board and CLI retain questions, decisions, tasks and results in files. Lead designs and accepts work; Executor implements it; ordinary programs validate records and transitions.
 
+## How does a question reach an accepted result?
+
+<img src="images/question-life.svg" alt="A question moves through five role lanes to an accepted finding" width="1200">
+
+Follow the original question through its message record, event, numbered design question, task and delivery. The red return path sends rejected work to Executor while the records retain the accepted finding and final reply.
+
+## Who decides which choices?
+
+<img src="images/who-decides.svg" alt="Owner actions, Lead decisions, five ask kinds and Executor decision records" width="1200">
+
+The left stack assigns authority, while the central gate routes the five question kinds to Lead. Routine choices enter the decision ledger, and Lead escalates the actions that require Owner.
+
+## How does a GPU job finish or recover?
+
+<img src="images/gpu-job-life.svg" alt="GPU dispatch, completion, time-limit requeue, crash retries and idle checks" width="1200">
+
+Follow completed work through both evaluators, checksum-verified local return and Lead review. Time-limit exits preserve finished items and requeue the rest; crash exits follow bounded retries, and the lower panels show idle intervention and rental preparation.
+
+## How do repeated mistakes become safeguards?
+
+<img src="images/mistake-to-program.svg" alt="Six repeated operational mistakes become executable checks" width="1200">
+
+Each red note connects an observed failure mode to a teal program rule. The pairings cover incomplete wakes, idle observation, time limits, message content, model identity and local evidence retention.
+
 ## Components
 
 | Component | Source | Responsibility |
