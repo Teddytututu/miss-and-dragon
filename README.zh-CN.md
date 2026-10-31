@@ -55,11 +55,11 @@ agent 负责准备 Python、启动看板并打开确认；你提供研究问题�
 - **像玩 GALGAME 一样推进学习和工作。** 和角色对话、做出选择，看学习目标、完成的任务和新结果推动故事向前。
 - **让 Claude 和 GPT 各展所长。** Claude 负责思考、规划和判断，GPT 承担代码、后端和具体执行，以更经济的方式把日常工作做完。
 
-<a href="docs/images/wake-loop.zh-CN.svg"><img src="docs/images/wake-loop.zh-CN.svg" alt="一轮醒来：事件、空卡、Lead 指令、开着的任务，只剩等待才休息" width="920"></a>
+<a href="docs/images/wake-loop.zh-CN.svg"><img src="docs/images/wake-loop.zh-CN.svg" alt="一轮醒来：事件、空卡、Lead 指令、开着的任务，只剩等待才休息" width="900"></a>
 
 ## 怎样协作
 
-<a href="docs/images/how-it-works.zh-CN.svg"><img src="docs/images/how-it-works.zh-CN.svg" alt="Owner、Lead、Executor 共用文件记录；普通程序看着记录并叫醒 Executor" width="920"></a>
+<a href="docs/images/how-it-works.zh-CN.svg"><img src="docs/images/how-it-works.zh-CN.svg" alt="Owner、Lead、Executor 共用文件记录；普通程序看着记录并叫醒 Executor" width="900"></a>
 
 Owner 定方向，**Lead** 设计和验收，**Executor** 做约定好的事。两者之间说的每句话都落在普通文件里，几个不用模型的小程序看着这些文件：把变化变成事件、叫醒对的会话、发现规矩被破坏就报出来。[架构说明](docs/ARCHITECTURE.md)里有六张细图：通道、一个问题的一生、每日节奏、决定权和醒来循环。
 
@@ -106,7 +106,7 @@ data/        首次启动创建的本地项目记录
 
 ## 实际运行带来的修正
 
-<img src="docs/images/mistake-to-program.zh-CN.svg" alt="六类运行问题对应六条程序规则" width="1200">
+<img src="docs/images/mistake-to-program.zh-CN.svg" alt="六类运行问题对应六条程序规则" width="900">
 
 参考部署出现过三类可量出的故障，分别推动了记录校验、决定分流和开工准备。
 

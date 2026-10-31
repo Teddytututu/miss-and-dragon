@@ -26,7 +26,7 @@ def note(x, y, w, h, color, title, lines=(), rot=0, title_size=27):
          f"<rect x='{x}' y='{y}' width='{w}' height='{h}' rx='6' fill='{NOTE[color]}' stroke='{color}' stroke-width='1.3'/>",
          f"<text x='{cx}' y='{y + 35}' text-anchor='middle' font-family=\"{HAND}\" font-size='{title_size}' font-weight='700' fill='{color}'>{title}</text>"]
     for i, line in enumerate(lines):
-        s.append(f"<text x='{cx}' y='{y + 60 + i * 20}' text-anchor='middle' font-family=\"{SANS}\" font-size='15' fill='{INK}'>{line}</text>")
+        s.append(f"<text x='{cx}' y='{y + 64 + i * 23}' text-anchor='middle' font-family=\"{SANS}\" font-size='18' fill='{INK}'>{line}</text>")
     s.append('</g>')
     s.append(tape(cx, y, color))
     return ''.join(s)
@@ -47,24 +47,24 @@ def curve(x1, y1, x2, y2, bend=-18, label='', ly=None, lx=None, color=INK, dash=
     s = f"<path d='M{x1} {y1} Q {mx} {my} {x2} {y2}' fill='none' stroke='{color}' stroke-width='1.6' stroke-linecap='round' marker-end='url(#a)'{d}/>"
     if label:
         s += (f"<text x='{lx if lx is not None else mx}' y='{ly if ly is not None else my - 4}' text-anchor='{anchor}' "
-              f"font-family=\"{HAND}\" font-size='19' fill='{MUTED}'>{label}</text>")
+              f"font-family=\"{HAND}\" font-size='22' fill='{MUTED}'>{label}</text>")
     return s
 
 
 def band(x, y, w, h, color, title):
     return (f"<rect x='{x}' y='{y}' width='{w}' height='{h}' rx='10' fill='{NOTE[color]}' fill-opacity='.55' stroke='{color}' "
             f"stroke-width='1.4' stroke-dasharray='7 5'/>"
-            f"<rect x='{x + 18}' y='{y + 14}' width='{len(title) * 9.6}' height='14' fill='{color}' opacity='.22'/>"
-            f"<text x='{x + 20}' y='{y + 30}' font-family=\"{HAND}\" font-size='24' font-weight='700' fill='{color}'>{title}</text>")
+            f"<rect x='{x + 18}' y='{y + 14}' width='{len(title) * 10.8}' height='15' fill='{color}' opacity='.22'/>"
+            f"<text x='{x + 20}' y='{y + 31}' font-family=\"{HAND}\" font-size='27' font-weight='700' fill='{color}'>{title}</text>")
 
 
 def chip(x, y, w, color, text, sub=None):
-    h = 54 if sub else 38
+    h = 64 if sub else 44
     s = (f"<rect x='{x}' y='{y}' width='{w}' height='{h}' rx='8' fill='#fffdfb' stroke='{color}' stroke-width='1.1'/>"
-         f"<text x='{x + w / 2}' y='{y + (23 if sub else 25)}' text-anchor='middle' font-family=\"{SANS}\" font-size='15' "
+         f"<text x='{x + w / 2}' y='{y + (26 if sub else 29)}' text-anchor='middle' font-family=\"{SANS}\" font-size='18' "
          f"font-weight='600' fill='{INK}'>{text}</text>")
     if sub:
-        s += f"<text x='{x + w / 2}' y='{y + 44}' text-anchor='middle' font-family=\"{SANS}\" font-size='14.5' fill='{MUTED}'>{sub}</text>"
+        s += f"<text x='{x + w / 2}' y='{y + 51}' text-anchor='middle' font-family=\"{SANS}\" font-size='16' fill='{MUTED}'>{sub}</text>"
     return s
 
 
@@ -107,28 +107,28 @@ def svg(w, h, body, label):
 
 
 def how_it_works():
-    b = [note(30, 36, 236, 132, ROSE, 'Owner · Big Fish', ['sets direction and budget', 'approves external actions', 'and deletion'], rot=-1.2),
-         note(362, 36, 236, 132, ORANGE, 'Lead · Miss', ['designs experiments,', 'decides, reviews', 'every delivery'], rot=0.8),
-         note(694, 36, 236, 132, LAV, 'Executor · Dragon', ['runs jobs, builds pages,', 'reports results first'], rot=-0.8),
-         avatar(34, 40, 'avatar-owner.png', 26), avatar(366, 40, 'avatar-lead.png', 26), avatar(698, 40, 'avatar-executor.png', 26),
-         curve(270, 78, 358, 78, label='direction'),
-         curve(358, 128, 270, 128, bend=18, label='conclusions', ly=160),
-         curve(602, 78, 690, 78, label='orders'),
-         curve(690, 128, 602, 128, bend=18, label='ask / deliver', ly=160),
-         band(30, 214, 900, 104, SAND, 'Shared records: plain files')]
+    b = [note(20, 36, 240, 156, ROSE, 'Owner · Big Fish', ['sets direction and budget', 'approves external actions', 'and deletion'], rot=-1.2),
+         note(330, 36, 240, 156, ORANGE, 'Lead · Miss', ['designs experiments,', 'decides, reviews', 'every delivery'], rot=0.8),
+         note(640, 36, 240, 156, LAV, 'Executor · Dragon', ['runs jobs, builds pages,', 'reports results first'], rot=-0.8),
+         avatar(24, 40, 'avatar-owner.png', 26), avatar(334, 40, 'avatar-lead.png', 26), avatar(644, 40, 'avatar-executor.png', 26),
+         curve(264, 104, 326, 104, label='direction'),
+         curve(326, 152, 264, 152, bend=18, label='conclusions', ly=192),
+         curve(574, 104, 636, 104, label='orders'),
+         curve(636, 152, 574, 152, bend=18, label='ask / deliver', ly=192),
+         band(20, 240, 860, 116, SAND, 'Shared records: plain files')]
     for i, t in enumerate(['task board', 'exchange notes', 'decide / veto log', 'events', 'findings']):
-        b.append(chip(50 + i * 176, 260, 160, SAND, t))
-    b += [curve(480, 172, 480, 212, bend=0, label='read / write', lx=490, ly=196, anchor='start'),
-          curve(812, 172, 812, 212, bend=0, label='read / write', lx=822, ly=196, anchor='start'),
-          band(30, 362, 900, 118, TEAL, 'Plain programs: no model, no quota')]
+        b.append(chip(32 + i * 168, 292, 158, SAND, t))
+    b += [curve(450, 196, 450, 238, bend=0, label='read / write', lx=460, ly=222, anchor='start'),
+          curve(760, 196, 760, 238, bend=0, label='read / write', lx=770, ly=222, anchor='start'),
+          band(20, 410, 860, 138, TEAL, 'Plain programs: no model, no quota')]
     for i, (t, sub) in enumerate([('night watch', 'turns changes into events'), ('event bridge', 'wakes the right chat'),
                                   ('checks', 'flow, jobs, idle GPUs'), ('guardian', 'restarts local services')]):
-        b.append(chip(50 + i * 220, 410, 204, TEAL, t, sub))
-    b += [curve(480, 360, 480, 322, bend=0, label='watch', lx=490, ly=346, anchor='start'),
-          f"<path d='M928 372 C 970 290, 970 190, 936 150' fill='none' stroke='{INK}' stroke-width='1.6' stroke-dasharray='6 5' marker-end='url(#a)'/>"
-          f"<text x='962' y='270' font-family=\"{HAND}\" font-size='19' fill='{MUTED}' transform='rotate(-90 962 270)' text-anchor='middle'>wake</text>",
-          doodles([('heart', 22, 30, ROSE), ('star', 652, 180, ORANGE), ('star', 918, 340, TEAL)])]
-    return svg(990, 498, ''.join(b), 'Owner, Lead and Executor share plain-file records; plain programs watch the records and wake the Executor')
+        b.append(chip(32 + i * 211, 464, 203, TEAL, t, sub))
+    b += [curve(450, 408, 450, 360, bend=0, label='watch', lx=460, ly=390, anchor='start'),
+          f"<path d='M882 420 C 916 340, 916 210, 886 150' fill='none' stroke='{INK}' stroke-width='1.6' stroke-dasharray='6 5' marker-end='url(#a)'/>"
+          f"<text x='910' y='300' font-family=\"{HAND}\" font-size='22' fill='{MUTED}' transform='rotate(-90 910 300)' text-anchor='middle'>wake</text>",
+          doodles([('heart', 14, 222, ROSE), ('star', 612, 210, ORANGE), ('star', 900, 560, TEAL)])]
+    return svg(930, 572, ''.join(b), 'Owner, Lead and Executor share plain-file records; plain programs watch the records and wake the Executor')
 
 
 def wake_loop():
@@ -136,21 +136,25 @@ def wake_loop():
              ('3 · Lead orders', LAV, 'do each one'), ('4 · open tasks', LAV, 'move each a step'), ('only waiting?', ORANGE, 'patrol, then sleep')]
     rots = [-1.5, 1, -0.8, 1.2, -1, 0.8]
     b = []
-    w, gap, y = 150, 18, 44
+    w, gap, h = 250, 45, 96
+    pos = [(25 + (i % 3) * (w + gap), 44 + (i // 3) * 160) for i in range(6)]
     for i, (t, c, sub) in enumerate(steps):
-        x = 24 + i * (w + gap)
-        b.append(note(x, y, w, 86, c, t, [sub], rot=rots[i], title_size=22))
-        if i:
-            b.append(curve(x - gap + 2, y + 44, x - 3, y + 44, bend=-2))
-    x1 = 24 + (w + gap) + w / 2
-    xe = 24 + 5 * (w + gap) + 30
-    b.append(f"<path d='M{x1} 134 C {x1 + 10} 180, {xe - 40} 184, {xe} 138' fill='none' stroke='{RED}' stroke-width='1.6' stroke-dasharray='6 5'/>"
-             f"<g stroke='{RED}' stroke-width='2.4' stroke-linecap='round'><line x1='{(x1 + xe) / 2 - 8}' y1='{168}' x2='{(x1 + xe) / 2 + 8}' y2='{184}'/>"
-             f"<line x1='{(x1 + xe) / 2 + 8}' y1='{168}' x2='{(x1 + xe) / 2 - 8}' y2='{184}'/></g>"
-             f"<text x='{(x1 + xe) / 2}' y='212' text-anchor='middle' font-family=\"{HAND}\" font-size='20' fill='{RED}'>"
+        x, y = pos[i]
+        b.append(note(x, y, w, h, c, t, [sub], rot=rots[i], title_size=26))
+        if i % 3:
+            px = pos[i - 1][0] + w
+            b.append(curve(px + 3, y + 48, x - 3, y + 48, bend=-6))
+    x2, y2 = pos[2]; x3, y3 = pos[3]
+    b.append(f"<path d='M{x2 + w / 2} {y2 + h + 4} C {x2 + w / 2} {y2 + h + 40}, {x3 + w / 2} {y3 - 44}, {x3 + w / 2} {y3 - 6}' fill='none' stroke='{INK}' stroke-width='1.6' marker-end='url(#a)'/>")
+    xe, ye = pos[1]
+    xs = xe + w / 2 + 60; xt = pos[5][0] + w - 20
+    b.append(f"<path d='M{xs} {ye + h + 4} C {xs + 60} {ye + h + 60}, {xt} {ye + h + 30}, {xt} {pos[5][1] - 6}' fill='none' stroke='{RED}' stroke-width='1.6' stroke-dasharray='6 5'/>"
+             f"<g stroke='{RED}' stroke-width='2.4' stroke-linecap='round'><line x1='{xt - 70}' y1='{ye + h + 26}' x2='{xt - 54}' y2='{ye + h + 42}'/>"
+             f"<line x1='{xt - 54}' y1='{ye + h + 26}' x2='{xt - 70}' y2='{ye + h + 42}'/></g>"
+             f"<text x='450' y='{pos[5][1] + h + 44}' text-anchor='middle' font-family=\"{HAND}\" font-size='22' fill='{RED}'>"
              "old loop: slept right after the event while GPUs sat idle — the wake contract now refuses it</text>")
-    b.append(doodles([('heart', 1000, 30, ROSE), ('star', 18, 150, LAV)]))
-    return svg(1040, 232, ''.join(b), 'One wake: events, idle GPUs, Lead orders, open tasks; sleep only when everything left is waiting')
+    b.append(doodles([('heart', 880, 30, ROSE), ('star', 14, 200, LAV)]))
+    return svg(900, 400, ''.join(b), 'One wake: events, idle GPUs, Lead orders, open tasks; sleep only when everything left is waiting')
 
 
 # The new diagrams reuse all existing notebook primitives and embedded fonts.
@@ -162,14 +166,14 @@ NOTE[RED] = '#fff0ed'
 AUDIT = {}
 
 
-def ink_text(x, y, text, size=14, color=MUTED, anchor='middle', hand=False):
+def ink_text(x, y, text, size=16, color=MUTED, anchor='middle', hand=False):
     return (f"<text x='{x}' y='{y}' text-anchor='{anchor}' font-family=\"{HAND if hand else SANS}\" "
             f"font-size='{size}' fill='{color}'>{text}</text>")
 
 
 def caption(x, y, w, text, color=MUTED):
-    return ''.join(ink_text(x + w/2, y + i*18, line, color=color)
-                   for i, line in enumerate(textwrap.wrap(text, max(16, int(w/7.4)))))
+    return ''.join(ink_text(x + w/2, y + i*21, line, color=color)
+                   for i, line in enumerate(textwrap.wrap(text, max(16, int(w/8.4)))))
 
 
 def sticky(key, x, y, w, color, title, detail, unit='', rot=0):
@@ -177,7 +181,7 @@ def sticky(key, x, y, w, color, title, detail, unit='', rot=0):
     assert len((' '.join([title, *lines])).split()) <= 6, title
     AUDIT.setdefault(key, []).append(dict(title=title, lines=lines, detail=detail))
     height = 84 if unit else 68
-    return (note(x, y, w, height, color, title, lines, rot=rot, title_size=21)
+    return (note(x, y, w, height, color, title, lines, rot=rot, title_size=25)
             + caption(x, y + height + 21, w, detail))
 
 
@@ -294,7 +298,7 @@ def gpu_job_life():
 def mistake_to_program():
     key='mistake-to-program';AUDIT[key]=[]
     body=[diagram_heading('Mistake → program', 'Repeated operational mistakes become executable checks.'),
-          band(24,105,470,922,RED,'The recurring mistake'),band(706,105,470,922,TEAL,'The rule in code')]
+          band(20,105,400,972,RED,'The recurring mistake'),band(540,105,400,972,TEAL,'The rule in code')]
     pairs=[('One event, then sleep','GPUs sat idle.','Wake lists all work','Events, orders, tasks, idle cards.'),
            ('GPU memory held','Computation stayed idle.','Watch utilization','Idle uses the 10-minute average.'),
            ('Time limit became failure','Finished items were discarded.','Save and requeue','Time limits retain completed items.'),
@@ -302,15 +306,15 @@ def mistake_to_program():
            ('Model silently weakened','The chat used another model.','Owner chooses each model','Each chat uses the selected model.'),
            ('Reports became cloud-only','Linked evidence left local storage.','Keep linked files local','Board-linked files retain readable bytes.')]
     for i,(old,old_detail,new,new_detail) in enumerate(pairs):
-        y=158+i*143
-        body += [curve(468,y+34,728,y+34,bend=-10),
-                 ink_text(600,y+12,'seen twice',17,MUTED,hand=True),
-                 ink_text(600,y+67,'move into code',17,MUTED,hand=True),
-                 sticky(key,50,y,418,RED,old,old_detail,rot=(-.7 if i%2 else .7)),
-                 sticky(key,732,y,418,TEAL,new,new_detail,rot=(.6 if i%2 else -.6))]
-    body += [ink_text(600,1068,'Prompts hold judgment; programs hold rules.',26,INK,hand=True),
-             doodles([('star',1155,41,TEAL),('heart',42,1064,ROSE)])]
-    return svg(1200,1096,''.join(body),'Six recurring mistakes become six executable safeguards')
+        y=158+i*152
+        body += [curve(400,y+34,560,y+34,bend=-10),
+                 ink_text(480,y+12,'seen twice',20,MUTED,hand=True),
+                 ink_text(480,y+70,'move into code',20,MUTED,hand=True),
+                 sticky(key,38,y,364,RED,old,old_detail,rot=(-.7 if i%2 else .7)),
+                 sticky(key,558,y,364,TEAL,new,new_detail,rot=(.6 if i%2 else -.6))]
+    body += [ink_text(480,1120,'Prompts hold judgment; programs hold rules.',28,INK,hand=True),
+             doodles([('star',915,41,TEAL),('heart',40,1114,ROSE)])]
+    return svg(960,1146,''.join(body),'Six recurring mistakes become six executable safeguards')
 
 
 def write_extended_diagrams():

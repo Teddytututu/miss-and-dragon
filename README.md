@@ -56,11 +56,11 @@ A day in a fictional student's project: notes to self, today's schedule, the res
 - **Move through work like a GALGAME.** Talk with characters, make choices and watch the story advance through learning goals, finished tasks and new results.
 - **Let Claude and GPT play to their strengths.** Claude handles thinking, planning and judgment; GPT takes on coding, backend work and execution, keeping day-to-day work cost-effective.
 
-<a href="docs/images/wake-loop.svg"><img src="docs/images/wake-loop.svg" alt="One wake: events, idle GPUs, Lead orders, open tasks; sleep only when everything left is waiting" width="920"></a>
+<a href="docs/images/wake-loop.svg"><img src="docs/images/wake-loop.svg" alt="One wake: events, idle GPUs, Lead orders, open tasks; sleep only when everything left is waiting" width="900"></a>
 
 ## How it works
 
-<a href="docs/images/how-it-works.svg"><img src="docs/images/how-it-works.svg" alt="Owner, Lead and Executor share plain-file records; plain programs watch the records and wake the Executor" width="920"></a>
+<a href="docs/images/how-it-works.svg"><img src="docs/images/how-it-works.svg" alt="Owner, Lead and Executor share plain-file records; plain programs watch the records and wake the Executor" width="900"></a>
 
 The owner sets direction; **Lead** designs and accepts; **Executor** carries out the agreed work. Everything they say to each other lands in plain files, and small programs without a model watch those files, wake the right chat and flag broken rules. The [architecture guide](docs/ARCHITECTURE.md) has six detailed diagrams: channels, a question's life, daily cadence, authority and the wake loop.
 
@@ -107,7 +107,7 @@ data/        Local project records created at first run
 
 ## Lessons learned
 
-<img src="docs/images/mistake-to-program.svg" alt="Repeated mistakes become executable safeguards" width="1200">
+<img src="docs/images/mistake-to-program.svg" alt="Repeated mistakes become executable safeguards" width="900">
 
 Reference operations exposed three measurable failures. Their fixes shaped record validation, decision routing and work preparation.
 
