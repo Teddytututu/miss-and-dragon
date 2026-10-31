@@ -16,11 +16,15 @@
 
 ## 界面
 
-<img src="docs/images/screen-pink.jpg" alt="Pink notebook theme" width="920">
+<img src="docs/images/screen-pink.zh-CN.png" alt="粉色手账界面" width="920">
+
+[↗ 查看高清原图](docs/images/screen-pink.zh-CN.png)
 
 <details><summary>蓝色主题</summary>
 
-<img src="docs/images/screen-blue.jpg" alt="Blue workbench theme" width="920">
+<img src="docs/images/screen-blue.zh-CN.png" alt="蓝色工作台界面" width="920">
+
+[↗ 查看高清原图](docs/images/screen-blue.zh-CN.png)
 
 </details>
 
@@ -45,11 +49,11 @@ python -m board start --demo
 - 醒来合同要求巡检前继续查看消息、指令和可独立推进的任务。
 - 普通程序检查记录格式、命令字段和任务状态流转。
 
-<img src="docs/images/wake-loop.svg" alt="一轮醒来：事件、空卡、Lead 指令、开着的任务，只剩等待才休息" width="920">
+<a href="docs/images/wake-loop.zh-CN.svg"><img src="docs/images/wake-loop.zh-CN.svg" alt="一轮醒来：事件、空卡、Lead 指令、开着的任务，只剩等待才休息" width="920"></a>
 
 ## 怎样协作
 
-<img src="docs/images/how-it-works.svg" alt="Owner、Lead、Executor 共用文件记录；普通程序看着记录并叫醒 Executor" width="920">
+<a href="docs/images/how-it-works.zh-CN.svg"><img src="docs/images/how-it-works.zh-CN.svg" alt="Owner、Lead、Executor 共用文件记录；普通程序看着记录并叫醒 Executor" width="920"></a>
 
 Owner 定方向，**Lead** 设计和验收，**Executor** 做约定好的事。两者之间说的每句话都落在普通文件里，几个不用模型的小程序看着这些文件：把变化变成事件、叫醒对的会话、发现规矩被破坏就报出来。[架构说明](docs/ARCHITECTURE.md)里有六张细图：通道、一个问题的一生、每日节奏、决定权和醒来循环。
 

@@ -16,11 +16,15 @@ A local web board and command line for running a research project with two AI ag
 
 ## Interface
 
-<img src="docs/images/screen-pink.jpg" alt="Pink notebook theme" width="920">
+<img src="docs/images/screen-pink.en.png" alt="Pink notebook theme" width="920">
+
+[↗ Open full-size image](docs/images/screen-pink.en.png)
 
 <details><summary>Blue theme</summary>
 
-<img src="docs/images/screen-blue.jpg" alt="Blue workbench theme" width="920">
+<img src="docs/images/screen-blue.en.png" alt="Blue workbench theme" width="920">
+
+[↗ Open full-size image](docs/images/screen-blue.en.png)
 
 </details>
 
@@ -45,11 +49,11 @@ Open **http://127.0.0.1:8780** and keep the last command running. Choose **Engli
 - The wake contract keeps messages, orders and independent open work in view before patrol.
 - Ordinary programs validate record shapes, command fields and task transitions.
 
-<img src="docs/images/wake-loop.svg" alt="One wake: events, idle GPUs, Lead orders, open tasks; sleep only when everything left is waiting" width="920">
+<a href="docs/images/wake-loop.svg"><img src="docs/images/wake-loop.svg" alt="One wake: events, idle GPUs, Lead orders, open tasks; sleep only when everything left is waiting" width="920"></a>
 
 ## How it works
 
-<img src="docs/images/how-it-works.svg" alt="Owner, Lead and Executor share plain-file records; plain programs watch the records and wake the Executor" width="920">
+<a href="docs/images/how-it-works.svg"><img src="docs/images/how-it-works.svg" alt="Owner, Lead and Executor share plain-file records; plain programs watch the records and wake the Executor" width="920"></a>
 
 The owner sets direction; **Lead** designs and accepts; **Executor** carries out the agreed work. Everything they say to each other lands in plain files, and small programs without a model watch those files, wake the right chat and flag broken rules. The [architecture guide](docs/ARCHITECTURE.md) has six detailed diagrams: channels, a question's life, daily cadence, authority and the wake loop.
 

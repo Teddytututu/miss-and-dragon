@@ -35,7 +35,7 @@ def note(x, y, w, h, color, title, lines=(), rot=0, title_size=27):
 def avatar(cx, cy, file, r=24):
     """Small round character sticker (the real board avatars) embedded as PNG."""
     from PIL import Image
-    im = Image.open(OUT / file).convert('RGBA').resize((96, 96), Image.LANCZOS)
+    im = Image.open(OUT / file).convert('RGBA').resize((192, 192), Image.LANCZOS)
     buf = io.BytesIO(); im.save(buf, 'PNG', optimize=True)
     data = base64.b64encode(buf.getvalue()).decode()
     return f"<image x='{cx - r}' y='{cy - r}' width='{2 * r}' height='{2 * r}' href='data:image/png;base64,{data}'/>"
@@ -64,7 +64,7 @@ def chip(x, y, w, color, text, sub=None):
          f"<text x='{x + w / 2}' y='{y + (23 if sub else 25)}' text-anchor='middle' font-family=\"{SANS}\" font-size='15' "
          f"font-weight='600' fill='{INK}'>{text}</text>")
     if sub:
-        s += f"<text x='{x + w / 2}' y='{y + 44}' text-anchor='middle' font-family=\"{SANS}\" font-size='13.5' fill='{MUTED}'>{sub}</text>"
+        s += f"<text x='{x + w / 2}' y='{y + 44}' text-anchor='middle' font-family=\"{SANS}\" font-size='14.5' fill='{MUTED}'>{sub}</text>"
     return s
 
 
@@ -93,9 +93,7 @@ def font_face(family, file, weight, chars):
 
 
 def svg(w, h, body, label):
-    chars = ''.join(re.findall(r'>([^<]+)</text>', body)) + ' '
-    style = ('<style>' + font_face('MD Hand', 'Caveat-Bold.ttf', 700, chars) + font_face('MD Sans', 'Nunito-Medium.ttf', 500, chars)
-             + font_face('MD Sans', 'Nunito-Bold.ttf', 700, chars) + '</style>')
+    style = ''  # Font contours are resolved before export.
     return (f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 {w} {h}' width='{w}' height='{h}' role='img' aria-label='{label}'>"
             "<defs>" + style +
             f"<marker id='a' viewBox='0 0 10 10' refX='8' refY='5' markerWidth='8' markerHeight='8' orient='auto-start-reverse'>"
@@ -116,7 +114,7 @@ def how_it_works():
          curve(270, 78, 358, 78, label='direction'),
          curve(358, 128, 270, 128, bend=18, label='conclusions', ly=160),
          curve(602, 78, 690, 78, label='orders'),
-         curve(690, 128, 602, 128, bend=18, label='asks, deliveries', ly=160),
+         curve(690, 128, 602, 128, bend=18, label='ask / deliver', ly=160),
          band(30, 214, 900, 104, SAND, 'Shared records: plain files')]
     for i, t in enumerate(['task board', 'exchange notes', 'decide / veto log', 'events', 'findings']):
         b.append(chip(50 + i * 176, 260, 160, SAND, t))
@@ -124,7 +122,7 @@ def how_it_works():
           curve(812, 172, 812, 212, bend=0, label='read / write', lx=822, ly=196, anchor='start'),
           band(30, 362, 900, 118, TEAL, 'Plain programs: no model, no quota')]
     for i, (t, sub) in enumerate([('night watch', 'turns changes into events'), ('event bridge', 'wakes the right chat'),
-                                  ('checks', 'flow, idle GPUs, model'), ('guardian', 'restarts local services')]):
+                                  ('checks', 'flow, jobs, idle GPUs'), ('guardian', 'restarts local services')]):
         b.append(chip(50 + i * 220, 410, 204, TEAL, t, sub))
     b += [curve(480, 360, 480, 322, bend=0, label='watch', lx=490, ly=346, anchor='start'),
           f"<path d='M928 372 C 970 290, 970 190, 936 150' fill='none' stroke='{INK}' stroke-width='1.6' stroke-dasharray='6 5' marker-end='url(#a)'/>"
@@ -143,7 +141,7 @@ def wake_loop():
         x = 24 + i * (w + gap)
         b.append(note(x, y, w, 86, c, t, [sub], rot=rots[i], title_size=22))
         if i:
-            b.append(curve(x - gap + 2, y + 44, x - 3, y + 44, bend=-8))
+            b.append(curve(x - gap + 2, y + 44, x - 3, y + 44, bend=-2))
     x1 = 24 + (w + gap) + w / 2
     xe = 24 + 5 * (w + gap) + 30
     b.append(f"<path d='M{x1} 134 C {x1 + 10} 180, {xe - 40} 184, {xe} 138' fill='none' stroke='{RED}' stroke-width='1.6' stroke-dasharray='6 5'/>"
@@ -155,6 +153,11 @@ def wake_loop():
     return svg(1040, 232, ''.join(b), 'One wake: events, idle GPUs, Lead orders, open tasks; sleep only when everything left is waiting')
 
 
-(OUT / 'how-it-works.svg').write_text(how_it_works(), encoding='utf-8')
-(OUT / 'wake-loop.svg').write_text(wake_loop(), encoding='utf-8')
-print('ok')
+if __name__ == '__main__':
+    from diagram_labels import outlined
+    for name, render in [('how-it-works', how_it_works), ('wake-loop', wake_loop)]:
+        raw = render()
+        for language in ['en', 'zh-CN']:
+            suffix = '' if language == 'en' else '.zh-CN'
+            (OUT / (name + suffix + '.svg')).write_text(outlined(raw, language), encoding='utf-8')
+    print('four language-specific SVGs exported with accessible glyph outlines')
