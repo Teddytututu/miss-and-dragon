@@ -27,3 +27,15 @@ Record Owner-requested workflow improvements in the deployment's local improveme
 Keep deployment outputs, temporary work and large runtime payloads outside version snapshots through scoped ignore rules. For an approved existing checkout, remove generated paths from the Git index while preserving their working files, and record the change in a normal commit scoped to that cleanup. Preserve the Owner's other staged changes and published history. Source artwork, documentation images and release inputs remain tracked according to the explicit source manifest. Observe object growth after the change and identify the paths behind any continuing large writes.
 
 部署产生的输出、临时工作和大型运行数据采用明确的忽略规则。已有仓库按获批范围取消生成文件的索引跟踪，保留工作文件，并用仅包含本次清理的正常提交记录；其他暂存改动与已发布历史保持。源码图片、文档插图和发布输入按明确清单继续跟踪。修改后观察对象增长，继续出现的大文件按实际来源路径定位。
+
+## Application goals and actual work
+
+After an original blocker is approved and work resumes, the owning chat reads the host goal with its native tool and records a timestamped structured observation alongside the exact blocker and current execution evidence. Associate observations with the goal instance and status revision, including creation and update metadata when exposed by the host. Fresh blocked status with a resolved original blocker and running work produces one deduplicated consistency event for that instance and revision. A genuine pending approval remains a dependency. A fresh empty goal plus an explicit Owner clear is a valid terminal state; missing or stale observations remain unknown. Close the event after fresh reconciliation and preserve host goal controls, resource policy and notification cadence.
+
+原阻塞获批并恢复工作时，由所属会话实际读取宿主目标，并把带时间的结构化快照与该目标、该阻塞、当前执行事实关联。实例及状态版本采用宿主提供的创建和更新时间等字段，旧批复与旧事件回执各自关联原版本。已解决原阻塞且实际运行、目标仍为 blocked 时，只产生一条去重一致性事件；真实待批继续作为依赖，用户明确清除且工具返回空目标时保留清除状态。过期或缺失的观察归为未知，fresh 协调结果使事件收口；目标控制、资源规则和通知节奏沿当前授权。
+
+## Directed assignment receipts
+
+Route an explicitly addressed lead assignment to the owning executor chat, accepting configured display names and stable role aliases. That chat acknowledges receipt with a safe reaction during claim or handoff. Reading, reactions, substantive replies and task execution keep separate records. Other role chats retain their own assignments and cursors.
+
+明确派给某个执行角色的指令，由实际接单会话在认领或交接时贴安全表情；显示名与稳定角色别名指向同一角色。阅读、表情、实质文字回复与任务执行分别记账，各角色保持原任务归属及收信游标。
