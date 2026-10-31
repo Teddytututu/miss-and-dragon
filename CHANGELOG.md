@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.2
+
+- Bring Big Fish, Miss and Dragon together in the cover, with matching chibi profile portraits.
+- Add four notebook workflow diagrams and a Chinese version of the mistakes-to-programs diagram.
+- Use high-resolution English and Chinese interface images with direct full-size links.
+- Explain the six everyday benefits in both README languages.
+- Open help in the selected interface language and shorten Windows temporary paths for nested installations.
+- Align role schedules across guides and diagrams, and document the optional diagram-building tools and font licenses.
+
 ## 0.4.1
 
 - Add English and Simplified Chinese interface selection, persistent browser preference and bilingual help.
