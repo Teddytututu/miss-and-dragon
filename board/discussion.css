@@ -246,3 +246,40 @@ html.theme-pink :is(.room-message-menu,.room-reaction-actors,.room-delete-dialog
 @media(max-width:600px){#msgs .room-actions-button{min-width:40px;min-height:40px}.room-message-menu button,.room-delete-dialog button{min-height:44px}}
 
 html body :is(.room-message-menu,.room-delete-dialog) button:is(:hover,:active){transform:none;box-shadow:none}
+
+:root{--room-scale:1}
+html body #msgs{--room-avatar-base:34px;--room-author-base:12px;--room-input-base:14px;--room-heading-base:15px}
+html.theme-pink body #msgs{--room-avatar-base:46px;--room-author-base:13px;--room-input-base:15px;--room-heading-base:16px}
+html body #msgs .room-body{font-size:calc(14px * var(--room-scale))!important}
+html body #msgs :is(.room-meta,.room-meta time,.room-date,.room-date span,.room-quote,.room-reply-button,.room-reaction,.room-reaction-add,.room-code pre,.room-code-bar,.room-markdown table){font-size:calc(12px * var(--room-scale))!important}
+html body #msgs .room-author{font-size:calc(var(--room-author-base) * var(--room-scale))!important}
+html body #msgs :is(.room-heading strong,.room-private-heading h2){font-size:calc(var(--room-heading-base) * var(--room-scale))!important}
+html body #msgs :is(.room-compose textarea,#private-chat textarea){font-size:calc(var(--room-input-base) * var(--room-scale))!important}
+html body #msgs :is(.room-message>.room-avatar,#private-chat .private-avatar){width:calc(var(--room-avatar-base) * var(--room-scale));height:calc(var(--room-avatar-base) * var(--room-scale));min-height:calc(var(--room-avatar-base) * var(--room-scale))}
+html body #msgs .room-message-content{max-width:min(84%,calc(100% - var(--room-avatar-base) * var(--room-scale) - 10px),650px);min-width:0}
+html body #msgs :is(.room-bubble,.room-input-wrap,.room-log-wrap,.room-actions,.room-compose-right){min-width:0}
+html body #msgs .room-meta{flex-wrap:wrap;overflow-wrap:anywhere}
+html body #msgs .room-sticker{width:calc(112px * var(--room-scale));height:calc(128px * var(--room-scale));max-width:100%;object-fit:contain}
+html body #msgs .room-reaction-image{width:calc(24px * var(--room-scale));height:calc(24px * var(--room-scale))}
+html body #msgs .room-quote-sticker{width:calc(52px * var(--room-scale));height:calc(52px * var(--room-scale));max-width:100%}
+html body #msgs .room-threads{overflow-x:hidden}
+.room-scale-hint{position:absolute;right:18px;top:76px;z-index:8;padding:4px 10px;border-radius:8px;background:var(--room-bg,#f5f7fa);color:var(--room-accent,#2459c4);box-shadow:var(--shadow-1);font:12px/1.5 var(--body-font);opacity:0;pointer-events:none;transition:opacity 160ms linear}
+.room-scale-hint.show{opacity:1}
+@media(max-width:719px){
+  html body #msgs{--room-avatar-base:30px;--room-input-base:16px}
+  html.theme-pink body #msgs{--room-avatar-base:46px;--room-input-base:16px}
+  html body #msgs.dock{top:auto!important;left:0!important;right:0!important;bottom:var(--room-drawer-bottom,64px)!important;width:100%!important;height:var(--room-drawer-height,75dvh);max-height:calc(100dvh - 64px);padding:0 4px 4px;border-radius:16px 16px 0 0;border-left:0;transition:height 260ms var(--ease),transform 260ms var(--ease);overflow:hidden}
+  html body #msgs.dock.collapsed{transform:translateY(calc(100% + 80px))}
+  html body #msgs.dock.room-drawer-dragging{transition:none;user-select:none}
+  html body #msgs.dock .room-shell{border-radius:16px 16px 0 0}
+  html body #msgs.dock .dock-grip{display:none}
+  html body #msgs.dock .room-header{position:relative;flex:none;touch-action:none;cursor:ns-resize;padding-top:18px}
+  html body #msgs.dock .room-header::before{content:"";position:absolute;top:5px;left:50%;width:36px;height:4px;transform:translateX(-50%);border-radius:999px;background:var(--muted,#a5a9b1);opacity:.45}
+  html body #msgs.dock .room-header :is(button,a,input){touch-action:manipulation;cursor:pointer}
+  html body #msgs.dock :is(.room-threads,.private-log){min-height:0;overscroll-behavior-y:contain;touch-action:pan-y}
+  html body #msgs.dock .room-compose{flex:none}
+  html body #msgs.dock :is(.room-actions,.room-compose-right){flex-wrap:wrap;gap:6px}
+  html body #msgs.dock .room-heading span{white-space:normal}
+  html body #msgs.dock .room-scale-hint{top:86px}
+}
+@media(prefers-reduced-motion:reduce){html body #msgs.dock,.room-scale-hint{transition:none}}

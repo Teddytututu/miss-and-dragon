@@ -20,6 +20,7 @@ def write_report(path,value):
 def files():
     names=['.gitattributes','.gitignore','LICENSE','README.md','README.zh-CN.md','当前指令.md','AGENTS.md','CLAUDE.md','pyproject.toml','requirements.txt','发言.py']
     names += ['board/motion.css', 'board/motion.js']
+    names += ['tests/room-sizing.test.cjs']
     names+=['board/'+n for n in ['__init__.py','__main__.py','app.py','contacts.py','project.py','maintenance.py','scheduler.py','provider_bridge.py','onboarding.py','artwork.py','assets.py','environment.py','storage.py','workers.py','task_eta.py','eta-view.js','eta-view.css','fanart.css','index.html','identity.js','identity.css','discussion.js','discussion.css','room-extras.js','room-markdown.js','room-features.css','v02.js','v02.css','room-collection.js','mood.js','room-collection.css','help.html']]
     names+=['scripts/'+n for n in ['bootstrap.py','install_emotes.py','install_deps.py','verify.py','onboarding.py','provider_bridge.py','artwork.py','maintenance.py','task_number.py','workers.py','post_message.py','update_state.py','patrol.py','react.py','install-startup.ps1','watchdog.ps1','release.py','night_watch.py','run_queue.py','install_night_watch.py','install-night-watch.ps1']]
     names+=['docs/'+n for n in ['assets.md','agent-schedules.md','provider-bridge.md','patrol.md','quota.md','quota-scenarios.md','customization.md','private-repository.md','validation.md','third-party-notices.md','night-watch.md']]
