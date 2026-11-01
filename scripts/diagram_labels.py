@@ -24,7 +24,7 @@ ZH = {
     'night watch': '守夜人', 'turns changes into events': '把变化转成事件',
     'event bridge': '事件桥', 'wakes the right chat': '叫醒对应会话',
     'checks': '检查', 'flow, jobs, idle GPUs': '流程、作业与空卡',
-    'guardian': '服务卫士', 'restarts local services': '恢复本机服务',
+    'guardian': '卫士', 'restarts local services': '服务挂了就拉起来',
     'watch': '观察', 'wake': '唤醒', 'event or heartbeat': '事件或定时兜底',
     '1 · events': '1 · 处理事件', 'handle, acknowledge': '处理并登记回执',
     '2 · idle GPUs': '2 · 查看空卡', 'fill the queue': '接续就绪作业',
@@ -115,3 +115,6 @@ def outlined(raw, language='en'):
             parent.remove(element)
     ET.SubElement(root, f'{{{SVG}}}desc').text = '\n'.join(labels)
     return ET.tostring(root, encoding='unicode')
+
+ZH.update({str(n): str(n) for n in range(1, 10)})  # 卡片编号
+ZH.update({'wake': '叫醒', 'GPUs': '显卡', 'jobs': '作业', 'reports': '汇报', 'models': '模型', 'files': '文件'})

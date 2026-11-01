@@ -301,28 +301,60 @@ def gpu_job_life():
 
 
 def mistake_to_program():
-    global CAPTION, STICKY_TITLE
-    CAPTION, STICKY_TITLE = (17, 21, 8.6), 25
-    key='mistake-to-program';AUDIT[key]=[]
-    body=[diagram_heading('Mistake → program', 'Repeated operational mistakes become executable checks.'),
-          band(20,105,400,972,RED,'The recurring mistake'),band(540,105,400,972,TEAL,'The rule in code')]
-    pairs=[('One event, then sleep','GPUs sat idle.','Wake lists all work','Events, orders, tasks, idle cards.'),
-           ('GPU memory held','Computation stayed idle.','Watch utilization','Idle uses the 10-minute average.'),
-           ('Time limit became failure','Finished items were discarded.','Save and requeue','Time limits retain completed items.'),
-           ('Promises replaced results','The update was only a promise.','Check message content','Refuse promises; require concrete results.'),
-           ('Model silently weakened','The chat used another model.','Owner chooses each model','Each chat uses the selected model.'),
-           ('Reports became cloud-only','Linked evidence left local storage.','Keep linked files local','Board-linked files retain readable bytes.')]
-    for i,(old,old_detail,new,new_detail) in enumerate(pairs):
-        y=158+i*152
-        body += [curve(400,y+34,560,y+34,bend=-10),
-                 ink_text(480,y+12,'seen twice',20,MUTED,hand=True),
-                 ink_text(480,y+70,'move into code',20,MUTED,hand=True),
-                 sticky(key,38,y,364,RED,old,old_detail,rot=(-.7 if i%2 else .7)),
-                 sticky(key,558,y,364,TEAL,new,new_detail,rot=(.6 if i%2 else -.6))]
-    body += [ink_text(480,1120,'Prompts hold judgment; programs hold rules.',28,INK,hand=True),
-             doodles([('star',915,41,TEAL),('heart',40,1114,ROSE)])]
-    CAPTION, STICKY_TITLE = (14, 18, 7.4), 21
-    return svg(960,1146,''.join(body),'Six recurring mistakes become six executable safeguards')
+    """Six flashcards in two staggered columns. Card color = kind of problem (tag top-right);
+    red ✗ marks the mistake, green ✓ the rule now in code. Character stickers break the grid."""
+    key = 'mistake-to-program'; AUDIT[key] = []
+    pairs = [('One event, then sleep', 'GPUs sat idle.', 'Wake lists all work', 'Events, orders, tasks, idle cards.', 'wake', ROSE),
+             ('GPU memory held', 'Computation stayed idle.', 'Watch utilization', 'Idle uses the 10-minute average.', 'GPUs', ORANGE),
+             ('Time limit became failure', 'Finished items were discarded.', 'Save and requeue', 'Time limits retain completed items.', 'jobs', TEAL),
+             ('Promises replaced results', 'The update was only a promise.', 'Check message content', 'Refuse promises; require concrete results.', 'reports', LAV),
+             ('Model silently weakened', 'The chat used another model.', 'Owner chooses each model', 'Each chat uses the selected model.', 'models', ORANGE),
+             ('Reports became cloud-only', 'Linked evidence left local storage.', 'Keep linked files local', 'Board-linked files retain readable bytes.', 'files', SAND)]
+    W, w, h, top, gx, gy, stagger = 960, 446, 236, 112, 28, 34, 78
+    rots = (-1.3, 1.1, 0.9, -1.2, -0.8, 1.3)
+    cross = lambda x, y, c: (f"<path d='M{x - 7} {y - 7} L{x + 7} {y + 7} M{x + 7} {y - 7} L{x - 7} {y + 7}' stroke='{c}' "
+                             f"stroke-width='3' stroke-linecap='round'/>")
+    tick = lambda x, y, c: f"<path d='M{x - 8} {y} L{x - 2} {y + 7} L{x + 9} {y - 8}' fill='none' stroke='{c}' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/>"
+    GREEN = '#3f9a6a'
+    b = [diagram_heading('Mistake → program', 'Repeated operational mistakes become executable checks.')]
+    # 图例放在右列错开后留出的空白里
+    lx = 20 + w + gx + 40; ly = top + 34
+    b += [f"<rect x='{lx - 18}' y='{ly - 30}' width='{w - 44}' height='58' rx='29' fill='#fffdfb' stroke='{MUTED}' stroke-width='1' stroke-dasharray='5 4'/>",
+          cross(lx + 4, ly, RED), ink_text(lx + 20, ly + 8, 'seen twice', 22, RED, 'start', True),
+          f"<path d='M{lx + 150} {ly} L{lx + 205} {ly}' stroke='{INK}' stroke-width='1.6' marker-end='url(#a)'/>",
+          tick(lx + 232, ly + 1, GREEN), ink_text(lx + 250, ly + 8, 'move into code', 22, GREEN, 'start', True)]
+    stickers = {1: ('avatar-executor.png', 'right'), 3: ('avatar-lead.png', 'left')}
+    for i, (old, old_detail, new, new_detail, tag, col) in enumerate(pairs):
+        AUDIT[key] += [dict(title=old, lines=[], detail=old_detail), dict(title=new, lines=[], detail=new_detail)]
+        c, r = i % 2, i // 2
+        x = 20 + c * (w + gx); y = top + r * (h + gy) + (stagger if c else 0); cx = x + w / 2; rot = rots[i]
+        half = 114; tint = NOTE[col]
+        tw = len(tag) * 9 + 26
+        b += [f"<g transform='rotate({rot} {cx} {y + h / 2})'>",
+              f"<rect x='{x + 5}' y='{y + 6}' width='{w}' height='{h}' rx='10' fill='#000' opacity='.07'/>",
+              f"<rect x='{x}' y='{y}' width='{w}' height='{h}' rx='10' fill='#fffdfb' stroke='{col}' stroke-width='1.4'/>",
+              f"<path d='M{x} {y + 10} a10 10 0 0 1 10 -10 h{w - 20} a10 10 0 0 1 10 10 v{half - 10} h{-w}z' fill='{tint}'/>",
+              f"<line x1='{x + 14}' x2='{x + w - 14}' y1='{y + half + 8}' y2='{y + half + 8}' stroke='{col}' stroke-width='1.2' stroke-dasharray='5 5' opacity='.6'/>",
+              f"<circle cx='{x + 26}' cy='{y + 27}' r='16' fill='{col}'/>",
+              ink_text(x + 26, y + 35, str(i + 1), 21, '#fffdfb', hand=True),
+              f"<rect x='{x + w - tw - 16}' y='{y + 14}' width='{tw}' height='26' rx='13' fill='#fffdfb' stroke='{col}' stroke-width='1.2'/>",
+              ink_text(x + w - 16 - tw / 2, y + 32, tag, 15, col),
+              cross(x + 62, y + 60, RED), ink_text(x + 80, y + 68, old, 25, INK, 'start', True),
+              ink_text(x + 80, y + 95, old_detail, 17, MUTED, 'start'),
+              f"<circle cx='{cx}' cy='{y + half + 8}' r='15' fill='#fffdfb' stroke='{col}' stroke-width='1.5'/>",
+              f"<path d='M{cx} {y + half} L{cx} {y + half + 14} M{cx - 6} {y + half + 8} L{cx} {y + half + 15} L{cx + 6} {y + half + 8}' "
+              f"fill='none' stroke='{col}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/>",
+              tick(x + 62, y + half + 60, GREEN), ink_text(x + 80, y + half + 68, new, 25, col, 'start', True),
+              ink_text(x + 80, y + half + 96, new_detail, 17, INK, 'start'),
+              '</g>', tape(cx + (-40 if c else 40), y, col, w=78, rot=rot * 4)]
+        if i in stickers:
+            f, side = stickers[i]
+            sx = x + w - 8 if side == 'right' else x + 8
+            b += [f"<circle cx='{sx}' cy='{y + h - 6}' r='37' fill='#fffdfb' stroke='{col}' stroke-width='3'/>", avatar(sx, y + h - 6, f, r=34)]
+    H = top + 3 * h + 2 * gy + stagger + 28
+    b += [doodles([('star', 930, 80, ORANGE), ('star', 30, H - 40, LAV),
+                   ('star', 470, top + h + 18, TEAL), ('heart', 488, top + 2 * h + gy + 50, LAV)])]
+    return svg(W, H, ''.join(b), 'Six recurring mistakes become six executable safeguards')
 
 
 def write_extended_diagrams():
@@ -341,6 +373,70 @@ def write_extended_diagrams():
 
 
 
+CAST = {
+    'en': dict(title='Cast', label='Cast: Big Fish the owner, Miss the lead, Dragon the executor',
+               people=[('Big Fish', 'Owner', ['Direction', 'Budget', 'Final say']),
+                       ('Miss', 'Lead', ['Design', 'Decide', 'Review']),
+                       ('Dragon', 'Executor', ['Run', 'Build', 'Report'])]),
+    'zh-CN': dict(title='登场人物', label='登场人物：发起人大肥鱼、主线大小姐、执行龙娘',
+                  people=[('大肥鱼', '发起人', ['方向', '预算', '最终拍板']),
+                          ('大小姐', '主线', ['设计', '决定', '验收']),
+                          ('龙娘', '执行', ['执行', '搭建', '汇报'])]),
+}
+
+
+def pill_width(text, zh):
+    if zh:
+        return len(text) * 19 + 26
+    from diagram_labels import font, glyph
+    f, _, _ = font('Nunito-Bold.ttf')
+    return sum(glyph('Nunito-Bold.ttf', ch)[1] for ch in text) * 17 / f['head'].unitsPerEm + 28
+
+
+def pill_rows(items, zh, limit):
+    rows, row, used = [], [], 0
+    for item in items:
+        width = pill_width(item, zh) + (8 if row else 0)
+        if row and used + width > limit:
+            rows.append(row); row, used = [], 0; width -= 8
+        row.append(item); used += width
+    return rows + [row]
+
+
+def cast_card(language):
+    """README character cards: one taped note per role, avatar in a colored ring, name, role, three duty pills."""
+    c = CAST[language]
+    zh = language != 'en'
+    colors = [ROSE, ORANGE, LAV]
+    files = ['avatar-owner.png', 'avatar-lead.png', 'avatar-executor.png']
+    rots = [-1.6, 1.2, -1.0]
+    extra = max(len(pill_rows(d, zh, 240)) for _, _, d in c['people']) - 1
+    W, H, w, h, top = 930, 420 + 42 * extra, 270, 312 + 42 * extra, 78
+    b = [f"<rect x='28' y='22' width='{len(c['title']) * (30 if zh else 15) + 14}' height='18' fill='{ROSE}' opacity='.22'/>",
+         f"<text x='34' y='44' font-family=\"{HAND}\" font-size='34' font-weight='700' fill='{ROSE}'>{c['title']}</text>"]
+    for i, (name, role, duties) in enumerate(c['people']):
+        x = 30 + i * (w + 30); cx = x + w / 2; col = colors[i]
+        g = [f"<g transform='rotate({rots[i]} {cx} {top + h / 2})'>",
+             f"<rect x='{x + 4}' y='{top + 5}' width='{w}' height='{h}' rx='8' fill='#000' opacity='.06'/>",
+             f"<rect x='{x}' y='{top}' width='{w}' height='{h}' rx='8' fill='{NOTE[col]}' stroke='{col}' stroke-width='1.3'/>",
+             f"<circle cx='{cx}' cy='{top + 100}' r='66' fill='#fff' stroke='{col}' stroke-width='4'/>",
+             avatar(cx, top + 100, files[i], r=62),
+             f"<text x='{cx}' y='{top + 206}' text-anchor='middle' font-family=\"{HAND}\" font-size='{34 if zh else 38}' font-weight='700' fill='{col}'>{name}</text>",
+             f"<text x='{cx}' y='{top + 234}' text-anchor='middle' font-family=\"{SANS}\" font-size='18' fill='{MUTED}'>{role}</text>"]
+        for r, row in enumerate(pill_rows(duties, zh, w - 30)):
+            widths = [pill_width(d, zh) for d in row]
+            px = cx - (sum(widths) + 8 * (len(row) - 1)) / 2
+            for d, pw in zip(row, widths):
+                y = top + 252 + r * 42
+                g.append(f"<rect x='{px}' y='{y}' width='{pw}' height='34' rx='17' fill='#fffdfb' stroke='{col}' stroke-width='1.2'/>"
+                         f"<text x='{px + pw / 2}' y='{y + 23}' text-anchor='middle' font-family=\"{SANS}\" font-size='17' font-weight='600' fill='{INK}'>{d}</text>")
+                px += pw + 8
+        g.append('</g>')
+        b += g + [tape(cx, top, col, w=74, rot=rots[i] * 2)]
+    b.append(doodles([('star', 905, 40, ORANGE), ('heart', 880, H - 22, ROSE), ('star', 18, H - 20, LAV)]))
+    return svg(W, H, ''.join(b), c['label'])
+
+
 if __name__ == '__main__':
     from diagram_labels import outlined
     for name, render in [('how-it-works', how_it_works), ('wake-loop', wake_loop)]:
@@ -348,5 +444,11 @@ if __name__ == '__main__':
         for language in ['en', 'zh-CN']:
             suffix = '' if language == 'en' else '.zh-CN'
             (OUT / (name + suffix + '.svg')).write_text(outlined(raw, language), encoding='utf-8')
+    from diagram_labels import ZH
+    for language in ['en', 'zh-CN']:
+        raw = cast_card(language)
+        if language != 'en':  # 中文版直接用中文排版，outlined 只需原样映射
+            ZH.update({s: s for s in re.findall(r">([^<>]+)</text>", raw)}); ZH[CAST[language]['label']] = CAST[language]['label']
+        (OUT / ('cast' + ('' if language == 'en' else '.zh-CN') + '.svg')).write_text(outlined(raw, language), encoding='utf-8')
     print('four language-specific SVGs exported with accessible glyph outlines')
     write_extended_diagrams()

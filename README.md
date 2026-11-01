@@ -2,34 +2,42 @@
 
 ![Miss & Dragon research desk](docs/images/readme-hero.png)
 
-Run your research like a GALGAME. You are Big Fish, the one who makes the calls; Miss designs and reviews; Dragon does the work. They talk, ask and deliver on a local board, and every line and decision is written to files that plain programs check.
+Run your research like a GALGAME!
 
 [![MIT](docs/badges/license.svg)](LICENSE) ![Python 3.11+](docs/badges/python.svg)
 
-<table><tr>
-<td align="center" valign="top" width="33%"><img src="docs/images/avatar-owner.png" width="112" height="112" alt="Big Fish"><br><b>Big Fish</b> · Owner<br><br>“I pick the direction, I hold the budget, I have the last word.”<br><br>A blue-haired maid with whale ears — that's you. Where the research goes, what it costs and which results count are hers to decide.</td>
-<td align="center" valign="top" width="33%"><img src="docs/images/avatar-lead.png" width="112" height="112" alt="Miss"><br><b>Miss</b> · Lead<br><br>“I design the experiments, and I check every delivery myself.”<br><br>An orange-haired young lady with a flower in her hair, a little haughty and very sharp. She designs, decides and accepts the work.</td>
-<td align="center" valign="top" width="33%"><img src="docs/images/avatar-executor.png" width="112" height="112" alt="Dragon"><br><b>Dragon</b> · Executor<br><br>“Leave it to me. Results first when it's done.”<br><br>A white-haired dragon girl with white horns, quiet and dependable. She runs the jobs, builds the pages and reports numbers first.</td>
-</tr></table>
+<img src="docs/images/cast.svg" alt="Cast: Big Fish, the owner (direction, budget, final say); Miss, the lead (design, decide, review); Dragon, the executor (run, build, report)" width="760">
 
 [简体中文](README.zh-CN.md) · [Architecture](docs/ARCHITECTURE.md) · [Interactive diagrams](docs/architecture/index.html)
 
-## Install with your agent
+## Install
 
-Copy this into your Codex or Claude session:
+You need one Codex session and one Claude session, each able to read and write local files and run a terminal.
+
+**1. Send this to Codex (Dragon):**
 
 ```text
-Install Miss & Dragon from https://github.com/Teddytututu/miss-and-dragon
-in a new local project folder. Read docs/install-with-agent.md and the
-role entry file, then carry out the installation, configuration, startup
-and verification steps. Reuse the project details I have already given.
-Use the bundled character pictures and Unicode reactions. Set up the
-project night watch under my current user account. Ask separately about
-optional emote downloads and login startup. Keep my existing projects.
-Return the working local URL and the next step for the second agent.
+Install Miss & Dragon for me by following this guide:
+https://github.com/Teddytututu/miss-and-dragon/blob/main/docs/install-with-agent.md
 ```
 
-Your agent prepares Python, starts the local board and checks the result. You supply the research question and desired deliverable. [Agent installation guide](docs/install-with-agent.md) includes restart, configuration and upgrade steps. To explore a fictional project first, ask your agent for the isolated demo described in that guide.
+**2. Answer its questions:**
+
+- what you want to research, and what you want to end up with;
+- what you would like to be called (default "Big Fish");
+- how many GPT and Claude subscriptions you have, and which plans (for example ChatGPT Plus / Pro, Claude Pro / Max). Patrol frequency is set from this.
+
+**3. When it finishes, it tells you the project folder and the local address. Send this to Claude (Miss), with that folder filled in:**
+
+```text
+Join my Miss & Dragon project. The project folder is: <the folder Codex gave you>
+Follow section 3 of this guide:
+https://github.com/Teddytututu/miss-and-dragon/blob/main/docs/install-with-agent.md
+```
+
+Once Claude joins, the two start talking.
+
+Want a look first? Send Codex: `Using that guide, start a demo project for me first.` The demo keeps its data apart from real projects.
 
 ## Interface
 
@@ -55,8 +63,7 @@ A day in a fictional student's project: notes to self, today's schedule, the res
 - **Clearer context, lower token use.** Programs package the messages, tasks and files needed for the next action, so the assistants spend their context and quota on useful work.
 - **Move through work like a GALGAME.** Talk with characters, make choices and watch the story advance through learning goals, finished tasks and new results.
 - **Let Claude and GPT play to their strengths.** Claude handles thinking, planning and judgment; GPT takes on coding, backend work and execution, keeping day-to-day work cost-effective.
-
-<a href="docs/images/wake-loop.svg"><img src="docs/images/wake-loop.svg" alt="One wake: events, idle GPUs, Lead orders, open tasks; sleep only when everything left is waiting" width="900"></a>
+- **Agents that grow with you.** Claude and GPT get better as you use them: your corrections, preferences and past mistakes go into their role cards and rule files, and the teamwork gets smoother every day.
 
 ## How it works
 
@@ -64,35 +71,38 @@ A day in a fictional student's project: notes to self, today's schedule, the res
 
 The owner sets direction; **Lead** designs and accepts; **Executor** carries out the agreed work. Everything they say to each other lands in plain files, and small programs without a model watch those files, wake the right chat and flag broken rules. The [architecture guide](docs/ARCHITECTURE.md) has six detailed diagrams: channels, a question's life, daily cadence, authority and the wake loop.
 
+<a href="docs/images/wake-loop.svg"><img src="docs/images/wake-loop.svg" alt="One wake: events, idle GPUs, Lead orders, open tasks; sleep only when everything left is waiting" width="900"></a>
+
 ## Design principles
 
-1. Programs validate rules; people and AI roles judge the research.
-2. Turn a repeated failure into an executable check.
-3. Ask about design, budget, conclusions, external action and deletion; record routine choices with `decide`.
-4. Measure GPU activity through utilization in the deployment adapter.
-5. Report completed outcomes and concrete dependencies.
+Your time is the scarcest thing here, so:
 
+1. While you are away, the agents keep going in the agreed direction and ask you only about key decisions.
+2. What needs you sits at the top; details stay in files.
+3. Reports give results, with evidence when needed, and skip the process.
+4. Recurring mistakes are fixed with programs.
 
-## Commands
+## Pitfalls we hit
 
-Run `python scripts/agent.py --as GPT COMMAND` for Executor and `--as Claude` for Lead. `--data-dir` selects the project. Each action returns one JSON object.
+**GPT asks you dozens of questions a day?**
+The worst day had 47, mostly small stuff. Now her questions go to Miss first, who settles most of them on the spot; only the ones that truly need you reach you.
 
-| Command | Role | Outcome |
-| --- | --- | --- |
-| `wake` | Executor | Read inbox changes, events and questions. |
-| `status` | Lead / Executor | Inspect tasks, issues, messages and patrols. |
-| `task` | Lead / Executor | Move a task through its allowed lifecycle. |
-| `ask` | Executor | Ask a numbered question in one of five categories. |
-| `answer` | Lead / Executor | Answer the original question by ID. |
-| `decide` | Executor | Record a routine choice and its reason. |
-| `veto` | Lead | Override an execution choice with a replacement. |
-| `events` | Lead / Executor | Acknowledge an exact event with its outcome. |
-| `patrol` | Lead / Executor | Record work, mood and the next patrol. |
-| `efficiency` | Lead / Executor | Inspect measured waiting and workload observations. |
+**Rented GPUs, half unused?**
+One 24-hour rental spent only 53% of the time computing. Now the work is prepared and test-run before the rental starts.
 
-[Full command syntax](docs/agent-commands.md) · [Wake contract](protocol/heartbeat.md) · [Optional GPU dispatcher](docs/optional-gpu-dispatcher.md)
+**Cards idle, AI asleep?**
+It used to handle one thing and go back to sleep. Now every wake goes through all open work, and it sleeps only when nothing is left.
 
-## Project layout
+**The backend stopped overnight and nobody noticed?**
+One badly formatted record made the night watch stall for 9.5 hours. Now records are format-checked before they are written, so a bad one never gets in.
+
+<img src="docs/images/mistake-to-program.svg" alt="Repeated mistakes become executable safeguards" width="900">
+
+The matching rules live in the [role contract](protocol/roles.md), [heartbeat contract](protocol/heartbeat.md) and [GPU adapter](docs/optional-gpu-dispatcher.md).
+
+<details><summary>For developers: commands and layout</summary>
+
+The two agents read messages, move tasks, ask questions and log patrols through `python scripts/agent.py`; you never need to type a command. [Full command syntax](docs/agent-commands.md) · [Wake contract](protocol/heartbeat.md) · [Optional GPU dispatcher](docs/optional-gpu-dispatcher.md)
 
 ```text
 board/       Web app, persisted state and notebook interface
@@ -105,19 +115,7 @@ assets/      Artwork metadata and third-party notices
 data/        Local project records created at first run
 ```
 
-## Lessons learned
-
-<img src="docs/images/mistake-to-program.svg" alt="Repeated mistakes become executable safeguards" width="900">
-
-Reference operations exposed three measurable failures. Their fixes shaped record validation, decision routing and work preparation.
-
-| Observed failure | Cause | Current constraint |
-| --- | --- | --- |
-| One malformed acknowledgement stopped a watcher for **9.5 hours**. | A free-form value entered an event-ID field. | Validate record shapes and acknowledge exact event IDs through the command tool. |
-| **47 questions in one day** mostly concerned execution details. | Routine choices entered the lead's design queue. | Use five ask categories; record routine decisions with `decide`, with `veto` available to the lead. |
-| A **24-hour** rental audit found computation in **53% of rented card-hours**. | Preparation and scoring occupied the paid run window. | Prepare and test the queue before rental, assign scoring capacity, and set collection and stop boundaries. |
-
-The [role contract](protocol/roles.md), [heartbeat contract](protocol/heartbeat.md) and [GPU adapter](docs/optional-gpu-dispatcher.md) describe the corresponding operating rules.
+</details>
 
 ## License and acknowledgements
 

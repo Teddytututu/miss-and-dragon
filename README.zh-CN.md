@@ -2,33 +2,42 @@
 
 ![Miss & Dragon 研究手账](docs/images/readme-hero.png)
 
-像 GALGAME 一样推进你的研究：你是做决定的大肥鱼，大小姐负责设计和验收，龙娘负责执行。她们在本机看板上聊天、提问、交结果，每句话、每个决定都写成文件，由普通程序检查规则。
+像 GALGAME 一样推进你的研究！
 
 [![MIT](docs/badges/license.svg)](LICENSE) ![Python 3.11+](docs/badges/python.svg)
 
-<table><tr>
-<td align="center" valign="top" width="33%"><img src="docs/images/avatar-owner.png" width="112" height="112" alt="大肥鱼"><br><b>大肥鱼</b> · 发起人<br><br>「方向我定，钱我出，最后我拍板。」<br><br>蓝发鲸鱼耳的女仆少女，也就是你。研究往哪走、花多少、结论算不算数，都由她说了算。</td>
-<td align="center" valign="top" width="33%"><img src="docs/images/avatar-lead.png" width="112" height="112" alt="大小姐"><br><b>大小姐</b> · 主线<br><br>「实验本小姐来设计，交上来的东西本小姐一件件验。」<br><br>橙发戴花的大小姐，嘴上傲娇，判断很准。设计实验、做决定、验收每一份交付。</td>
-<td align="center" valign="top" width="33%"><img src="docs/images/avatar-executor.png" width="112" height="112" alt="龙娘"><br><b>龙娘</b> · 执行<br><br>「交给我，跑完先报结果。」<br><br>白发白角的龙娘，安静可靠。上卡、跑实验、搭页面，做完第一句就说数字。</td>
-</tr></table>
+<img src="docs/images/cast.zh-CN.svg" alt="登场人物：发起人大肥鱼（方向、预算、最终拍板）、主线大小姐（设计、决定、验收）、执行龙娘（执行、搭建、汇报）" width="760">
 
 [English](README.md) · [Architecture](docs/ARCHITECTURE.md) · [Interactive diagrams](docs/architecture/index.html)
 
-## 交给 agent 安装
+## 安装
 
-把下面这段复制给 Codex 或 Claude：
+你需要：Codex 和 Claude 各开一个会话，都要能读写本机文件、能跑终端。
+
+**1. 发给 Codex（龙娘）：**
 
 ```text
-请在新的本机项目文件夹安装 Miss & Dragon：
-https://github.com/Teddytututu/miss-and-dragon
-先读 docs/install-with-agent.zh-CN.md 和你的角色入口文件，
-接着完成安装、配置、启动和验证。复用我已经提供的项目资料，
-使用随包角色图和 Unicode 表情，在当前用户下接入项目守夜人。
-可选表情包下载与登录自启动分别征求我的选择，保留现有项目。
-完成后给我可打开的本机网址，以及第二个 agent 的接入步骤。
+帮我安装 Miss & Dragon，按这份说明做：
+https://github.com/Teddytututu/miss-and-dragon/blob/main/docs/install-with-agent.zh-CN.md
 ```
 
-agent 负责准备 Python、启动看板并打开确认；你提供研究问题和希望得到的成果。[agent 安装指南](docs/install-with-agent.zh-CN.md)写明配置、重启和升级流程。想先试用时，把“先启动独立演示项目”加到上面的请求里。
+**2. 回答它的几个问题：**
+
+- 你想研究什么，想得到什么成果；
+- 希望怎么称呼你（默认“大肥鱼”）；
+- GPT 和 Claude 各有几个订阅、什么档位（比如 ChatGPT Plus / Pro，Claude Pro / Max）。巡检多勤快按这个定。
+
+**3. 装好后它会告诉你项目文件夹和本机网址。把下面这句发给 Claude（大小姐），换上那个文件夹：**
+
+```text
+加入我的 Miss & Dragon 项目，项目文件夹是：<Codex 告诉你的文件夹>
+按这份说明的第 3 节做：
+https://github.com/Teddytututu/miss-and-dragon/blob/main/docs/install-with-agent.zh-CN.md
+```
+
+Claude 加进来以后，两边就开始对话了。
+
+想先看看再装？发给 Codex：`按上面那份文件，先给我开一个演示项目。` 演示项目和正式项目的数据分开放。
 
 ## 界面
 
@@ -46,7 +55,7 @@ agent 负责准备 Python、启动看板并打开确认；你提供研究问题�
 
 一个虚构学生的研究日常：要做的事、今天的安排、研究问题和结果树，右边是 Lead 和 Executor 在讨论室里的对话。粉色手账和蓝色工作台两套主题用同一份数据。
 
-## 用起来有什么好处
+## 为什么选 Miss & Dragon
 
 - **人在环中，任务持续推进。** 你把握方向和关键选择，AI 接着做已经约定好的工作，把真正需要你决定的事情集中带回来。
 - **一块任务板，多条线一起推进。** 给各个 AI 分清工作，用清楚的进度、结果和下一步，同时跟上几个项目。
@@ -54,8 +63,7 @@ agent 负责准备 Python、启动看板并打开确认；你提供研究问题�
 - **程序整理上下文，省下模型额度。** 消息、任务和文件由程序打包成下一步所需的信息，让 AI 把上下文和额度用在具体工作上。
 - **像玩 GALGAME 一样推进学习和工作。** 和角色对话、做出选择，看学习目标、完成的任务和新结果推动故事向前。
 - **让 Claude 和 GPT 各展所长。** Claude 负责思考、规划和判断，GPT 承担代码、后端和具体执行，以更经济的方式把日常工作做完。
-
-<a href="docs/images/wake-loop.zh-CN.svg"><img src="docs/images/wake-loop.zh-CN.svg" alt="一轮醒来：事件、空卡、Lead 指令、开着的任务，只剩等待才休息" width="900"></a>
+- **越用越得心应手。** Claude 和 GPT 在使用中养成和成长：你纠正过的说法、定下的偏好、踩过的坑都会记进角色卡和规则文件，配合一天比一天默契。
 
 ## 怎样协作
 
@@ -63,35 +71,38 @@ agent 负责准备 Python、启动看板并打开确认；你提供研究问题�
 
 Owner 定方向，**Lead** 设计和验收，**Executor** 做约定好的事。两者之间说的每句话都落在普通文件里，几个不用模型的小程序看着这些文件：把变化变成事件、叫醒对的会话、发现规矩被破坏就报出来。[架构说明](docs/ARCHITECTURE.md)里有六张细图：通道、一个问题的一生、每日节奏、决定权和醒来循环。
 
+<a href="docs/images/wake-loop.zh-CN.svg"><img src="docs/images/wake-loop.zh-CN.svg" alt="一轮醒来：事件、空卡、Lead 指令、开着的任务，只剩等待才休息" width="900"></a>
+
 ## 设计原则
 
-1. 程序校验规矩，人和 AI 角色判断研究。
-2. 重复出现的错误进入可执行检查。
-3. 设计、预算、结论、对外和删除进入提问，其余执行选择用 `decide` 记账。
-4. GPU 部署以实际利用率衡量计算活动。
-5. 汇报完成结果和具体依赖。
+你的时间最贵，所以：
 
+1. 你不在的时候，AI 照定好的方向接着干，只有关键决定才问你。
+2. 要你做的事放最上面，细节留在文件里。
+3. 汇报只说结果，需要时附上证据，不说过程。
+4. 反复出现的错，用程序解决。
 
-## 常用命令
+## 踩过的坑
 
-Executor 使用 `python scripts/agent.py --as GPT 命令`，Lead 使用 `--as Claude`。`--data-dir` 选择项目，每次操作返回一个 JSON 对象。
+**GPT 一天问几十个问题？**
+最多的一天问了 47 次，大半是小事。现在她的问题先交给大小姐，大部分当场拍板，只有真要你定的才轮到你。
 
-| 命令 | 角色 | 作用 |
-| --- | --- | --- |
-| `wake` | Executor | 读取收信变化、事件与提问。 |
-| `status` | Lead / Executor | 查看任务、流程事项、消息和巡检。 |
-| `task` | Lead / Executor | 按各自权限流转任务。 |
-| `ask` | Executor | 在五类范围内提交编号提问。 |
-| `answer` | Lead / Executor | 按原编号回答。 |
-| `decide` | Executor | 记录执行选择及原因。 |
-| `veto` | Lead | 记录否决与替代方案。 |
-| `events` | Lead / Executor | 按精确事件编号登记处理结果。 |
-| `patrol` | Lead / Executor | 记录成果、心情和下一次巡检。 |
-| `efficiency` | Lead / Executor | 查看已观测的等待与工作情况。 |
+**租的卡没用满？**
+有次租了 24 小时，真正在算的只有 53%。现在先把活备好、试跑通了再开租。
 
-[完整命令](docs/agent-commands.md) · [醒来流程](protocol/heartbeat.zh-CN.md) · [可选 GPU 调度器](docs/optional-gpu-dispatcher.md)
+**卡空着，AI 却睡了？**
+以前它处理完一件事就睡。现在醒来先把所有活过一遍，真没事了才睡。
 
-## 项目目录
+**后台停了一晚上没人知道？**
+一条记录格式写错，守夜人读到就卡住，停了 9.5 小时。现在写记录前先查格式，错的写不进去。
+
+<img src="docs/images/mistake-to-program.zh-CN.svg" alt="六类运行问题对应六条程序规则" width="900">
+
+对应的规则写在[角色约定](protocol/roles.md)、[醒来合同](protocol/heartbeat.md)和[GPU 适配器](docs/optional-gpu-dispatcher.md)里。
+
+<details><summary>给开发者：命令与目录</summary>
+
+两个 AI 通过 `python scripts/agent.py` 读消息、流转任务、提问和记巡检，你不需要敲命令。 [完整命令](docs/agent-commands.md) · [醒来流程](protocol/heartbeat.zh-CN.md) · [可选 GPU 调度器](docs/optional-gpu-dispatcher.md)
 
 ```text
 board/       网页应用、持久化状态和手账界面
@@ -104,19 +115,7 @@ assets/      图像元数据与第三方说明
 data/        首次启动创建的本地项目记录
 ```
 
-## 实际运行带来的修正
-
-<img src="docs/images/mistake-to-program.zh-CN.svg" alt="六类运行问题对应六条程序规则" width="900">
-
-参考部署出现过三类可量出的故障，分别推动了记录校验、决定分流和开工准备。
-
-| 出现过的问题 | 根因 | 现在的约束 |
-| --- | --- | --- |
-| 一条错误格式的确认记录让守夜程序停了 **9.5 小时**。 | 事件编号字段混入了自由格式的值。 | 程序校验记录结构，事件通过命令工具按精确编号确认。 |
-| **一天 47 次提问**，多数是执行细节。 | 日常选择挤进了主线的研究设计队列。 | 五类大事进入提问，其余用 `decide` 记账，Lead 保留 `veto`。 |
-| 一次 **24 小时**租用审计中，只有 **53% 的卡时**在计算。 | 环境准备和判分占据了租用时段。 | 开租前备好并试跑队列，分配判分资源，提前设置收图与停止边界。 |
-
-[角色约定](protocol/roles.md)、[醒来合同](protocol/heartbeat.md)和[GPU 适配器](docs/optional-gpu-dispatcher.md)写明对应的运行规则。
+</details>
 
 ## 许可与致谢
 

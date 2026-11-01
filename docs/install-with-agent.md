@@ -4,6 +4,18 @@
 
 Give the README's installation request to a Codex or Claude session with local file and terminal access. The agent performs the steps below and returns a working local board. The Owner chooses each session's model; changing it requires the Owner's agreement.
 
+## 0. Defaults
+
+The README gives the user a one-line prompt. Apply these defaults:
+
+- Install into a new folder and leave the user's existing projects and files as they are.
+- Reuse project details the user has already given and ask the rest in one go: what to research and what to deliver; what the user wants to be called (Bootstrap `--user-name`, default 大肥鱼 / Big Fish); how many GPT and Claude subscriptions they have and which plans.
+- Plans set each assistant's quota band: several subscriptions or the top plan → `plenty`, a regular paid plan → `normal`, free or often exhausted → `tight`. Record them under `plans` in `data/attachments/onboarding.json` and pass the matching `--tier` to that assistant's `scripts/patrol.py`.
+- Use the bundled character pictures and Unicode reactions. Ask once each about the optional emote download and login startup, and install them only with consent.
+- Register the night watch under the current user account.
+- When the user asks for a demo project, use the isolated demo at the end of section 2 and create no real project.
+- Finish by returning the working local address and the full project folder path (the user puts it into the README line for Claude).
+
 ## 1. Prepare the project
 
 Use Python 3.11 or newer with `venv` support and Git. Inspect the current environment and use its available Python command; on Windows this may be `py -3`. Install missing prerequisites through the host's authorized package manager. Keep the existing machine and account settings.
