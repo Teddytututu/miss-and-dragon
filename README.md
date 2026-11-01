@@ -12,7 +12,7 @@ Run your research like a GALGAME!
 
 ## Install
 
-You need one Codex session and one Claude session, each able to read and write local files and run a terminal.
+You need one Codex session and one Claude session, each able to read and write local files and run a terminal. Windows is the smoothest; Mac and Linux work too. You need Python 3.11 or newer, and Codex installs it if it is missing. No GPU is required unless you run experiments.
 
 **1. Send this to Codex (Dragon):**
 
@@ -53,7 +53,7 @@ Want a look first? Send Codex: `Using that guide, start a demo project for me fi
 
 </details>
 
-A day in a fictional student's project: notes to self, today's schedule, the research question and results tree, with the Lead and Executor talking in the room on the right. Pink notebook and blue workbench themes share the same data.
+A day in a fictional student's project: notes to self, today's schedule, the research question and results tree, with Miss and Dragon talking in the room on the right. Pink notebook and blue workbench themes share the same data.
 
 ## Why use Miss & Dragon?
 
@@ -67,20 +67,19 @@ A day in a fictional student's project: notes to self, today's schedule, the res
 
 ## How it works
 
-<a href="docs/images/how-it-works.svg"><img src="docs/images/how-it-works.svg" alt="Owner, Lead and Executor share plain-file records; plain programs watch the records and wake the Executor" width="900"></a>
+<a href="docs/images/how-it-works.svg"><img src="docs/images/how-it-works.svg" alt="Big Fish, Miss and Dragon share plain-file records; plain programs watch the records and wake Dragon" width="900"></a>
 
-The owner sets direction; **Lead** designs and accepts; **Executor** carries out the agreed work. Everything they say to each other lands in plain files, and small programs without a model watch those files, wake the right chat and flag broken rules. The [architecture guide](docs/ARCHITECTURE.md) has six detailed diagrams: channels, a question's life, daily cadence, authority and the wake loop.
+You (Big Fish) set the direction; Miss designs and accepts; Dragon carries out the agreed work. Everything they say to each other lands in plain files, and small programs without a model watch those files, wake the right chat and flag broken rules. The [architecture guide](docs/ARCHITECTURE.md) has six detailed diagrams: channels, a question's life, daily cadence, authority and the wake loop.
 
-<a href="docs/images/wake-loop.svg"><img src="docs/images/wake-loop.svg" alt="One wake: events, idle GPUs, Lead orders, open tasks; sleep only when everything left is waiting" width="900"></a>
+<a href="docs/images/wake-loop.svg"><img src="docs/images/wake-loop.svg" alt="One wake: events, idle GPUs, orders from Miss, open tasks; sleep only when everything left is waiting" width="900"></a>
 
 ## Design principles
 
 Your time is the scarcest thing here, so:
 
-1. While you are away, the agents keep going in the agreed direction and ask you only about key decisions.
-2. What needs you sits at the top; details stay in files.
-3. Reports give results, with evidence when needed, and skip the process.
-4. Recurring mistakes are fixed with programs.
+1. What needs you sits at the top; details stay in files.
+2. Reports give results, with evidence when needed, and skip the process.
+3. Recurring mistakes are fixed with programs.
 
 ## Pitfalls we hit
 
@@ -108,7 +107,7 @@ The two agents read messages, move tasks, ask questions and log patrols through 
 board/       Web app, persisted state and notebook interface
 scripts/     Command tools, setup, patrol and release helpers
 protocol/    Roles, lifecycle, decisions and wake contracts
-personas/    Lead and Executor role cards
+personas/    Role cards for Miss and Dragon
 templates/   Task and report starting points
 docs/        Architecture, screenshots and deployment guides
 assets/      Artwork metadata and third-party notices

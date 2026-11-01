@@ -12,7 +12,7 @@
 
 ## 安装
 
-你需要：Codex 和 Claude 各开一个会话，都要能读写本机文件、能跑终端。
+你需要：Codex 和 Claude 各开一个会话，都要能读写本机文件、能跑终端。Windows 上最省心，Mac 和 Linux 也能跑；电脑上要有 Python 3.11 以上，没有的话 Codex 会帮你装；不需要显卡，跑实验时才用得上。
 
 **1. 发给 Codex（龙娘）：**
 
@@ -53,7 +53,7 @@ Claude 加进来以后，两边就开始对话了。
 
 </details>
 
-一个虚构学生的研究日常：要做的事、今天的安排、研究问题和结果树，右边是 Lead 和 Executor 在讨论室里的对话。粉色手账和蓝色工作台两套主题用同一份数据。
+一个虚构学生的研究日常：要做的事、今天的安排、研究问题和结果树，右边是大小姐和龙娘在讨论室里的对话。粉色手账和蓝色工作台两套主题用同一份数据。
 
 ## 为什么选 Miss & Dragon
 
@@ -67,20 +67,19 @@ Claude 加进来以后，两边就开始对话了。
 
 ## 怎样协作
 
-<a href="docs/images/how-it-works.zh-CN.svg"><img src="docs/images/how-it-works.zh-CN.svg" alt="Owner、Lead、Executor 共用文件记录；普通程序看着记录并叫醒 Executor" width="900"></a>
+<a href="docs/images/how-it-works.zh-CN.svg"><img src="docs/images/how-it-works.zh-CN.svg" alt="大肥鱼、大小姐、龙娘共用文件记录；普通程序看着记录并叫醒龙娘" width="900"></a>
 
-Owner 定方向，**Lead** 设计和验收，**Executor** 做约定好的事。两者之间说的每句话都落在普通文件里，几个不用模型的小程序看着这些文件：把变化变成事件、叫醒对的会话、发现规矩被破坏就报出来。[架构说明](docs/ARCHITECTURE.md)里有六张细图：通道、一个问题的一生、每日节奏、决定权和醒来循环。
+你（大肥鱼）定方向，大小姐设计和验收，龙娘做约定好的事。她们之间说的每句话都落在普通文件里，几个不用模型的小程序看着这些文件：把变化变成事件、叫醒对的会话、发现规矩被破坏就报出来。[架构说明](docs/ARCHITECTURE.md)里有六张细图：通道、一个问题的一生、每日节奏、决定权和醒来循环。
 
-<a href="docs/images/wake-loop.zh-CN.svg"><img src="docs/images/wake-loop.zh-CN.svg" alt="一轮醒来：事件、空卡、Lead 指令、开着的任务，只剩等待才休息" width="900"></a>
+<a href="docs/images/wake-loop.zh-CN.svg"><img src="docs/images/wake-loop.zh-CN.svg" alt="一轮醒来：事件、空卡、大小姐的指令、开着的任务，只剩等待才休息" width="900"></a>
 
 ## 设计原则
 
 你的时间最贵，所以：
 
-1. 你不在的时候，AI 照定好的方向接着干，只有关键决定才问你。
-2. 要你做的事放最上面，细节留在文件里。
-3. 汇报只说结果，需要时附上证据，不说过程。
-4. 反复出现的错，用程序解决。
+1. 要你做的事放最上面，细节留在文件里。
+2. 汇报只说结果，需要时附上证据，不说过程。
+3. 反复出现的错，用程序解决。
 
 ## 踩过的坑
 
@@ -108,7 +107,7 @@ Owner 定方向，**Lead** 设计和验收，**Executor** 做约定好的事。�
 board/       网页应用、持久化状态和手账界面
 scripts/     命令、安装、巡检和打包工具
 protocol/    角色、生命周期、决定和醒来约定
-personas/    Lead 与 Executor 角色卡
+personas/    大小姐与龙娘的角色卡
 templates/   任务与报告模板
 docs/        架构图、截图和部署说明
 assets/      图像元数据与第三方说明
