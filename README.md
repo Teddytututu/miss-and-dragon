@@ -8,7 +8,7 @@ Run your research like a GALGAME!
 
 <img src="docs/images/cast.svg" alt="Cast: Big Fish, the owner (direction, budget, final say); Miss, the lead (design, decide, review); Dragon, the executor (run, build, report)" width="760">
 
-[简体中文](README.zh-CN.md) · [Architecture](docs/ARCHITECTURE.md) · [Interactive diagrams](docs/architecture/index.html)
+[简体中文](README.zh-CN.md) · [Architecture](docs/ARCHITECTURE.md)
 
 ## Install
 
@@ -90,18 +90,16 @@ The worst day had 47, mostly small stuff. Now her questions go to Miss first, wh
 One 24-hour rental spent only 53% of the time computing. Now the work is prepared and test-run before the rental starts.
 
 **Cards idle, AI asleep?**
-It used to handle one thing and go back to sleep. Now every wake goes through all open work, and it sleeps only when nothing is left.
+Dragon used to handle one thing and go back to sleep. Now every wake goes through all open work, and it sleeps only when nothing is left.
 
 **The backend stopped overnight and nobody noticed?**
 One badly formatted record made the night watch stall for 9.5 hours. Now records are format-checked before they are written, so a bad one never gets in.
 
 <img src="docs/images/mistake-to-program.svg" alt="Repeated mistakes become executable safeguards" width="900">
 
-The matching rules live in the [role contract](protocol/roles.md), [heartbeat contract](protocol/heartbeat.md) and [GPU adapter](docs/optional-gpu-dispatcher.md).
-
 <details><summary>For developers: commands and layout</summary>
 
-The two agents read messages, move tasks, ask questions and log patrols through `python scripts/agent.py`; you never need to type a command. [Full command syntax](docs/agent-commands.md) · [Wake contract](protocol/heartbeat.md) · [Optional GPU dispatcher](docs/optional-gpu-dispatcher.md)
+The two agents read messages, move tasks, ask questions and log patrols through `python scripts/agent.py`; you never need to type a command. [Full command syntax](docs/agent-commands.md) · [Role contract](protocol/roles.md) · [Wake contract](protocol/heartbeat.md) · [Optional GPU dispatcher](docs/optional-gpu-dispatcher.md)
 
 ```text
 board/       Web app, persisted state and notebook interface

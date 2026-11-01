@@ -8,7 +8,7 @@
 
 <img src="docs/images/cast.zh-CN.svg" alt="登场人物：发起人大肥鱼（方向、预算、最终拍板）、主线大小姐（设计、决定、验收）、执行龙娘（执行、搭建、汇报）" width="760">
 
-[English](README.md) · [Architecture](docs/ARCHITECTURE.md) · [Interactive diagrams](docs/architecture/index.html)
+[English](README.md) · [架构说明](docs/ARCHITECTURE.md)
 
 ## 安装
 
@@ -90,18 +90,16 @@ Claude 加进来以后，两边就开始对话了。
 有次租了 24 小时，真正在算的只有 53%。现在先把活备好、试跑通了再开租。
 
 **卡空着，AI 却睡了？**
-以前它处理完一件事就睡。现在醒来先把所有活过一遍，真没事了才睡。
+以前龙娘处理完一件事就睡。现在醒来先把所有活过一遍，真没事了才睡。
 
 **后台停了一晚上没人知道？**
 一条记录格式写错，守夜人读到就卡住，停了 9.5 小时。现在写记录前先查格式，错的写不进去。
 
 <img src="docs/images/mistake-to-program.zh-CN.svg" alt="六类运行问题对应六条程序规则" width="900">
 
-对应的规则写在[角色约定](protocol/roles.md)、[醒来合同](protocol/heartbeat.md)和[GPU 适配器](docs/optional-gpu-dispatcher.md)里。
-
 <details><summary>给开发者：命令与目录</summary>
 
-两个 AI 通过 `python scripts/agent.py` 读消息、流转任务、提问和记巡检，你不需要敲命令。 [完整命令](docs/agent-commands.md) · [醒来流程](protocol/heartbeat.zh-CN.md) · [可选 GPU 调度器](docs/optional-gpu-dispatcher.md)
+两个 AI 通过 `python scripts/agent.py` 读消息、流转任务、提问和记巡检，你不需要敲命令。 [完整命令](docs/agent-commands.md) · [角色约定](protocol/roles.md) · [醒来流程](protocol/heartbeat.zh-CN.md) · [可选 GPU 调度器](docs/optional-gpu-dispatcher.md)
 
 ```text
 board/       网页应用、持久化状态和手账界面
