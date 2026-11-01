@@ -26,3 +26,7 @@ After handling an event, continue through lead orders, open work and returned it
 In deployments with multiple executor chats, route a reply event back to the role that asked the original question. The provider adapter shares that correlation between event dispatch and wake summaries, using the question reference and its time. The owning role acknowledges execution results; dispatch handoffs keep their own receipts, preserving the original work item for its owner.
 
 多个执行会话共用身份时，答复事件沿原问题编号与时间回到提问角色，事件派发与唤醒摘要共用同一套关联。实施结果由实际负责角色确认，交接另记回执，原任务继续由所属会话推进。
+
+Provider adapters keep reading reactions, active work receipts and final replies as separate records. A structured handoff, claim or review receipt binds the original message ID, owning role, stage and a verifiable evidence section. With the owner's reaction acknowledgement preference, a verified action in progress moves to that role's work queue. Questions and requests for results continue to require text, and a completed item continues to require a reply to its original message. Missing or changed evidence restores the text reminder. Question timeout events return to the original asking role.
+
+提供方适配器分别记录阅读表情、在办回执和最终回复。交接、认领与待审回执关联精确消息、所属角色、阶段及可核查的证据节；沿用户表情确认偏好，有证据的进行中指令进入所属角色的在办队列。真问句、索要结果和完成后的原消息回复继续保留，证据变更时恢复文字提醒，问题超时事件回原提问角色。
