@@ -11,7 +11,7 @@ BASELINE = '#bdb3b9'   # “什么都不做”的基线固定用灰
 
 
 class Colors:
-    """identity = Colors({'早筛': '#c2477a', '画完四张再挑': '#6f8496'})；没登记的名字按顺序自动发色。
+    """identity = Colors({'新方法': '#c2477a', '基线': '#6f8496'})；没登记的名字按顺序自动发色。
     同一个颜色发给两个名字会直接报错。"""
     def __init__(self, fixed=None):
         self.map = {}
@@ -165,7 +165,7 @@ def diverging(rows, left, right, colors, aria='', W=760, unit_px=30):
 
 
 def lines(series, colors, xlabel, ylabel='', aria='', W=760, H=290, ymax=None, marks=()):
-    """曲线图。series = {名字: [(x, y), ...]}。marks = [(x, 文字, 名字)] 在某个 x 画竖虚线并标注（定型、可读）。
+    """曲线图。series = {名字: [(x, y), ...]}。marks = [(x, 文字, 名字)] 在某个 x 画竖虚线并标注关键时刻。
     曲线末端直接写名字，不用图例。"""
     xs = [x for pts in series.values() for x, _ in pts]
     ys = [y for pts in series.values() for _, y in pts]

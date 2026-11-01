@@ -125,7 +125,7 @@ def check(path):
 
     # 8. 比较要带基线
     alltext = H.unescape(re.sub(r'<[^>]+>', ' ', body))
-    if re.search(r'Best-of-?N|BoN|画完四张', alltext) and not re.search(r'直接画一张|直接画|单张|不做筛选|直接生成|N\s*=\s*1|BoN1', alltext):
+    if re.search(r'Best-of-?N|BoN', alltext) and not re.search(r'直接画一张|直接画|单张|不做筛选|直接生成|N\s*=\s*1|BoN1', alltext):
         W('有和 Best-of-N 的比较，但没看到“直接画一张”的基线')
 
     # 9. 小样本百分比
