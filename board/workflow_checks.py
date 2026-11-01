@@ -19,6 +19,9 @@ def prompt_readability_issues(root):
             out.append(f'{name}: {len(text)} characters; repeated jargon {len(hits)}; archived tasks '+', '.join(stale))
     texts=storage.read(life.data_file(root,'attachments/wake-prompts.json'),{})
     if isinstance(texts,dict):
+        from .wake_prompt import build
+        texts=dict(texts,**{'built-in GPT':build('GPT')})
+    if isinstance(texts,dict):
         for role,text in texts.items():
             if isinstance(text,str) and (len(text)>1200 or sum(w.lower() in text.lower() for w in JARGON)>=2):
                 out.append(f'{role} wake prompt requires plain, concise steps ({len(text)} characters)')

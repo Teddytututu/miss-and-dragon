@@ -80,5 +80,13 @@ class Workflow(unittest.TestCase):
         values=w.oss_sync_issues(self.root,late);self.assertEqual([r['owner'] for r in values],['Claude'])
         report.write_text('Review: returned: revise the example\n')
         self.assertEqual(w.oss_sync_issues(self.root,late)[0]['owner'],'GPT')
+    def test_builtin_wake_uses_plain_ordered_steps_and_quiet_routine_results(self):
+        from board.wake_prompt import build
+        text=build('GPT')
+        self.assertLessEqual(len(text),1200)
+        self.assertIn('1.',text);self.assertIn('4.',text)
+        self.assertIn('at most two sentences',text)
+        self.assertIn('Keep unchanged healthy states quiet',text)
+        self.assertIn('scripts/patrol.py GPT --auto',text)
 
 if __name__=='__main__':unittest.main()

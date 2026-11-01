@@ -163,7 +163,8 @@ class CodexSessionHost:
             elif self.last_dispatched is not None and when<=self.last_dispatched:
                 self.timer=None;status='running-session'
             else:
-                self.timer=dict(id='session-'+self.thread_id,when=when,prompt='Read docs/patrol.md. Perform one authorized patrol, report quota with scripts/patrol.py GPT --auto, read the schedule and apply the next wake. Keep unchanged healthy states quiet.')
+                from .wake_prompt import build
+                self.timer=dict(id='session-'+self.thread_id,when=when,prompt=build('GPT'))
                 status='scheduled-session'
             patrol=dict(id='session-'+self.thread_id,status=status,next_wake_unix=self.timer['when'] if self.timer else None)
             updated=dict(row,patrol=patrol,patrol_id=patrol['id'],patrol_status=status,next_wake_unix=patrol['next_wake_unix'])
