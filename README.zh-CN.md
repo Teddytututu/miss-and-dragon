@@ -8,7 +8,7 @@
 
 <img src="docs/images/cast.zh-CN.svg" alt="登场人物：发起人大肥鱼（方向、预算、最终拍板）、主线大小姐（设计、决定、验收）、执行龙娘（执行、搭建、汇报）" width="760">
 
-[English](README.md) · [架构说明](docs/ARCHITECTURE.md)
+[English](README.md) · [架构说明](docs/ARCHITECTURE.zh-CN.md)
 
 ## 安装
 
@@ -69,7 +69,7 @@ Claude 加进来以后，两边就开始对话了。
 
 <a href="docs/images/how-it-works.zh-CN.svg"><img src="docs/images/how-it-works.zh-CN.svg" alt="大肥鱼、大小姐、龙娘共用文件记录；普通程序看着记录并叫醒龙娘" width="900"></a>
 
-你（大肥鱼）定方向，大小姐设计和验收，龙娘做约定好的事。她们之间说的每句话都落在普通文件里，几个不用模型的小程序看着这些文件：把变化变成事件、叫醒对的会话、发现规矩被破坏就报出来。[架构说明](docs/ARCHITECTURE.md)里有六张细图：通道、一个问题的一生、每日节奏、决定权和醒来循环。
+你（大肥鱼）定方向，大小姐设计和验收，龙娘做约定好的事。她们之间说的每句话都落在普通文件里，几个不用模型的小程序看着这些文件：把变化变成事件、叫醒对的会话、发现规矩被破坏就报出来。[架构说明](docs/ARCHITECTURE.zh-CN.md)里有六张细图：通道、一个问题的一生、每日节奏、决定权和醒来循环。
 
 <a href="docs/images/wake-loop.zh-CN.svg"><img src="docs/images/wake-loop.zh-CN.svg" alt="一轮醒来：事件、空卡、大小姐的指令、开着的任务，只剩等待才休息" width="900"></a>
 
