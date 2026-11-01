@@ -69,5 +69,16 @@ class Workflow(unittest.TestCase):
         storage.write(self.root/'overview.json',dict(sentinel=7))
         agent.cmd_todo(SimpleNamespace(op='add',until=None,what='Choose schedule',when='today',how='Open the course page',note='Group choice',task='T001',data_dir=self.root,who='GPT'))
         value=storage.read(self.root/'overview.json');self.assertEqual(value['todo'][0]['task'],'T001');self.assertEqual(value['sentinel'],7)
+    def test_daily_open_source_reviews_have_distinct_responsible_assistants(self):
+        from board import workflow_checks as w
+        late=datetime(2026,1,12,14,tzinfo=timezone.utc)
+        self.assertEqual(w.oss_sync_issues(self.root,late),[])
+        p=self.root/'project.json';value=storage.read(p);value['open_source_sync']={'enabled':True};storage.write(p,value)
+        self.assertTrue(any(r['code']=='oss_sync_missing' and r['owner']=='GPT' for r in w.oss_sync_issues(self.root,late)))
+        folder=self.root/'attachments/open-source-sync';folder.mkdir(parents=True)
+        report=folder/'2026-01-12.md';report.write_text('Review: pending Claude\nPrepared changes.\n')
+        values=w.oss_sync_issues(self.root,late);self.assertEqual([r['owner'] for r in values],['Claude'])
+        report.write_text('Review: returned: revise the example\n')
+        self.assertEqual(w.oss_sync_issues(self.root,late)[0]['owner'],'GPT')
 
 if __name__=='__main__':unittest.main()

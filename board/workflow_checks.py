@@ -38,6 +38,23 @@ def task_todo_issues(todos,rows):
     return [dict(task=todo['task'],what=str(todo.get('what',''))[:80]) for todo in todos
             if todo.get('task') and states.get(todo['task']) not in {'blocked','queued'}]
 
+def oss_sync_issues(root,at):
+    from . import lifecycle as life
+    config=storage.read(life.data_file(root,'project.json'),{}).get('open_source_sync',{})
+    if not isinstance(config,dict) or config.get('enabled') is not True:return []
+    folder=life.data_file(root,'attachments/open-source-sync');out=[]
+    for path in sorted(folder.glob('????-??-??.md')):
+        lines=path.read_text('utf-8-sig').lstrip().splitlines()
+        head=lines[0] if lines else ''
+        if head.startswith(('Review: pending Claude','审核：待 Claude')):
+            out.append(dict(owner='Claude',task='-',code='oss_sync_review',what='Open-source changes await review: '+path.stem,fix='Review the commits and validation, then record the decision'))
+        elif head.startswith(('Review: returned','审核：退回')):
+            out.append(dict(owner='GPT',task='-',code='oss_sync_returned',what='Open-source changes returned: '+path.stem,fix='Apply the review and mark the report pending Claude'))
+    local=at.astimezone(life.TAIPEI)
+    if local.hour>=22 and not life.data_file(root,f'attachments/open-source-sync/{local:%Y-%m-%d}.md').exists():
+        out.append(dict(owner='GPT',task='-',code='oss_sync_missing',what='Today’s open-source review report is due',fix='Prepare the batch or record why this day has no suitable changes'))
+    return out
+
 def idle_roles(root,rows):
     from . import lifecycle as life
     config=storage.read(life.data_file(root,'project.json'),{})
