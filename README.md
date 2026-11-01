@@ -2,14 +2,14 @@
 
 ![Miss & Dragon research desk](docs/images/readme-hero.png)
 
-A local web board and command line for running a research project with two AI agents: a **Lead** that designs and reviews, an **Executor** that runs the work. Every question, decision and status change is written to files, and plain programs check the rules.
+Run your research like a GALGAME. You are Big Fish, the one who makes the calls; Miss designs and reviews; Dragon does the work. They talk, ask and deliver on a local board, and every line and decision is written to files that plain programs check.
 
 [![MIT](docs/badges/license.svg)](LICENSE) ![Python 3.11+](docs/badges/python.svg)
 
 <table><tr>
-<td align="center" valign="top" width="200"><img src="docs/images/avatar-owner.png" width="72" height="72" alt="Big Fish"><br><b>Big&nbsp;Fish</b><br><sub>Owner</sub><br><br><sub>Direction<br>Budget<br>Final say</sub></td>
-<td align="center" valign="top" width="200"><img src="docs/images/avatar-lead.png" width="72" height="72" alt="Miss"><br><b>Miss</b><br><sub>Lead</sub><br><br><sub>Design<br>Decisions<br>Review</sub></td>
-<td align="center" valign="top" width="200"><img src="docs/images/avatar-executor.png" width="72" height="72" alt="Dragon"><br><b>Dragon</b><br><sub>Executor</sub><br><br><sub>Run<br>Build<br>Report</sub></td>
+<td align="center" valign="top" width="33%"><img src="docs/images/avatar-owner.png" width="112" height="112" alt="Big Fish"><br><b>Big Fish</b> · Owner<br><br>“I pick the direction, I hold the budget, I have the last word.”<br><br>A blue-haired maid with whale ears — that's you. Where the research goes, what it costs and which results count are hers to decide.</td>
+<td align="center" valign="top" width="33%"><img src="docs/images/avatar-lead.png" width="112" height="112" alt="Miss"><br><b>Miss</b> · Lead<br><br>“I design the experiments, and I check every delivery myself.”<br><br>An orange-haired young lady with a flower in her hair, a little haughty and very sharp. She designs, decides and accepts the work.</td>
+<td align="center" valign="top" width="33%"><img src="docs/images/avatar-executor.png" width="112" height="112" alt="Dragon"><br><b>Dragon</b> · Executor<br><br>“Leave it to me. Results first when it's done.”<br><br>A white-haired dragon girl with white horns, quiet and dependable. She runs the jobs, builds the pages and reports numbers first.</td>
 </tr></table>
 
 [简体中文](README.zh-CN.md) · [Architecture](docs/ARCHITECTURE.md) · [Interactive diagrams](docs/architecture/index.html)

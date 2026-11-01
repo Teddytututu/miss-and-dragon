@@ -2,14 +2,14 @@
 
 ![Miss & Dragon 研究手账](docs/images/readme-hero.png)
 
-本机看板与命令行，让一个人带着两个 AI 做研究：Lead 设计和验收，Executor 执行，提问、决定和状态写成文件，由普通程序检查。
+像 GALGAME 一样推进你的研究：你是做决定的大肥鱼，大小姐负责设计和验收，龙娘负责执行。她们在本机看板上聊天、提问、交结果，每句话、每个决定都写成文件，由普通程序检查规则。
 
 [![MIT](docs/badges/license.svg)](LICENSE) ![Python 3.11+](docs/badges/python.svg)
 
 <table><tr>
-<td align="center" valign="top" width="200"><img src="docs/images/avatar-owner.png" width="72" height="72" alt="大肥鱼"><br><b>大肥鱼</b><br><sub>发起人</sub><br><br><sub>方向<br>预算<br>最终拍板</sub></td>
-<td align="center" valign="top" width="200"><img src="docs/images/avatar-lead.png" width="72" height="72" alt="大小姐"><br><b>大小姐</b><br><sub>主线</sub><br><br><sub>设计<br>决定<br>验收</sub></td>
-<td align="center" valign="top" width="200"><img src="docs/images/avatar-executor.png" width="72" height="72" alt="龙娘"><br><b>龙娘</b><br><sub>执行</sub><br><br><sub>执行<br>搭建<br>汇报</sub></td>
+<td align="center" valign="top" width="33%"><img src="docs/images/avatar-owner.png" width="112" height="112" alt="大肥鱼"><br><b>大肥鱼</b> · 发起人<br><br>「方向我定，钱我出，最后我拍板。」<br><br>蓝发鲸鱼耳的女仆少女，也就是你。研究往哪走、花多少、结论算不算数，都由她说了算。</td>
+<td align="center" valign="top" width="33%"><img src="docs/images/avatar-lead.png" width="112" height="112" alt="大小姐"><br><b>大小姐</b> · 主线<br><br>「实验本小姐来设计，交上来的东西本小姐一件件验。」<br><br>橙发戴花的大小姐，嘴上傲娇，判断很准。设计实验、做决定、验收每一份交付。</td>
+<td align="center" valign="top" width="33%"><img src="docs/images/avatar-executor.png" width="112" height="112" alt="龙娘"><br><b>龙娘</b> · 执行<br><br>「交给我，跑完先报结果。」<br><br>白发白角的龙娘，安静可靠。上卡、跑实验、搭页面，做完第一句就说数字。</td>
 </tr></table>
 
 [English](README.md) · [Architecture](docs/ARCHITECTURE.md) · [Interactive diagrams](docs/architecture/index.html)
