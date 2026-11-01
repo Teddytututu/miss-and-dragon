@@ -65,3 +65,6 @@ Run `python -B scripts/verify.py`. This uses the project environment and scoped 
 Read [workers](protocol/workers.md) and [execution](protocol/execution.md). Review concrete acceptance criteria and resource boundaries, keep the dispatcher and workers within disjoint scopes, and use calibrated task estimates. Preserve scientific judgment and review unexpected results before a change in experiment scope.
 
 Read [authorization roles](protocol/roles.md) and [self-contained maintenance](protocol/maintenance.md). Review accepted task rows before compaction and retain the complete historical exchange alongside the daily working view.
+# Patrol review gate / 巡检验收门
+
+Before patrol, accept or reject every delivered task, or give each card an explicit `--defer TASK:reason`; patrol records preserve the full reasons. 巡检前逐张验收或退回已交卡，暂缓逐卡写明原因。

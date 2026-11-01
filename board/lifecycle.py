@@ -473,7 +473,31 @@ def fix_tree(root, *, by):
         return changed
 
 
-def log_patrol(root, who, note, *, every=120, now=None):
+def patrol_reviews(root, who, defer=()):
+    """Validate every lead delivery before recording a patrol."""
+    if who != 'Claude':
+        return {}
+    board = data_file(Path(root), 'board.md')
+    delivered = {r['task'] for r in parse_board(board.read_text('utf-8-sig'))
+                 if state_of(r['status']) == 'delivered'} if board.exists() else set()
+    deferred = {}
+    for item in defer:
+        task, sep, reason = item.partition(':')
+        task, reason = task.strip(), clean(reason)
+        if not sep or not reason:
+            raise ValueError('Use --defer TASK:reason / 每张暂缓卡须写原因')
+        if task not in delivered:
+            raise ValueError('Deferral requires a delivered task / 暂缓仅用于已交卡: ' + task)
+        if task in deferred:
+            raise ValueError('One deferral per task / 每卡只写一条暂缓: ' + task)
+        deferred[task] = reason
+    missing = sorted(delivered - deferred.keys())
+    if missing:
+        raise ValueError('Review or defer every delivery / 逐卡验收、退回或暂缓: ' + ', '.join(missing))
+    return deferred
+
+
+def log_patrol(root, who, note, *, every=120, now=None, defer=()):
     root = Path(root).resolve()
     if who not in ROLES or type(every) is not int or every <= 0 or not clean(note):
         raise ValueError('Assistant, note and positive interval in minutes required')
@@ -481,11 +505,14 @@ def log_patrol(root, who, note, *, every=120, now=None):
     for path in ('.write.lock', 'history', 'attachments/history', 'attachments/patrol-log.jsonl', 'overview.json'):
         data_file(root, path)
     with storage.locked(root):
+        deferred = patrol_reviews(root, who, defer)
         issues = check(root, now=at)
         mine = [i for i in issues if i['owner'] == who and i['code'] != 'patrol_overdue']
         record = dict(at=at.isoformat(timespec='seconds'), who=who, note=clean(note)[:80],
                       next_at=(at + timedelta(minutes=every)).isoformat(timespec='seconds'),
                       every_min=every, open_issues=len(mine))
+        if deferred:
+            record['deferred'] = deferred
         overview = storage.read(root / 'overview.json', {})
         overview.setdefault('patrols', {})[who] = record
         overview['flow_issues'] = [i for i in issues if i['code'] != 'patrol_overdue' or i['owner'] != who]

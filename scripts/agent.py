@@ -162,7 +162,7 @@ def build_parser():
     t = add('task'); t.add_argument('action', choices=TASK_ACTIONS); t.add_argument('task')
     for field in TASK_FIELDS:
         t.add_argument('--' + field.replace('_', '-'))
-    pt = add('patrol'); pt.add_argument('note'); pt.add_argument('--every', type=int, default=120);pt.add_argument('--mood')
+    pt = add('patrol'); pt.add_argument('note'); pt.add_argument('--every', type=int, default=120);pt.add_argument('--mood');pt.add_argument('--defer', action='append', default=[], metavar='TASK:reason')
     s = add('say'); s.add_argument('text'); s.add_argument('--reply'); s.add_argument('--image', action='append', default=[])
     r = add('react'); r.add_argument('message_id'); r.add_argument('emoji',nargs='?',default='👀'); r.add_argument('--remove','--off',dest='remove',action='store_true')
     d = add('dm'); d.add_argument('--reply', metavar='TEXT')
@@ -216,6 +216,7 @@ def main(argv=None):
         if a.command=='finding':return emit(True,name,agent_tools.finding(a.data_dir,a.who,a.text,a.task))
         if a.command=='events' and a.ack:return emit(True,name,agent_tools.acknowledge(a.data_dir,a.who,a.ack,a.result))
         if a.command=='patrol':
+            lifecycle.patrol_reviews(a.data_dir,a.who,a.defer)
             if not a.mood:raise ValueError('patrol requires --mood from this assistant’s existing expressions')
             stability.set_mood(a.data_dir,a.who,a.mood,a.note);agent_tools.react_owed(a.data_dir,a.who);agent_tools.expire_due(a.data_dir)
         if a.command == 'status':
@@ -243,7 +244,9 @@ def main(argv=None):
                 argv2 += ['--' + field.replace('_', '-'), value]
         ok, out, err = run_script('task_flow.py', argv2)
     elif a.command == 'patrol':
-        ok, out, err = run_script('patrol_log.py', [a.who, a.note, '--every', str(a.every), '--data-dir', data])
+        args = [a.who, a.note, '--every', str(a.every), '--data-dir', data]
+        for item in a.defer: args += ['--defer', item]
+        ok, out, err = run_script('patrol_log.py', args)
     elif a.command == 'say':
         argv2 = [a.who, a.text, '--root', data] + (['--reply', a.reply] if a.reply else [])
         for image in a.image:

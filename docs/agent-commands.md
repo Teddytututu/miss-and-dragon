@@ -1,5 +1,7 @@
 # Agent commands / 代理命令
 
+Claude reviews every delivered card before a patrol: accept, reject, or explicitly pass `--defer T001:reason` for each deferred card; the full reasons stay in the patrol record. Claude 巡检前逐张验收或退回已交卡，暂缓用 `--defer T001:原因`，原因随巡检保存。
+
 Every board action an assistant takes goes through one entry point, `scripts/agent.py`. It fixes identity (`--as Claude|GPT`), resolves the data directory, keeps each underlying script's validation, and prints exactly one JSON object:
 
 ```json

@@ -15,6 +15,7 @@ def main(argv=None):
     parser.add_argument('who', choices=['Claude', 'GPT'])
     parser.add_argument('note')
     parser.add_argument('--every', type=int, default=120, help='Next patrol in minutes')
+    parser.add_argument('--defer', action='append', default=[], metavar='TASK:reason')
     parser.add_argument('--data-dir', '--root', type=Path, default=ROOT / 'data')
     args = vars(parser.parse_args(argv))
     root = args.pop('data_dir')
