@@ -42,5 +42,15 @@ class Workflow(unittest.TestCase):
         self.assertEqual(exchange.entries(self.root),[])
         exchange.write(self.root,'GPT','Update','The table is ready. Please review it.')
         self.assertEqual(len(exchange.entries(self.root)),1)
+    def test_nightly_review_is_due_after_2230_and_date_requires_heading(self):
+        from board import workflow_checks as w
+        early=datetime(2026,1,12,14,29,tzinfo=timezone.utc)
+        late=early.replace(minute=30)
+        self.assertEqual(w.lead_review_issues(self.root,early),[])
+        self.assertTrue(w.lead_review_issues(self.root,late))
+        p=self.root/'lead-review.md';p.write_text('Mentioned 2026-01-12 in the error log.\n')
+        self.assertTrue(w.lead_review_issues(self.root,late))
+        p.write_text('## 2026-01-12\n- Judgment: Checked the wrong total.\n- Cause: Used an old row.\n- Change: Read the current row.\n- Tomorrow: Check counts.\n')
+        self.assertEqual(w.lead_review_issues(self.root,late),[])
 
 if __name__=='__main__':unittest.main()

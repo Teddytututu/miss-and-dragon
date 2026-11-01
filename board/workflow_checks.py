@@ -24,6 +24,14 @@ def prompt_readability_issues(root):
                 out.append(f'{role} wake prompt requires plain, concise steps ({len(text)} characters)')
     return out
 
+def lead_review_issues(root,at):
+    from . import lifecycle as life
+    local=at.astimezone(life.TAIPEI)
+    if (local.hour,local.minute)<(22,30):return []
+    path=life.data_file(root,'lead-review.md')
+    text=path.read_text('utf-8-sig') if path.exists() else ''
+    return [] if re.search(r'^#{2,3}\s+'+local.strftime('%Y-%m-%d')+r'\s*$',text,re.M) else ['Write today’s four-line lead review and update the error log']
+
 def idle_roles(root,rows):
     from . import lifecycle as life
     config=storage.read(life.data_file(root,'project.json'),{})

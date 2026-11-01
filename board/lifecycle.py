@@ -461,11 +461,13 @@ def check(root, *, now=None, owner=None):
             add('GPT', '-', 'lead_patrol_overdue', 'Research-lead patrol is overdue', 'Record the decision and recommendation in the exchange; continue authorized work')
     from . import stability
     issues.extend(stability.issues(root, at, overview, owner=owner))
-    from .workflow_checks import idle_roles, prompt_readability_issues
+    from .workflow_checks import idle_roles, prompt_readability_issues, lead_review_issues
     for role in idle_roles(root,rows):
         add('Claude','-','idle_executor',role+' has no active or ready task','Queue a concrete authorized task or record an explicit role pause')
     for what in prompt_readability_issues(root):
         add('Claude','-','prompt_readability',what,'Review the prompt with docs/prompt-writing.md')
+    for what in lead_review_issues(root,at):
+        add('Claude','-','nightly_review',what,'Use templates/lead-review.md in project-local lead-review.md')
     return [i for i in issues if owner is None or i['owner'] == owner]
 
 
