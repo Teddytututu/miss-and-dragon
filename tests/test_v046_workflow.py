@@ -33,5 +33,14 @@ class Workflow(unittest.TestCase):
         self.assertTrue(any('instructions.md' in v and 'T007' in v for v in values))
         self.assertTrue(any('GPT' in v for v in values));self.assertTrue(any('Claude' in v for v in values))
         self.assertTrue(any(r['code']=='prompt_readability' and r['owner']=='Claude' for r in lifecycle.check(self.root,now=self.now)))
+    def test_plain_notes_and_questions_reject_before_writing_any_record(self):
+        from board import exchange, agent_tools
+        for body in ['x'*601,'Digest '+'a'*64,'identity boundary, admission gate, byte contract']:
+            with self.assertRaises(ValueError):exchange.write(self.root,'GPT','Update',body)
+            with self.assertRaises(ValueError):agent_tools.ask(self.root,'GPT','Choice',body,'design',['A','B'])
+        self.assertEqual(agent_tools.records(self.root),[])
+        self.assertEqual(exchange.entries(self.root),[])
+        exchange.write(self.root,'GPT','Update','The table is ready. Please review it.')
+        self.assertEqual(len(exchange.entries(self.root)),1)
 
 if __name__=='__main__':unittest.main()

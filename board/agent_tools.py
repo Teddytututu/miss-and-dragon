@@ -24,6 +24,8 @@ def ask(root,who,title,body,kind,options,lean=None):
     if kind not in KINDS:raise ValueError('ask requires --kind design|budget|conclusion|external|deletion')
     if not isinstance(title,str) or not title.strip() or any(c in title for c in '\r\n'):raise ValueError('Use a nonempty, single-line exchange title')
     if len(options)<2 or any(not isinstance(x,str) or not x.strip() for x in options):raise ValueError('ask requires two --option values')
+    if not isinstance(body,str) or not body.strip():raise ValueError('Provide concrete text')
+    exchange.validate_plain(who,body,options,lean)
     row=record(root,who,'ask',body,title=title,category=KINDS[kind],options=list(options),lean=lean,peer='Claude' if who=='GPT' else 'GPT')
     row['exchange_title']='['+row['id']+'] ['+row['category']+'] '+title
     row.update(exchange.write(root,who,row['exchange_title'],body,ask=True,options=options,lean=lean))

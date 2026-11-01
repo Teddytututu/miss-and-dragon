@@ -10,6 +10,16 @@ from .lifecycle import ROLES, append_text, data_file, moment
 HEAD = re.compile(r'^### (\d{4}-\d\d-\d\d[T ][^·\n]+?)\s*·\s*(GPT|Claude)\s*→\s*(GPT|Claude)(?:\s*·\s*(T\d+))?(?:\s*·\s*(.*))?\s*$')
 ASK = re.compile(r'please (?:decide|confirm|approve)|decision requested|请定|请明确|请确认|请批', re.I)
 
+def validate_plain(who,body,options=(),lean=None):
+    if who!='GPT':return
+    from .workflow_checks import JARGON
+    text='\n'.join([body,*options,*([lean] if lean else [])])
+    if len(text)>600:raise ValueError('Exchange text uses at most 600 characters; put details in a companion file')
+    if re.search(r'(?<![0-9a-fA-F])[0-9a-fA-F]{16,}(?![0-9a-fA-F])',text):
+        raise ValueError('Put long hashes and identifiers in the companion file')
+    if sum(word.lower() in text.lower() for word in JARGON)>=3:
+        raise ValueError('Describe the result and next action in ordinary words')
+
 
 def write(root, who, title, body, *, ask=False, options=None, lean=None, now=None):
     root = Path(root).resolve()
@@ -22,6 +32,7 @@ def write(root, who, title, body, *, ask=False, options=None, lean=None, now=Non
     options = list(options or [])
     if ask and (len(options) < 2 or any(not isinstance(o, str) or not o.strip() for o in options)):
         raise ValueError('ask requires at least two nonempty --option values')
+    validate_plain(who,body,options,lean)
     at = moment(now) or datetime.now().astimezone()
     other = 'GPT' if who == 'Claude' else 'Claude'
     heading = f'### {at.isoformat(timespec="microseconds")} · {who} → {other} · ' + ('问：' if ask else '答：') + title.strip()
