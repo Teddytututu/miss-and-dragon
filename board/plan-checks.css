@@ -1,0 +1,17 @@
+/* Keep the existing time/category columns and each theme's paper treatment. */
+#plan .plan-check-label{display:flex;align-items:flex-start;gap:8px;cursor:pointer;min-height:36px;margin:-5px 0;padding:5px 0}
+#plan .plan-check-input{flex:0 0 auto;appearance:auto;width:18px;height:18px;margin:4px 0 0;accent-color:var(--rose,#476d90);cursor:pointer}
+#plan .plan-check-input:focus-visible{outline:2px solid var(--rose,#476d90);outline-offset:4px}
+#plan .plan-check-text{min-width:0;overflow-wrap:anywhere}
+#plan .plan-done .plan-check-text{text-decoration:line-through;text-decoration-thickness:1px;color:var(--muted,#68717e)}
+#plan .plan-saving .plan-check-label{opacity:.7;cursor:progress}
+#plan .plan-check-status{display:block;color:var(--rose,#476d90);font-size:12px;line-height:1.5}
+#plan .plan-check-status:empty{display:none}
+@media(max-width:820px){#plan .plan-check-label{min-height:44px;margin:-8px 0;padding:8px 0}}
+@media(max-width:440px){
+  html.theme-pink #plan .slot{grid-template-columns:minmax(0,1fr) auto;gap:4px 8px;align-items:start}
+  html.theme-pink #plan .slot .t{grid-column:1;grid-row:1;white-space:nowrap}
+  html.theme-pink #plan .slot .kind{grid-column:2;grid-row:1;justify-self:end}
+  html.theme-pink #plan .slot .w{grid-column:1/-1;grid-row:2}
+}
+@media(prefers-reduced-motion:reduce){#plan .plan-check-label{transition:none}}

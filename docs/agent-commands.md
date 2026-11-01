@@ -100,3 +100,7 @@ python scripts/agent.py --as GPT ask "Comparison budget" "Which sample pool shou
 python scripts/agent.py --as Claude answer QUESTION_ID "Use the accepted pool."
 python scripts/agent.py --as GPT mood calm "Reviewing the comparison"
 ```
+
+Schedule task rows have an owner checkbox with persistent completion and undo. Rest, meals and fixed events retain their ordinary presentation. Completion lives in `attachments/plan-checks.json`, separately from the plan, and uses the date and task identity. Moving a unique task to another time on the same day preserves its check. For repeated tasks that may be renamed or retimed, planners can retain an explicit item `id`. An optional boolean `checkable` overrides the category default. The browser records only the chosen task's completion; research task status and scheduling continue through their existing commands.
+
+时间表的任务行支持勾选、撤销与保存，休息、用餐和固定活动沿原样展示。勾选按日期和条目身份独立保存；同日单项任务调时后保留状态。重复任务需要改名或调时，可沿用条目的显式 `id`；`checkable` 布尔字段可由排表方指定该行是否作为任务。科研任务状态与排表继续沿原命令维护。

@@ -6,12 +6,13 @@ class BoardHTTPServer(ThreadingHTTPServer):
     request_queue_size = 128
 from urllib.parse import urlsplit,unquote,parse_qs
 import base64,hashlib,html,io,ipaddress,json,mimetypes,os,re,uuid
-from . import project,storage,scheduler,contacts,task_eta,assets,onboarding
+from . import project,storage,scheduler,contacts,task_eta,assets,onboarding,plan_checks
 ASSETS=Path(__file__).resolve().parent
 STATIC={n for n in ['index.html','discussion.js','discussion.css','identity.js','identity.css','room-extras.js','room-markdown.js','room-features.css','room-collection.js','mood.js','room-collection.css','v02.js','v02.css','eta-view.js','eta-view.css','fanart.css','help.html']}
 STATIC.update({'lifecycle-view.js','lifecycle-view.css','index-tabs.js','index-tabs.css','private-notes.js','private-notes.css'})
 STATIC.update({'i18n.js','i18n.css','help.en.html'})
 STATIC.update({'notebook.css','notebook.js','XiaolaiSC-subset.woff2','visual.css','favicon-32.png','apple-touch-icon.png'})
+STATIC.update({'plan-checks.js','plan-checks.css'})
 REACTIONS={'👍':'done','❤️':'care','😂':'smile','🎉':'celebrate','👀':'review','💡':'idea'}
 REACTION_KEYS=list(dict.fromkeys([*REACTIONS,*(x['key'] for x in assets.emote_manifest())]))
 def contained(root,relative):
@@ -86,6 +87,7 @@ def snapshot(root,channel=None):
     today=datetime.now().astimezone().date()
     for day in overview.get('schedule',[]):
         if type(day.get('relative_day')) is int:day['date']=(today+timedelta(days=day['relative_day'])).strftime('%m-%d')
+    overview['schedule']=plan_checks.project(overview.get('schedule',[]),storage.read(root/'attachments/plan-checks.json',{}),today)
     overview=task_eta.project(root,overview)
     for task in tasks:task['eta']=overview.get('task_etas',{}).get(task['id'])
     result=dict(overview=overview,tasks=tasks,discussion=conversation(root,channel),project=storage.read(root/'project.json'),modified=datetime.now().astimezone().isoformat())
@@ -159,6 +161,14 @@ def create_server(root,port=8780,open_file=None):
             if private_notes.dispatch(self,root,route,query):return
             if self.command=='POST':
                 p=self.body(68*1024**2 if route=='/api/discussion' else 100_000)
+                if route=='/api/plan/check':
+                    from datetime import datetime
+                    with storage.locked(root):
+                        result=plan_checks.validate(storage.read(root/'overview.json',{}).get('schedule',[]),p)
+                        checks=storage.read(root/'attachments/plan-checks.json',{})
+                        checks.setdefault('items',{})[result['id']]=dict(completed=result['completed'],updated_at=datetime.now().astimezone().isoformat(),actor='owner')
+                        storage.write(root/'attachments/plan-checks.json',checks)
+                    return self.respond(200,result)
                 if route=='/api/discussion/delete':
                     if set(p)-{'message_id','channel'} or 'message_id' not in p:raise ValueError('Deletion uses a message ID and optional channel')
                     return self.respond(200,project.delete_message(root,p['message_id'],'owner',channel=p.get('channel')))

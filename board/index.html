@@ -962,6 +962,8 @@ html.theme-pink #nav .brand .brand-person img{transform:scale(1.45);transform-or
 <script src="/discussion.js"></script>
 <script src="/private-notes.js"></script>
 <script src="/index-tabs.js"></script>
+<link rel="stylesheet" href="/plan-checks.css">
+<script src="/plan-checks.js"></script>
 <script>
 (async () => { await BoardIdentity.ready;
 const $ = s => document.querySelector(s);
@@ -1007,6 +1009,7 @@ function renderTodo(todo) {
 function slotRow(s, isToday) {
   const r = el('div', 'slot' + (s.kind === '考试' ? ' exam' : ''));
   r.append(el('span', 't', s.time), el('span', 'w', s.what), el('span', 'kind k-' + s.kind, s.kind));
+  if(window.PlanChecks)PlanChecks.attach(r,s);
   if (isToday) {
     const m = (s.time || '').match(/(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/);
     if (m) { const now = new Date(), cur = now.getHours() * 60 + now.getMinutes();
@@ -1017,10 +1020,11 @@ function slotRow(s, isToday) {
 }
 function renderPlan(days) {
   const box = $('#plan-body'); box.replaceChildren();
-  const now = new Date(), today = md(now), tom = md(new Date(now.getTime() + 864e5));
+  const now = new Date(), tomorrow = new Date(now.getTime() + 864e5);
+  const today = now.getFullYear() + '-' + md(now), tom = tomorrow.getFullYear() + '-' + md(tomorrow);
   let todayDay = null, tomDay = null; const later = [];
   for (const d of days) {
-    const ds = (d.date.match(/\d{2}-\d{2}/g) || []);
+    const ds = PlanChecks.dates(d.date, now);
     const first = ds[0], last = ds[ds.length - 1];
     if (first && last < today) continue;                         // already past
     if (first === today && ds.length === 1) todayDay = d;
