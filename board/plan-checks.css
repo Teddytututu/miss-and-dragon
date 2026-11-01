@@ -3,6 +3,7 @@
 #plan .plan-check-input{flex:0 0 auto;appearance:auto;width:18px;height:18px;margin:4px 0 0;accent-color:var(--rose,#476d90);cursor:pointer}
 #plan .plan-check-input:focus-visible{outline:2px solid var(--rose,#476d90);outline-offset:4px}
 #plan .plan-check-text{min-width:0;overflow-wrap:anywhere}
+#plan:has(.plan-check-input) .slot:not([data-plan-id]) .w{padding-inline-start:26px}
 #plan .plan-done .plan-check-text{text-decoration:line-through;text-decoration-thickness:1px;color:var(--muted,#68717e)}
 #plan .plan-saving .plan-check-label{opacity:.7;cursor:progress}
 #plan .plan-check-status{display:block;color:var(--rose,#476d90);font-size:12px;line-height:1.5}
