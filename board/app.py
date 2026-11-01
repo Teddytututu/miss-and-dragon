@@ -12,6 +12,7 @@ STATIC={n for n in ['index.html','discussion.js','discussion.css','identity.js',
 STATIC.update({'lifecycle-view.js','lifecycle-view.css','index-tabs.js','index-tabs.css','private-notes.js','private-notes.css'})
 STATIC.update({'i18n.js','i18n.css','help.en.html'})
 STATIC.update({'notebook.css','notebook.js','XiaolaiSC-subset.woff2','visual.css','favicon-32.png','apple-touch-icon.png'})
+STATIC.update({'motion.css','motion.js'})
 STATIC.update({'plan-checks.js','plan-checks.css','cadence.js','cadence.css'})
 REACTIONS={'👍':'done','❤️':'care','😂':'smile','🎉':'celebrate','👀':'review','💡':'idea'}
 REACTION_KEYS=list(dict.fromkeys([*REACTIONS,*(x['key'] for x in assets.emote_manifest())]))

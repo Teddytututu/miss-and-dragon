@@ -1,0 +1,58 @@
+:root{
+  --mo-out:cubic-bezier(.22,1,.36,1);      
+  --mo-spring:cubic-bezier(.34,1.56,.64,1); 
+  --mo-fast:160ms;--mo-mid:260ms;--mo-slow:520ms;
+}
+@media (prefers-reduced-motion: no-preference){
+  html{scroll-behavior:smooth}
+  :target{scroll-margin-top:16px}
+
+  
+  @supports (animation-timeline: view()){
+    main > section:not(#msgs):not(#hero){animation:mo-rise linear both;animation-timeline:view();animation-range:entry 0% entry 35%}
+    :is(.todo-item,.task-group,.research-topic,.fcard,#lines .card,#plan-body .day,.nd):not(#msgs *){animation:mo-drop linear both;animation-timeline:view();animation-range:entry 0% entry 70%}
+    html.theme-pink :is(.todo-item,.fcard):not(#msgs *):nth-child(3n+1){--mo-tilt:-1.2deg}
+    html.theme-pink :is(.todo-item,.fcard):not(#msgs *):nth-child(3n+2){--mo-tilt:1deg}
+  }
+  
+  @keyframes mo-rise{from{opacity:.001;translate:0 22px}}
+  @keyframes mo-drop{from{opacity:.001;translate:0 14px;rotate:var(--mo-tilt,0deg);scale:.98}}
+  .bar > i{transition:width 900ms var(--mo-out)}
+
+  
+  :is(.todo-item,.fcard,.research-topic,.task-group,.nd,.findex-tab){transition:transform var(--mo-mid) var(--mo-spring),box-shadow var(--mo-mid) var(--mo-out),border-color var(--mo-fast) linear,background-color var(--mo-fast) linear}
+  :is(.todo-item,.fcard,.research-topic):hover{transform:translateY(-3px)}
+  html.theme-pink :is(.todo-item,.fcard):hover{transform:translateY(-3px) rotate(-.4deg)}
+  html.theme-pink :is(.todo-item,.fcard):nth-child(even):hover{transform:translateY(-3px) rotate(.4deg)}
+  :is(button,.fchip,nav a,summary):active{transform:scale(.97);transition:transform 90ms ease-out}
+  button,.fchip{transition:transform var(--mo-mid) var(--mo-spring),background-color var(--mo-fast) linear,color var(--mo-fast) linear,box-shadow var(--mo-mid) var(--mo-out)}
+
+  
+  summary{transition:color var(--mo-fast) linear}
+  .research-topic-head::after,.task-summary::after{transition:transform var(--mo-mid) var(--mo-spring)}
+
+  
+  nav a .ni{transition:transform var(--mo-mid) var(--mo-spring)}
+  nav a:hover .ni{transform:translateY(-2px) rotate(-6deg) scale(1.08)}
+  nav a{transition:transform var(--mo-mid) var(--mo-spring),background-color var(--mo-mid) var(--mo-out),box-shadow var(--mo-mid) var(--mo-out)}
+  html.theme-pink nav a:hover{transform:translateX(3px)}
+  html.theme-pink nav a.on::before{animation:mo-sway 3.2s ease-in-out infinite alternate}
+  @keyframes mo-sway{from{rotate:-2deg}to{rotate:2deg}}
+
+  
+  #hero::before{transition:transform var(--mo-slow) var(--mo-spring)}
+  #hero:hover::before{transform:translateY(-6px) rotate(-4deg)}
+
+  
+  .drawer{transition:transform 380ms var(--mo-out)!important}
+  .drawer-bg{transition:opacity 280ms linear,visibility 280ms linear}
+
+  
+  ::view-transition-old(root),::view-transition-new(root){animation-duration:360ms;animation-timing-function:var(--mo-out)}
+
+  
+  .mo-changed{animation:mo-flash 1.6s var(--mo-out)}
+  @keyframes mo-flash{0%{box-shadow:0 0 0 0 rgba(232,120,160,.0)}15%{box-shadow:0 0 0 4px rgba(232,120,160,.28)}100%{box-shadow:0 0 0 0 rgba(232,120,160,0)}}
+  html.theme-default .mo-changed{animation-name:mo-flash-blue}
+  @keyframes mo-flash-blue{0%{box-shadow:0 0 0 0 rgba(70,120,170,0)}15%{box-shadow:0 0 0 4px rgba(70,120,170,.25)}100%{box-shadow:0 0 0 0 rgba(70,120,170,0)}}
+}
