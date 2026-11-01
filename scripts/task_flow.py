@@ -16,7 +16,7 @@ def main(argv=None):
     parser.add_argument('task')
     parser.add_argument('--by', required=True, choices=['Claude', 'GPT'])
     parser.add_argument('--data-dir', '--root', type=Path, default=ROOT / 'data')
-    for field in ('title', 'when', 'node', 'status', 'wait', 'evidence', 'summary', 'node-summary', 'reason'):
+    for field in ('title', 'when', 'node', 'status', 'wait', 'evidence', 'summary', 'node-summary', 'reason', 'owner-step'):
         parser.add_argument('--' + field)
     args = vars(parser.parse_args(argv))
     root = args.pop('data_dir')

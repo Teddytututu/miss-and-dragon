@@ -22,7 +22,7 @@ from board import exchange, lifecycle, stability, storage, agent_tools, plan_che
 AGENTS = ['Claude', 'GPT']
 CATEGORIES = ['研究', '学习', '事务', '界面与设计', '项目', '其他']
 TASK_ACTIONS = ['new', 'start', 'progress', 'block', 'queue', 'deliver', 'accept', 'reject', 'stop']
-TASK_FIELDS = ['title', 'when', 'node', 'status', 'wait', 'evidence', 'summary', 'node_summary', 'reason']
+TASK_FIELDS = ['title', 'when', 'node', 'status', 'wait', 'evidence', 'summary', 'node_summary', 'reason', 'owner_step']
 
 COMMANDS = {
     'status': 'Everything that needs me now: my flow issues, tasks, patrols, unread owner messages, pending events',

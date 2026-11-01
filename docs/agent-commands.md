@@ -3,6 +3,8 @@ For an overview, see “How it works” in the README.
 
 # Agent commands / 代理命令
 
+`task accept` requires `--owner-step`: what the owner still has to do after acceptance (it becomes an owner to-do naming the task), or `none`. A task whose status waits on the owner without such a to-do is reported to Claude. 验收必须写 `--owner-step`：还要用户做什么（自动进“需要你做的”），不用就写 `none`。
+
 Claude reviews every delivered card before a patrol: accept, reject, or explicitly pass `--defer T001:reason` for each deferred card; the full reasons stay in the patrol record. Claude 巡检前逐张验收或退回已交卡，暂缓用 `--defer T001:原因`，原因随巡检保存。
 
 Every board action an assistant takes goes through one entry point, `scripts/agent.py`. It fixes identity (`--as Claude|GPT`), resolves the data directory, keeps each underlying script's validation, and prints exactly one JSON object:
@@ -28,7 +30,7 @@ It also returns `local_disk`: the available local volumes with `path`, `free_gib
 | Command | What it does | Wraps |
 |---|---|---|
 | `status` | Everything that needs you now | lifecycle, private chat, night watch |
-| `task ACTION ID [--title --when --node --status --wait --evidence --summary --node-summary --reason]` | Lifecycle transition: `new`, `start`, `progress`, `block`, `queue`, `deliver`, `accept`, `reject`, `stop` | `task_flow.py` |
+| `task ACTION ID [--title --when --node --status --wait --evidence --summary --node-summary --reason --owner-step]` | Lifecycle transition: `new`, `start`, `progress`, `block`, `queue`, `deliver`, `accept`, `reject`, `stop` | `task_flow.py` |
 | `check` | Flow issues assigned to you | `flow_check.py` |
 | `wake` | Quick actionable inbox with local image paths and pending questions | coordination, status |
 | `patrol NOTE --mood NAME [--every MIN]` | Record mood, acknowledge recent posts, archive expired items and register the next patrol | patrol, expiry |

@@ -177,6 +177,9 @@ def transition(root, action, task, *, by, now=None, **fields):
     for name in required:
         if not clean(fields.get(name)):
             raise ValueError(action + ' requires --' + name)
+    # Acceptance states whether the owner still has a step; a real step becomes an owner to-do.
+    if action == 'accept' and not clean(fields.get('owner_step')):
+        raise ValueError('accept requires --owner-step: what the owner still has to do, or none')
     if action=='new' and len(clean(fields['title']))>16:
         raise ValueError('Task names use at most 16 characters')
     if action in {'start', 'progress'}:
@@ -285,6 +288,12 @@ def transition(root, action, task, *, by, now=None, **fields):
         storage.write_bytes(paths['board'], encode_like(''.join(lines), board_before))
         if action in {'accept', 'stop'}:
             storage.write_bytes(paths['archive'], archive_before)
+        step = clean(fields.get('owner_step'))
+        if action == 'accept' and step.lower() not in {'none', 'no', '-', '无', '没有'}:
+            items = overview.setdefault('todo', [])
+            if not any(task in str(i.get('note', '')) and i.get('what') == step for i in items):
+                items.append(dict(what=step, when='after review', how='Ask Claude in the room if anything is unclear',
+                                  note=task + ' was accepted; this step needs you'))
         storage.write(paths['overview'], overview)
         storage.write(paths['state'], state)
         storage.write_bytes(spec, spec_before)
@@ -369,6 +378,12 @@ def check(root, *, now=None, owner=None):
     issues = []
     def add(who, task, code, what, fix):
         issues.append(dict(owner=who, task=task, code=code, what=what, fix=fix))
+    # A task waiting on the owner needs a matching owner to-do, otherwise the owner never sees the pending step.
+    todo_text = ' '.join(f"{t.get('what', '')} {t.get('note', '')}" for t in overview.get('todo', []))
+    for row in rows:
+        if re.search(r'(?i)(waiting (for|on) (the )?owner|等\s*(你|用户|大肥鱼|owner))', row.get('status', '')) and row['task'] not in todo_text:
+            add('Claude', row['task'], 'owner_step_hidden', 'Task waits on the owner but no owner to-do names it',
+                'Add an owner to-do whose note names the task')
     seen = set()
     for row in rows:
         task, status = row['task'], state_of(row['status'])

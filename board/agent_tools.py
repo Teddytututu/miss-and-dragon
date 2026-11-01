@@ -139,7 +139,11 @@ def inbox(root,who):
                 if re.fullmatch(r'[a-f0-9]{32}\.(?:png|jpg|webp|gif)',name):value['image_paths'].append(str(lifecycle.data_file(root,'attachments/discussion/images/'+name).resolve()))
             fresh.append(value)
         storage.write(path,dict(seen=[p['id'] for p in posts][-5000:]))
-    pending_rows=[dict(id=p['id'],author=p['author'],body=p.get('body','')) for p in posts if p.get('author')=='owner' and p['id'] not in replied and re.search(r'\?|？|请|帮我|please|tell me',p.get('body',''),re.I)]
+    # Every owner message stays pending until this assistant replies or reacts; assistant @mentions of this assistant need a reply.
+    from .message_controls import reaction_state
+    reacted={mid for mid,actor,_ in reaction_state(storage.lines(lifecycle.data_file(root,'attachments/discussion/reactions.jsonl'))) if actor==who}
+    pending_rows=[dict(id=p['id'],author=p['author'],body=p.get('body','')) for p in posts if p['id'] not in replied and (
+        p.get('author')=='owner' and p['id'] not in reacted or p.get('author') in ('Claude','GPT') and (p.get('body') or '').lstrip().startswith('@'+who))]
     return dict(new_messages=fresh[-50:],pending_replies=pending_rows[-50:])
 def react_owed(root,who):
     from .message_controls import reaction_state

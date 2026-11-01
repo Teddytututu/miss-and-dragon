@@ -44,7 +44,7 @@ class Lifecycle(unittest.TestCase):
         self.move('deliver', evidence=self.evidence())
         with self.assertRaisesRegex(ValueError, 'research lead'):
             self.move('accept', summary='Ready')
-        self.move('accept', 'Claude', summary='Two cases ready', node_summary='Comparison ready')
+        self.move('accept', 'Claude', summary='Two cases ready', node_summary='Comparison ready', owner_step='none')
         self.assertNotIn('| T001 |', (self.root / 'board.md').read_text('utf-8'))
         self.assertIn('accepted: Two cases ready', (self.root / 'tasks/archive.md').read_text('utf-8'))
         tree = storage.read(self.root / 'overview.json')['tree'][0]

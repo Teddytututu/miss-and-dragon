@@ -121,7 +121,7 @@ class EncodedLifecycle(unittest.TestCase):
                     evidence = root / 'attachments/result.md'
                     evidence.write_bytes(b'Example evidence\n')
                     move('deliver', evidence='attachments/result.md')
-                    move('accept', summary='Reviewed')
+                    move('accept', summary='Reviewed', owner_step='none')
                     for path in originals:
                         raw = path.read_bytes()
                         self.assertEqual(raw.startswith(b'\xef\xbb\xbf'), bool(bom), path.name)
