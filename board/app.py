@@ -6,13 +6,13 @@ class BoardHTTPServer(ThreadingHTTPServer):
     request_queue_size = 128
 from urllib.parse import urlsplit,unquote,parse_qs
 import base64,hashlib,html,io,ipaddress,json,mimetypes,os,re,uuid
-from . import project,storage,scheduler,contacts,task_eta,assets,onboarding,plan_checks
+from . import project,storage,scheduler,contacts,task_eta,assets,onboarding,plan_checks,cadence
 ASSETS=Path(__file__).resolve().parent
 STATIC={n for n in ['index.html','discussion.js','discussion.css','identity.js','identity.css','room-extras.js','room-markdown.js','room-features.css','room-collection.js','mood.js','room-collection.css','v02.js','v02.css','eta-view.js','eta-view.css','fanart.css','help.html']}
 STATIC.update({'lifecycle-view.js','lifecycle-view.css','index-tabs.js','index-tabs.css','private-notes.js','private-notes.css'})
 STATIC.update({'i18n.js','i18n.css','help.en.html'})
 STATIC.update({'notebook.css','notebook.js','XiaolaiSC-subset.woff2','visual.css','favicon-32.png','apple-touch-icon.png'})
-STATIC.update({'plan-checks.js','plan-checks.css'})
+STATIC.update({'plan-checks.js','plan-checks.css','cadence.js','cadence.css'})
 REACTIONS={'👍':'done','❤️':'care','😂':'smile','🎉':'celebrate','👀':'review','💡':'idea'}
 REACTION_KEYS=list(dict.fromkeys([*REACTIONS,*(x['key'] for x in assets.emote_manifest())]))
 def contained(root,relative):
@@ -89,6 +89,8 @@ def snapshot(root,channel=None):
         if type(day.get('relative_day')) is int:day['date']=(today+timedelta(days=day['relative_day'])).strftime('%m-%d')
     overview['schedule']=plan_checks.project(overview.get('schedule',[]),storage.read(root/'attachments/plan-checks.json',{}),today)
     overview=task_eta.project(root,overview)
+    if not storage.read(root/'project.json',{}).get('onboarding_complete'):
+        overview['todo']=[dict(what='告诉 Claude 你的研究问题和想要的成果',when='开始时',how='在讨论室告诉大小姐')] + [r for r in overview.get('todo',[]) if r.get('what') not in ['写下一句研究问题与希望得到的成果','告诉 Claude 你的研究问题和想要的成果']]
     for task in tasks:task['eta']=overview.get('task_etas',{}).get(task['id'])
     result=dict(overview=overview,tasks=tasks,discussion=conversation(root,channel),project=storage.read(root/'project.json'),modified=datetime.now().astimezone().isoformat())
     result['revision']=hashlib.sha256(json.dumps({k:v for k,v in result.items() if k!='modified'},sort_keys=True).encode()).hexdigest();return result
@@ -190,6 +192,8 @@ def create_server(root,port=8780,open_file=None):
                     if set(p)!={'message_id','emoji','active'} or emoji not in REACTION_KEYS or type(p.get('active')) is not bool or not any(x['id']==mid and not x.get('deleted') for x in project.all_posts(root)):raise ValueError('Choose an active conversation message and reaction')
                     with storage.locked(root):storage.append(root/'attachments/discussion/reactions.jsonl',dict(message_id=mid,emoji=emoji,active=p['active'],actor='owner'))
                     return self.respond(200,dict(message_id=mid,reactions=next(x['reactions'] for c in project.CHANNELS for x in conversation(root,c)['items'] if x['id']==mid)))
+                if route=='/api/cadence':return self.respond(200,cadence.configure(root,p))
+                if route=='/api/display-name':return self.respond(200,project.display_name(root,p.get('user_name')))
                 if route=='/api/project':return self.respond(200,project.configure(root,p.get('question'),p.get('deliverable'),p.get('user_name')))
                 if route=='/api/quota':
                     name=p.get('agent');tier=p.get('tier')
@@ -227,6 +231,7 @@ def create_server(root,port=8780,open_file=None):
                     rows.append(dict(id=cid,label=label,latest=last['body'][:90] if last else '开始新会话',unread=sum(p['author']!='owner' and epoch(p['created_at'])>epoch(stamp) for p in posts),last_at=last['created_at'] if last else None))
                 return self.respond(200,dict(channels=rows))
             if route=='/api/project':return self.respond(200,storage.read(root/'project.json'))
+            if route=='/api/cadence':return self.respond(200,cadence.view(root))
             if route=='/api/schedule':return self.respond(200,scheduler.refresh(root))
             name=route[1:]
             if route=='/help':name='help.html'

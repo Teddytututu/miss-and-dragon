@@ -39,7 +39,7 @@ Reuse the project name, research question and desired deliverable already suppli
 python scripts/bootstrap.py "My project" --question "Research question" --deliverable "Desired deliverable" --agent GPT --port 8780 --unicode-emotes
 ```
 
-Use `--agent Claude` when the installing session is Claude. Bootstrap creates `.venv`, installs Pillow through the bundled dependency helper, initializes `data/`, and starts a detached service bound to `127.0.0.1`. The default display name is 大肥鱼 and the initial theme is blue. Project settings and the sidebar provide display-name, theme and language controls. English is available at `http://127.0.0.1:8780/?lang=en`; Chinese uses `?lang=zh-CN`.
+Use `--agent Claude` when the installing session is Claude. Bootstrap creates `.venv`, installs Pillow through the bundled dependency helper, initializes `data/`, and starts a detached service bound to `127.0.0.1`. The default display name is 大肥鱼 and the initial theme is blue. The identity menu changes the display name; the sidebar changes theme and language. The assistant writes the research question and deliverable during the first conversation through `/api/project`. Later edits live at the bottom of Cadence settings. English is available at `http://127.0.0.1:8780/?lang=en`; Chinese uses `?lang=zh-CN`.
 
 Bootstrap also attempts to register this project's ten-minute night watch under the current Windows user. On macOS and Linux it returns preparation and cron commands. Read its actual result: a manual-registration outcome includes a runnable command, and the board can continue independently. [Night watch](night-watch.md) describes installation and its lifecycle.
 
@@ -86,3 +86,12 @@ git merge --ff-only origin/main
 Review divergent local history in its own branch and integrate it deliberately. Existing tags and release assets retain their published history. For ZIP installations, extract the selected new source separately and copy the preserved project records into its `data/` directory. Recreate its local environment through bootstrap. Project-path-specific scheduling and startup entries should follow the newly selected folder through their documented installers.
 
 Rerun bootstrap, refresh dependencies if `requirements.txt` changed, restart this project's service after the source update, and repeat section 3. Use the same interpreter's `scripts/install_deps.py` for the project-local dependency refresh. Before contributing code, run `python scripts/check_eol.py` and `python -B scripts/verify.py` as specified in the role entry.
+
+Record the subscription count and tier supplied for each assistant. Multiple subscriptions or the highest tier suggest the lower patrol bound; a normal plan uses the baseline and a free plan the upper bound. Automatic quota scheduling keeps its existing calculation.
+
+```sh
+python scripts/onboarding.py plans GPT --subscriptions 1 --tier normal
+python scripts/onboarding.py plans Claude --subscriptions 1 --tier normal
+```
+
+Use `free`, `normal` or `highest` for `--tier`. Cadence settings stores fixed overrides separately; after changing night-watch frequency, preview and reapply its installer for this project. Event-bridge adapters read `event_cooldown` from `/api/cadence` (or `board.cadence.minutes`) before scheduling a session wake.

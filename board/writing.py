@@ -2,6 +2,8 @@
 import re
 
 BANNED = [
+    (r'我会(查|按|让|把|继续|整理|检查|去|核|确认|尽快)|我去查|我这就|正在查|稍后(回|给|发)|查完再|抱歉|不好意思|理解错了|答偏了|^收到[，,。！!]|^好的[，,]|^明白了?[，,。]|我会在|马上去|马上就|接下来我(将|会)|这就去|稍等|待会儿?(发|回|给)|我(将|会)(于|在)', 'promises or courtesy acknowledgements; post the completed result'),
+    (r"\bI(?: will|'ll|’ll) (?:check|look|investigate|continue|send|review|confirm|get back)\b|\b(?:sorry|apologies|my apologies|please wait|bear with me)\b|^(?:got it|understood|noted|okay|ok)[,.! ]", 'promises or courtesy acknowledgements; post the completed result'),
     (r'\b(?:PID|SHA|sha256|exit ?0|ticks?)\b', 'process IDs, hashes or exit codes'),
     (r'\bT\d+\b|\bE[0-4][a-z]?\b|\bV[01]b?\b', 'internal task or experiment identifiers'),
     (r'(?<![A-Za-z0-9])[A-Za-z]:[\\/]|/(?:var|tmp|data|localdata)/', 'local paths'),

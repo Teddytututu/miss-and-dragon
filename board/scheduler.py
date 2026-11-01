@@ -24,11 +24,11 @@ def number(v,low=0,high=1e6):
     if not math.isfinite(x) or not low<=x<=high:raise ValueError('Value is outside the accepted range')
     return x
 
-def compute_schedule(agents,work,previous=None,now=None):
+def compute_schedule(agents,work,previous=None,now=None,cadence=None):
     import time
     now=time.time() if now is None else now;previous=previous or {};rows={};capacities={}
     for name in AGENTS:
-        report=agents.get(name,{});jobs=work.get(name,{});prev=previous.get('agents',{}).get(name,{})
+        report=agents.get(name,{});jobs=work.get(name,{});prev=previous.get('automatic_agents',previous.get('agents',{})).get(name,{})
         raw=number(report.get('remaining',TIERS.get(report.get('tier','plenty'),.7)),0,1)
         hours=number(report.get('reset_hours',24));cost=.01
         history=report.get('history',[])[-20:]
@@ -66,11 +66,25 @@ def compute_schedule(agents,work,previous=None,now=None):
             input_digest=digest,reported_at=report.get('updated_at'),active=active,review=review,mentioned=mentioned,
             quota=quota_provenance(report))
         capacities[name]=budget/(1+number(jobs.get('unfinished',active+review)))
+    automatic_agents={name:dict(row) for name,row in rows.items()}
+    sessions={}
+    overrides=(cadence or {}).get('overrides',{})
+    for key,name in [('execution','GPT'),('front','GPT'),('lead','Claude'),('chores','GPT')]:
+        row=dict(rows[name]);fixed=overrides.get(key,{}).get('minutes');jobs=work.get(name,{})
+        urgent=jobs.get('deadline_unix') is not None and 0<=jobs['deadline_unix']-now<=7200
+        if fixed is not None and not row['paused']:
+            interval=20 if row['mentioned'] or urgent else fixed
+            prev=previous.get('sessions',{}).get(key,{})
+            wake=now+interval*60
+            if prev.get('interval_minutes')==interval and prev.get('input_digest')==row['input_digest'] and (prev.get('next_wake') or 0)>now:wake=prev['next_wake']
+            row.update(interval_minutes=interval,next_wake=wake,reason='回应用户提及或临近截止' if interval==20 and (row['mentioned'] or urgent) else '使用固定巡检间隔')
+        sessions[key]=row
+    rows['GPT']=sessions['execution'];rows['Claude']=sessions['lead']
     total=sum(capacities.values());share=.5 if total==0 else capacities['Claude']/total
     share=max(.2,min(.8,share));shares={'Claude':share,'GPT':1-share}
     eligible=[n for n in AGENTS if not rows[n]['paused']]
     handoff=max(eligible,key=lambda n:capacities[n]) if eligible else None
-    return dict(schema='quota-schedule-v1',updated_at=now,agents=rows,shares=shares,handoff_to=handoff,
+    return dict(schema='quota-schedule-v1',updated_at=now,agents=rows,automatic_agents=automatic_agents,sessions=sessions,shares=shares,handoff_to=handoff,
                 next_wake_iso={n:datetime.fromtimestamp(r['next_wake'],timezone.utc).isoformat() if r['next_wake'] else None for n,r in rows.items()})
 
 def work_state(root):
@@ -102,7 +116,8 @@ def refresh(root):
     root=__import__('pathlib').Path(root)
     with storage.locked(root):
         agents=storage.read(root/'attachments/agents.json',{});old=storage.read(root/'attachments/schedule.json',{})
-        value=compute_schedule(agents,work_state(root),old);storage.write(root/'attachments/schedule.json',value);return value
+        from . import cadence
+        value=compute_schedule(agents,work_state(root),old,cadence=cadence.read(root));storage.write(root/'attachments/schedule.json',value);return value
 
 def report(root,name,**value):
     from datetime import datetime

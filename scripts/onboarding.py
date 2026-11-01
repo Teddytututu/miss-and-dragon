@@ -7,12 +7,16 @@ if __name__=='__main__':use_project_environment(__file__)
 from board import onboarding,storage,provider_bridge
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('action',choices=['status','native-result','emotes']);p.add_argument('agent',choices=['GPT','Claude'],nargs='?',default='GPT')
+    p=argparse.ArgumentParser();p.add_argument('action',choices=['status','native-result','emotes','plans']);p.add_argument('agent',choices=['GPT','Claude'],nargs='?',default='GPT')
+    p.add_argument('--subscriptions',type=int,default=1);p.add_argument('--tier',choices=['free','normal','highest'],default='normal')
     p.add_argument('--id');p.add_argument('--kind',choices=['goal','scheduled-task'],default='goal')
     emotes=p.add_mutually_exclusive_group()
     emotes.add_argument('--download-emotes',dest='emotes',action='store_const',const='download')
     emotes.add_argument('--unicode-emotes',dest='emotes',action='store_const',const='unicode')
     p.add_argument('--data-dir',type=Path,default=ROOT/'data');a=p.parse_args()
+    if a.action=='plans':
+        from board import cadence
+        print(json.dumps(cadence.configure_plans(a.data_dir,{a.agent:dict(subscriptions=a.subscriptions,tier=a.tier)}),ensure_ascii=False,indent=2));return
     if a.action=='emotes':
         if a.emotes is None:p.error('Record the user answer with --download-emotes or --unicode-emotes')
         print(json.dumps(onboarding.configure_emotes(a.data_dir,a.emotes),ensure_ascii=False,indent=2));return

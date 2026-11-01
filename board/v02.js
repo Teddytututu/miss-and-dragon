@@ -20,10 +20,7 @@
    label.append(select);box.append(label,node('small',(pending?'初始估计分工 ':'建议分工 ')+Math.round(s.shares[name]*100)+'%'));wrap.append(box);
   }
  }
- async function init(){await BoardIdentity.ready;const p=await json('/api/project');
-  $('#setup-question').value=p.question;$('#setup-deliverable').value=p.deliverable;$('#setup-name').value=p.user_name;
-  $('#project-settings').open=!p.onboarding_complete;
-  $('#setup-form').onsubmit=async e=>{e.preventDefault();try{await json('/api/project',{question:$('#setup-question').value,deliverable:$('#setup-deliverable').value,user_name:$('#setup-name').value});$('#setup-status').textContent='已保存';await BoardIdentity.refreshAccounts();location.reload();}catch(e){$('#setup-status').textContent=e.message;}};
+ async function init(){await BoardIdentity.ready;
   quota(await json('/api/schedule'));
   setInterval(async()=>{try{quota(await json('/api/schedule'));}catch(_){}},45000);
  }

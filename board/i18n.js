@@ -2,6 +2,7 @@
 ((root) => {
   'use strict';
   const english = {
+    '告诉 Claude 你的研究问题和想要的成果':'Tell Miss your research question and desired deliverable','在讨论室告诉大小姐':'Tell Miss in the discussion room','使用固定巡检间隔':'Using a fixed patrol interval',
     '跳到正文':'Skip to content','研究工作台':'Research desk','需要你做的':'Your actions',
     '你的安排':'Your schedule','研究进度':'Research progress','报告与文件':'Reports & files',
     '正在做':'In progress','协作额度':'Agent capacity','研究目标':'Research goal',

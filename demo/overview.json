@@ -206,6 +206,23 @@
       "path": "/help",
       "cat": "项目",
       "archived": false
+    },
+    {
+      "title": "缓存压到四分之一，准确率下降 1.8 个点",
+      "path": "demo/cache-findings.html",
+      "cat": "研究"
+    },
+    {
+      "title": "逐题数据",
+      "path": "demo/cache-results.csv",
+      "under": "demo/cache-findings.html",
+      "cat": "研究"
+    },
+    {
+      "title": "阅读笔记",
+      "path": "demo/cache-notes.md",
+      "under": "demo/cache-findings.html",
+      "cat": "研究"
     }
   ],
   "important_dates": [

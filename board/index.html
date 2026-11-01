@@ -922,12 +922,7 @@ html.theme-pink #nav .brand .brand-person img{transform:scale(1.45);transform-or
 <h1 class="sr-only">__SITE_TITLE__</h1>
   <header class="hero" id="hero"><div class="hero-hi" id="hero-hi">owner，你好呀</div><div class="hero-sub" id="hero-sub"></div><div class="hero-deco theme-only" aria-hidden="true">✦ ✿ ♡</div></header>
 <section id="agent-panel" aria-labelledby="quota-title"><details id="quota-fold"><summary><h2 id="quota-title">协作额度</h2></summary><div id="quota-body" class="quota-grid" aria-live="polite"></div></details></section>
-<details id="project-settings" class="card project-settings"><summary>项目</summary>
- <p>Claude 负责研究设计与审核，GPT 负责实现与实验。讨论室里的开工消息由助手在实际会话中发送；示例与历史初始化说明分别标明。</p>
- <form id="setup-form"><h3>研究目标</h3><label>一句研究问题<textarea id="setup-question" required maxlength="2000"></textarea></label>
- <label>想要的成果<textarea id="setup-deliverable" required maxlength="2000"></textarea></label>
- <label>你的显示名<input id="setup-name" maxlength="40" value="大肥鱼"></label><button type="submit">保存项目</button><span id="setup-status" role="status"></span></form>
-</details>
+
   <section id="todo"><h2>需要你做的</h2><div class="card" id="todo-list"></div></section>
   <section id="plan"><h2>你的安排</h2><div id="plan-body"></div></section>
   <section id="progress"><h2>研究进度</h2><div class="card" id="lines"></div><div id="runs"></div></section>
@@ -1246,16 +1241,32 @@ function renderFiles(links) {
   const kind = p => /^https?:/i.test(p) ? ['网址', 'k-web'] : /\.html?$/i.test(p) ? ['网页', 'k-html'] : /\.md$/i.test(p) ? ['文档', 'k-md']
     : /\.pdf$/i.test(p) ? ['PDF', 'k-pdf'] : /\.(docx?|zip|csv|xlsx?)$/i.test(p) ? [p.split('.').pop().toUpperCase(), 'k-file'] : ['文件夹', 'k-dir'];
   const tail = p => { const seg = p.replace(/[\\/]+$/, '').split(/[\\/]/); const last = seg.pop() || p; return /^index\.html?$/i.test(last) && seg.length ? seg.pop() + ' / ' + last : last; };
+  const liveParents = new Set((links || []).filter(l => l.path && !l.archived && !l.under).map(l => l.path)), kids = new Map();
+  (links || []).forEach((l, i) => { if (l.path && l.under && !l.archived && liveParents.has(l.under)) {
+    if (!kids.has(l.under)) kids.set(l.under, []); kids.get(l.under).push([l, i]); } });
+  const opener = (l, i, cls, flash) => () => (cls === 'k-web' || l.path === '/help') ? window.open(l.path === '/help' ? (window.BoardI18n?.language === 'en' ? '/help.en.html' : '/help.html') : l.path, '_blank', 'noopener')
+      : fetch('/api/open', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({i})})
+          .then(r => flash(r.ok ? (cls === 'k-dir' ? '已在资源管理器打开' : '已打开') : r.status === 403 ? '只能在电脑上打开' : '找不到这个文件', r.ok))
+          .catch(() => flash('打开失败', false));
   (links || []).forEach((l, i) => { if (!l.path) return;
+    if (l.under && !l.archived && liveParents.has(l.under)) return;
     const [label, cls] = kind(l.path), card = el('div', 'fcard ' + cls), tile = el('span', 'ftile', label);
     const text = el('div', 'ftext'), name = el('div', 'fname', l.title), sub = el('div', 'fsub', tail(l.path));
     text.append(name, sub); card.title = l.path; card.tabIndex = 0; card.setAttribute('role', 'button');
     const flash = (msg, ok) => { sub.textContent = msg; sub.classList.toggle('ok', ok); sub.classList.toggle('bad', !ok);
       setTimeout(() => { sub.textContent = tail(l.path); sub.classList.remove('ok', 'bad'); }, 1600); };
-    const open = () => (cls === 'k-web' || l.path === '/help') ? window.open(l.path === '/help' ? (window.BoardI18n?.language === 'en' ? '/help.en.html' : '/help.html') : l.path, '_blank', 'noopener')
-      : fetch('/api/open', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({i})})
-          .then(r => flash(r.ok ? (cls === 'k-dir' ? '已在资源管理器打开' : '已打开') : r.status === 403 ? '只能在电脑上打开' : '找不到这个文件', r.ok))
-          .catch(() => flash('打开失败', false));
+    const open = opener(l, i, cls, flash);
+    const attached = l.archived ? [] : (kids.get(l.path) || []);
+    if (attached.length) {
+      const row = el('div', 'fattach');
+      attached.forEach(([c, ci]) => {
+        const [clabel, ccls] = kind(c.path), chip = el('button', 'fchip ' + ccls, clabel + ' · ' + c.title);
+        chip.type = 'button'; chip.title = c.path;
+        chip.onclick = e => { e.stopPropagation(); opener(c, ci, ccls, flash)(); };
+        chip.onkeydown = e => e.stopPropagation();row.append(chip);
+      });
+      text.append(row);card.dataset.attached=attached.map(([c])=>c.title).join(' ');
+    }
     card.onclick = open; card.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } };
     const copy = el('button', 'fcopy', '⧉'); copy.type = 'button'; copy.title = '复制路径'; copy.setAttribute('aria-label', '复制路径');
     copy.onclick = e => { e.stopPropagation(); navigator.clipboard.writeText(l.path).then(() => { copy.textContent = '✓'; flash('路径已复制', true); setTimeout(() => copy.textContent = '⧉', 1600); }); };
@@ -1263,7 +1274,7 @@ function renderFiles(links) {
     if (l.archived) (groups[l.cat || '其他'] = groups[l.cat || '其他'] || []).push(card); else {
       const category = l.cat || '其他';
       if (!active.has(category)) active.set(category, []);
-      active.get(category).push({card, title: String(l.title || '')});
+      active.get(category).push({card, title: String(l.title || '')+' '+(card.dataset.attached||'')});
     } });
   const order = ['研究', '学习', '事务', '界面与设计', '项目', '其他'], keys = Object.keys(groups);
   const filter = document.getElementById('file-filter'), states = [];
@@ -1446,6 +1457,8 @@ load().then(spy); setInterval(load, 20000); setInterval(() => { lastRev = ''; lo
 })();
 </script>
 <script src="/v02.js"></script>
+<link rel="stylesheet" href="/cadence.css">
+<script src="/cadence.js"></script>
 <script src="/notebook.js"></script>
 </body>
 </html>

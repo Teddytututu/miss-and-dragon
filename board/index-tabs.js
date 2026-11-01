@@ -51,7 +51,7 @@
       placeholder.hidden = true; placeholder.setAttribute('aria-hidden', 'true');
       group.prepend(placeholder); head.remove(); group.open = true;
       const records = Array.from(group.querySelectorAll('.fcard')).map(card => ({
-        card, title: card.querySelector('.fname')?.textContent || '',
+        card, title: (card.querySelector('.fname')?.textContent || '')+' '+(card.dataset.attached||''),
         course: card.closest('.fcourse')?.querySelector('.fcourse-label')?.textContent || ''
       }));
       existing.set(category, {category, group, head, records});

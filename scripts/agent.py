@@ -17,7 +17,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from board import exchange, lifecycle, stability, storage, agent_tools  # noqa: E402
+from board import exchange, lifecycle, stability, storage, agent_tools, plan_checks  # noqa: E402
 
 AGENTS = ['Claude', 'GPT']
 CATEGORIES = ['研究', '学习', '事务', '界面与设计', '项目', '其他']
@@ -88,7 +88,7 @@ def cmd_status(a):
         unread = None
     return {'as': a.who, 'at': datetime.now(timezone.utc).isoformat(timespec='seconds'),
             'my_issues': lifecycle.check(data, owner=a.who), 'tasks': tasks,
-            'patrols': overview.get('patrols'), 'unread_owner_messages': unread,
+            'schedule_completion':plan_checks.summary(data), 'patrols': overview.get('patrols'), 'unread_owner_messages': unread,
             'pending_events': [dict(id=e.get('id'), type=e.get('type'), task=e.get('task')) for e in events],
             'local_disk': stability.disk_summary()}
 
@@ -104,9 +104,21 @@ def cmd_file(a):
             links = value.setdefault('links', [])
             if any(link.get('title') == a.title for link in links):
                 raise ValueError('A card with this title already exists')
-            links.insert(0, dict(title=a.title, path=a.path, cat=a.cat, archived=False,**({'until':until} if until else {})))
+            links.insert(0, dict(title=a.title, path=a.path, cat=a.cat, archived=False,**({'under':a.under} if a.under else {}),**({'until':until} if until else {})))
         overview_update(a.data_dir, add)
         return dict(added=a.title, cat=a.cat)
+    if a.op=='edit':
+        def change(value):
+            found=[link for link in value.get('links',[]) if link.get('title')==a.title]
+            if len(found)!=1:raise ValueError('Choose exactly one card')
+            if a.new_title:
+                if any(link is not found[0] and link.get('title')==a.new_title for link in value.get('links',[])):raise ValueError('Title already exists')
+                found[0]['title']=a.new_title
+            if a.under is not None:
+                if a.under:found[0]['under']=a.under
+                else:found[0].pop('under',None)
+        overview_update(a.data_dir,change)
+        return dict(edited=a.title)
     def archive(value):
         found = [link for link in value.get('links', []) if link.get('title') == a.title]
         if len(found) != 1:
@@ -155,8 +167,8 @@ def build_parser():
     r = add('react'); r.add_argument('message_id'); r.add_argument('emoji',nargs='?',default='👀'); r.add_argument('--remove','--off',dest='remove',action='store_true')
     d = add('dm'); d.add_argument('--reply', metavar='TEXT')
     c = add('counter'); c.add_argument('run'); c.add_argument('done', type=int); c.add_argument('total', type=int)
-    f = add('file'); f.add_argument('op', choices=['add', 'archive']); f.add_argument('--title', required=True)
-    f.add_argument('--path'); f.add_argument('--cat', default='研究');f.add_argument('--until')
+    f = add('file'); f.add_argument('op', choices=['add', 'archive','edit']); f.add_argument('--title', required=True)
+    f.add_argument('--path'); f.add_argument('--cat', default='研究');f.add_argument('--until');f.add_argument('--under');f.add_argument('--new-title')
     td = add('todo'); td.add_argument('op', choices=['add', 'done']); td.add_argument('--what', required=True)
     td.add_argument('--when'); td.add_argument('--how'); td.add_argument('--note');td.add_argument('--until')
     e = add('events'); e.add_argument('--ack', action='append', default=[]);e.add_argument('--result',default='')
@@ -190,7 +202,7 @@ def main(argv=None):
         if a.command=='wake':
             agent_tools.expire_due(a.data_dir);status=cmd_status(a);inbox=agent_tools.inbox(a.data_dir,a.who);questions=agent_tools.pending(a.data_dir,a.who)
             actionable=bool(status['my_issues'] or status['pending_events'] or status['unread_owner_messages'] or inbox['new_messages'] or inbox['pending_replies'] or questions)
-            return emit(True,name,dict(status=status,inbox=inbox,questions=questions) if actionable else dict(nothing_to_do=True))
+            return emit(True,name,dict(status=status,inbox=inbox,questions=questions) if actionable else dict(nothing_to_do=True,schedule_completion=status['schedule_completion']))
         if a.command=='react-owed':return emit(True,name,agent_tools.react_owed(a.data_dir,a.who))
         if a.command=='efficiency':return emit(True,name,agent_tools.efficiency(a.data_dir,a.who))
         if a.command=='answer':return emit(True,name,agent_tools.answer(a.data_dir,a.who,a.identifier,a.body))

@@ -5,7 +5,7 @@ function harness(saved={}){
  const storage=new Map(Object.entries(saved)),ids=new Map(),requests=[],navigationCalls=[],opened=[];
  class Element{
   constructor(tag,cls='',text=''){
-   this.tagName=tag;this.className=cls;this.textContent=text;this.children=[];this.style={};this.handlers={};this.open=false;this.hidden=false;this.isConnected=false;
+   this.dataset={};this.tagName=tag;this.className=cls;this.textContent=text;this.children=[];this.style={};this.handlers={};this.open=false;this.hidden=false;this.isConnected=false;
    this.classList={add:n=>{if(!this.className.split(' ').includes(n))this.className+=' '+n;},toggle:()=>{}};
   }
   connect(value){this.isConnected=value;this.children.forEach(c=>c.connect(value));}
@@ -62,4 +62,12 @@ test('the help card follows the current language even after a language switch',(
  const card=h.find(h.box,'fcard')[0];card.onclick();
  h.context.window.BoardI18n.language='zh-CN';card.onclick();
  assert.deepEqual(h.opened,[['/help.en.html','_blank','noopener'],['/help.html','_blank','noopener']]);
+});
+
+test('supporting links stay searchable and open their original index; missing parents fall back',async()=>{
+ const h=harness();h.context.render([{title:'Finding',path:'a.html',cat:'研究'},{title:'Counts table',path:'b.csv',under:'a.html',cat:'研究'},{title:'Orphan',path:'c.csv',under:'missing.html',cat:'研究'}]);
+ assert.equal(h.find(h.box,'fcard').length,2);const chip=h.find(h.box,'fchip')[0];assert.match(chip.textContent,/Counts table/);
+ chip.onclick({stopPropagation(){}});await new Promise(r=>setImmediate(r));assert.deepEqual(h.requests,[{i:1}]);
+ h.filter.value='Counts table';h.filter.oninput();assert.equal(h.find(h.box,'fcard').filter(n=>!n.hidden).length,1);
+ const archived=harness();archived.context.render([{title:'Old',path:'a.html',archived:true},{title:'Data',path:'b.csv',under:'a.html'}]);assert.equal(archived.find(archived.box,'fcard').length,1);assert.equal(archived.find(archived.box,'fchip').length,0);
 });

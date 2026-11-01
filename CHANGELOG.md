@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.3
+
+- Add a full-screen cadence panel with 13 ordered activities, subscription-aware suggestions and persistent overrides; move project details into the panel and display names into the identity menu.
+- Add deduplicated weekly report tidying and rule-review events, supporting file links below each finding, and English/Chinese tidying guides.
+- Reject promise-only or courtesy-only assistant posts in English and Chinese, and remove two portraits from the mistakes diagram.
+
 ## 0.4.2
 
 - Bring Big Fish, Miss and Dragon together in the cover, with matching chibi profile portraits.

@@ -57,6 +57,7 @@ def files():
     names += [p.relative_to(ROOT).as_posix() for p in (ROOT/'board/reactions').glob('*.svg')]
     names += [p.relative_to(ROOT).as_posix() for p in (ROOT/'docs').glob('v02-*.png')]
     names += ['board/plan_checks.py','board/plan-checks.js','board/plan-checks.css','tests/test_v031_plan_checks.py','tests/plan-checks.test.cjs']
+    names += ['board/cadence.py','board/cadence.js','board/cadence.css','tests/test_v043_cadence.py','docs/report-tidy.md','docs/report-tidy.zh-CN.md','demo/cache-findings.html','demo/cache-results.csv','demo/cache-notes.md']
     return sorted(set(names))
 
 def scan(blob,name=''):

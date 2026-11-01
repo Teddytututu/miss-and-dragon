@@ -31,14 +31,16 @@ def build_plan(project_root=ROOT, *, system=None, python=None, data_dir='data'):
     python = str(python or (env_python if env_python.is_file() else sys.executable))
     digest = hashlib.sha256(os.path.normcase(str(root)).encode('utf-8')).hexdigest()[:20]
     task_name = 'ResearchNightWatch-' + digest
-    args = [python, '-B', str(script), '--project-root', str(root), '--data-dir', data_dir]
+    from board import cadence
+    interval=cadence.minutes(data,'night_watch')
+    args = [python, '-B', str(script), '--project-root', str(root), '--data-dir', data_dir,'--respect-cadence']
     system = system or platform.system()
     if system != 'Windows':
         # Cron consumes percent signs before the shell, even inside shell quotes.
         command = shlex.join(args).replace('%', r'\%')
         log = shlex.quote(str(data / 'attachments/night-watch/patrol.log')).replace('%', r'\%')
-        cron = '*/10 * * * * ' + command + ' >> ' + log + ' 2>&1'
-        return dict(system=system, task_name=task_name, interval_minutes=10,
+        cron = ('*/'+str(interval)+' * * * * ' if 60%interval==0 else '* * * * * ') + command + ' >> ' + log + ' 2>&1'
+        return dict(system=system, task_name=task_name, interval_minutes=interval,
                     command=[], manual_command=cron, prepare_command=shlex.join(['mkdir', '-p', str(data / 'attachments/night-watch')]))
     log = data / 'attachments/night-watch/patrol.log'
     invocation = '& ' + ' '.join(ps_quote(arg) for arg in args) + ' *>> ' + ps_quote(log) + '; exit $LASTEXITCODE'
@@ -47,17 +49,17 @@ def build_plan(project_root=ROOT, *, system=None, python=None, data_dir='data'):
     boundary = (datetime.now() + timedelta(minutes=1)).replace(microsecond=0).isoformat()
     xml = '''<?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
-  <Triggers><TimeTrigger><Repetition><Interval>PT10M</Interval><StopAtDurationEnd>false</StopAtDurationEnd></Repetition><StartBoundary>{boundary}</StartBoundary><Enabled>true</Enabled></TimeTrigger></Triggers>
+  <Triggers><TimeTrigger><Repetition><Interval>PT{interval}M</Interval><StopAtDurationEnd>false</StopAtDurationEnd></Repetition><StartBoundary>{boundary}</StartBoundary><Enabled>true</Enabled></TimeTrigger></Triggers>
   <Principals><Principal id="CurrentUser"><UserId>{user}</UserId><LogonType>InteractiveToken</LogonType><RunLevel>LeastPrivilege</RunLevel></Principal></Principals>
   <Settings><MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy><DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries><StopIfGoingOnBatteries>false</StopIfGoingOnBatteries><StartWhenAvailable>true</StartWhenAvailable><Hidden>true</Hidden><ExecutionTimeLimit>PT5M</ExecutionTimeLimit><Enabled>true</Enabled></Settings>
   <Actions Context="CurrentUser"><Exec><Command>powershell.exe</Command><Arguments>-NoProfile -NonInteractive -WindowStyle Hidden -EncodedCommand {encoded}</Arguments><WorkingDirectory>{root}</WorkingDirectory></Exec></Actions>
 </Task>
-'''.format(boundary=boundary, user=escape(getpass.getuser()), encoded=encoded, root=escape(str(root)))
+'''.format(interval=interval,boundary=boundary, user=escape(getpass.getuser()), encoded=encoded, root=escape(str(root)))
     xml_path = data / 'attachments/night-watch/install-task.xml'
     command = ['schtasks.exe', '/Create', '/TN', task_name, '/XML', str(xml_path), '/F']
     # A directly executable manual retry also creates the exact XML after failure.
     manual = '& ' + ' '.join(ps_quote(value) for value in command)
-    return dict(system=system, task_name=task_name, interval_minutes=10, command=command,
+    return dict(system=system, task_name=task_name, interval_minutes=interval, command=command,
                 action=action, task_xml=xml, xml_path=str(xml_path), manual_command=manual)
 
 

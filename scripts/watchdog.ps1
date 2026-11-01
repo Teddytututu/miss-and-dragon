@@ -15,5 +15,8 @@ while($true){
       }
     }
   }catch{}
-  Start-Sleep -Seconds 30
+  try{
+    $guardMinutes=& $python -c "import sys;from pathlib import Path;sys.path.insert(0,sys.argv[1]);from board.cadence import minutes;print(minutes(Path(sys.argv[1])/'data','service_guard'))" $projectRoot
+    Start-Sleep -Seconds ([int]$guardMinutes*60)
+  }catch{Start-Sleep -Seconds 60}
 }

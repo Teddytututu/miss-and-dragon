@@ -81,10 +81,13 @@ def initialize(root,name,question='',deliverable='',user_name='大肥鱼',demo=F
             if existing['name']!=name:raise ValueError('Use a separate --data-dir for another project')
             return existing
         value=dict(schema='research-board-project-v2',workspace_id=uuid.uuid4().hex,name=name,question=question,deliverable=deliverable,user_name=user_name,theme='default',created_at=datetime.now().astimezone().isoformat(),onboarding_complete=bool(question and deliverable))
-        overview=dict(todo=[dict(what='写下一句研究问题与希望得到的成果',when='开始时',how='在项目设置中填写')],schedule=[],progress_lines=[dict(line=name,text=question or '从研究问题与具体成果开始。')],runs=[],tree=[dict(title=name,status='todo',summary=deliverable or '确定成果后开始分工',children=[])],task_groups=[],links=[dict(title='使用说明',path='/help',cat='项目',archived=False)],important_dates=[])
+        overview=dict(todo=[dict(what='告诉 Claude 你的研究问题和想要的成果',when='开始时',how='在讨论室告诉大小姐')],schedule=[],progress_lines=[dict(line=name,text=question or '从研究问题与具体成果开始。')],runs=[],tree=[dict(title=name,status='todo',summary=deliverable or '确定成果后开始分工',children=[])],task_groups=[],links=[dict(title='使用说明',path='/help',cat='项目',archived=False)],important_dates=[])
         if demo:
             seed=storage.read(Path(__file__).resolve().parents[1]/'demo/overview.json',{})
             overview.update({k:v for k,v in seed.items() if k!='parent_summary'})
+            for filename in ('cache-findings.html','cache-results.csv','cache-notes.md'):
+                target=root/'demo'/filename;target.parent.mkdir(parents=True,exist_ok=True)
+                target.write_bytes((Path(__file__).resolve().parents[1]/'demo'/filename).read_bytes())
         storage.write(p,value);storage.write(root/'overview.json',overview)
         for n,text in {'board.md':'# '+name+'\n\n| ID | 工作 | 状态 | 负责人 |\n| --- | --- | --- | --- |\n','exchange.md':'# 研究协作\n'}.items():
             if demo and n=='board.md':text=(Path(__file__).resolve().parents[1]/'demo/board.md').read_text(encoding='utf-8')
@@ -118,4 +121,11 @@ def configure(root,question,deliverable,user_name=None):
             if not isinstance(user_name,str) or not 1<=len(user_name.strip())<=40:raise ValueError('Display name within 40 characters')
             p['user_name']=user_name.strip()
         storage.write(root/'project.json',p);o=storage.read(root/'overview.json');o['todo']=[];o['progress_lines']=[dict(line=p['name'],text=p['question'])];o['tree'][0].update(summary=p['deliverable'],status='doing');storage.write(root/'overview.json',o)
+    return p
+
+
+def display_name(root,user_name):
+    if not isinstance(user_name,str) or not 1<=len(user_name.strip())<=40:raise ValueError('Display name within 40 characters')
+    with storage.locked(root):
+        p=storage.read(root/'project.json');p['user_name']=user_name.strip();storage.write(root/'project.json',p)
     return p

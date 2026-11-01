@@ -16,7 +16,7 @@ When the user says `开始：<project name>`, inspect `data/project.json`. For a
 python scripts/bootstrap.py "<project name>" --question "<research question>" --deliverable "<desired deliverable>"
 ```
 
-The helper creates a project-local environment, installs requirements, initializes a clean conversation, and starts a detached loopback service at port 8780. Role introductions live in help and project settings; assistants post their own openings from their actual sessions. A new installation uses the display name 大肥鱼 and the blue theme; the user can change the display name in 项目. `--port` selects another local port.
+The helper creates a project-local environment, installs requirements, initializes a clean conversation, and starts a detached loopback service at port 8780. Role introductions live in help and project settings; assistants post their own openings from their actual sessions. A new installation uses the display name 大肥鱼 and the blue theme; the user can change the display name in the identity menu. `--port` selects another local port.
 
 Both bootstrap and `python -m board start` use `RESEARCH_BOARD_PORT` as the environment-selected default port. An explicit `--port` takes precedence; an unset variable keeps 8780. An isolated launcher may set this variable before invoking this project's normal entry, so the same “开始：<project name>” flow uses the selected isolated port.
 

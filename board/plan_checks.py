@@ -66,3 +66,22 @@ def validate(days, payload, today=None):
             if item.get('check_id')==payload['id']:
                 return dict(id=payload['id'],completed=payload['completed'])
     raise ValueError('安排已更新，请刷新后选择当前任务。')
+
+
+def summary(root,today=None):
+    """Expose the same dated completion facts to the project's assistants."""
+    from pathlib import Path
+    from . import storage
+    root=Path(root);today=today or date.today()
+    with storage.locked(root):
+        days=storage.read(root/'overview.json',{}).get('schedule',[])
+        state=storage.read(root/'attachments/plan-checks.json',{})
+        days=project(days,state,today)
+    rows=[];people={}
+    for day in days:
+        for item in day.get('items',[]):
+            if not item.get('check_id'):continue
+            person=item.get('who') or item.get('owner') or item.get('assignee') or 'owner'
+            row=dict(id=item['check_id'],date=day_key(day,today),time=item.get('time',''),what=item.get('what',''),person=person,completed=item['completed'])
+            rows.append(row);counts=people.setdefault(person,dict(completed=0,pending=0));counts['completed' if row['completed'] else 'pending']+=1
+    return dict(items=rows,people=people,completed=sum(r['completed'] for r in rows),pending=sum(not r['completed'] for r in rows))

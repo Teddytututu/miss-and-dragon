@@ -39,7 +39,7 @@ GPT / Codex 读 `AGENTS.md`，Claude 读 `CLAUDE.md`，接着读 `personas/` 对
 python scripts/bootstrap.py "我的项目" --question "研究问题" --deliverable "希望得到的成果" --agent GPT --port 8780 --unicode-emotes
 ```
 
-安装会话是 Claude 时使用 `--agent Claude`。Bootstrap 创建 `.venv`，通过随包依赖脚本安装 Pillow，初始化 `data/`，并在 `127.0.0.1` 启动后台服务。默认显示名是大肥鱼，初始主题是蓝色。项目设置与侧栏提供显示名、主题和语言选项。中文地址为 `http://127.0.0.1:8780/?lang=zh-CN`，英文使用 `?lang=en`。
+安装会话是 Claude 时使用 `--agent Claude`。Bootstrap 创建 `.venv`，通过随包依赖脚本安装 Pillow，初始化 `data/`，并在 `127.0.0.1` 启动后台服务。默认显示名是大肥鱼，初始主题是蓝色。身份菜单可改显示名，侧栏可改主题与语言。助手在首次对话里通过 `/api/project` 写入研究问题和成果；之后可在节奏设置底部修改。中文地址为 `http://127.0.0.1:8780/?lang=zh-CN`，英文使用 `?lang=en`。
 
 Bootstrap 也会尝试在当前 Windows 用户下注册本项目每十分钟一次的守夜人。macOS 与 Linux 会收到准备命令和 cron 命令。读取实际返回结果：手动注册状态附有可执行命令，看板本身可以继续启动。[启动与巡检](night-watch.md)说明完整接入与生命周期。
 
@@ -86,3 +86,12 @@ git merge --ff-only origin/main
 本地分支分叉时，在其独立分支审阅并合入上游。已有 tag 和发布附件保持历史。ZIP 安装把选定版本解压到另一个源目录，将保留的项目记录复制到其 `data/`，再通过 Bootstrap 创建本机环境。项目目录变化后，相关守夜人和自启动项按各自安装说明对应到新目录。
 
 重跑 Bootstrap；`requirements.txt` 变化时更新依赖；源码更新后重启本项目服务，再完成第三节。项目本机依赖更新使用同一解释器执行 `scripts/install_deps.py`。贡献代码前按角色入口运行 `python scripts/check_eol.py` 与 `python -B scripts/verify.py`。
+
+按用户给出的订阅数和档位分别登记。多订阅或最高档建议取巡检下限，普通档采用基准，免费档采用上限；自动模式沿现有额度算法计算。
+
+```sh
+python scripts/onboarding.py plans GPT --subscriptions 1 --tier normal
+python scripts/onboarding.py plans Claude --subscriptions 1 --tier normal
+```
+
+`--tier` 使用 `free`、`normal` 或 `highest`。固定覆盖单独保存；修改守夜人频率后，预览并重新应用本项目安装器。事件桥适配器从 `/api/cadence` 或 `board.cadence.minutes` 读取 `event_cooldown`，合并同会话叫醒。

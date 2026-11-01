@@ -12,7 +12,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from board import storage, task_eta
+from board import storage, task_eta, cadence
 from board.environment import use_project_environment
 from board.watch_rules import conditions as workflow_conditions
 from scripts.run_queue import atomic_json, project_path
@@ -57,7 +57,7 @@ def patrol(project_root=ROOT, *, data_dir='data', now=None):
         project_path(root, relative)
     for disk in config.get('disks', []):
         project_path(root, disk.get('path', '.'))
-    stall = config.get('stall_seconds', 3600)
+    stall = cadence.minutes(p['data'],'stall')*60 if 'stall' in cadence.read(p['data']).get('overrides',{}) else config.get('stall_seconds',cadence.minutes(p['data'],'stall')*60)
     if not number(stall) or stall <= 0:
         raise ValueError('Positive stall_seconds required')
     with storage.locked(p['data']):
@@ -199,18 +199,31 @@ def patrol(project_root=ROOT, *, data_dir='data', now=None):
         for condition in workflow_conditions(p['data'], state, at):
             kind = condition.pop('type')
             event(kind, **condition)
+        cadence_config=cadence.read(p['data'])
+        issued=cache.get('periods',{})
+        first_seen=cache.get('first_seen',at)
+        queued=storage.read(p['events'],{'events':[]})['events']
+        for kind in ['efficiency','weekly_tidy','weekly_rules']:
+            occurrence,period=cadence.due(cadence_config,kind,at)
+            spec=cadence.timing(cadence_config,kind)
+            if kind=='weekly_rules' and spec.get('after')=='weekly_tidy':
+                occurrence,period=cadence.due(cadence_config,'weekly_tidy',at)
+                if issued.get('weekly_tidy')!=period or any(e['type']=='weekly_tidy' for e in [*queued,*conditions.values()]):continue
+            if occurrence>=first_seen and issued.get(kind)!=period:
+                event(kind,'cadence',period,period=period,owner='Claude',guide='docs/report-tidy.md' if kind=='weekly_tidy' else None)
+                issued[kind]=period
         previous = set(cache.get('active', []))
         fresh = [event for key, event in conditions.items() if key not in previous]
         queue = storage.read(p['events'], {'events': []})
         # Completion stays pending until acknowledged. Condition events clear on recovery.
-        pending = {e['id']: e for e in queue['events'] if e['type'] == 'task_complete' or e['id'] in conditions}
+        pending = {e['id']: e for e in queue['events'] if e['type'] in ('task_complete','weekly_tidy','weekly_rules','efficiency') or e['id'] in conditions}
         for entry in fresh:
             pending.setdefault(entry['id'], entry)
         if pending or p['events'].exists():
             atomic_json(p['events'], {'events': list(pending.values())})
         if state != before:
             storage.write(p['state'], state)
-        atomic_json(p['cache'], dict(tracking=tracking, active=sorted(conditions)))
+        atomic_json(p['cache'], dict(tracking=tracking, active=sorted(conditions),periods=issued,first_seen=first_seen))
     task_eta.refresh(p['data'], storage.read(p['data'] / 'overview.json', {}), now=at)
     return fresh
 
@@ -219,12 +232,18 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--project-root', type=Path, default=ROOT)
     parser.add_argument('--data-dir', default='data', help='Project-relative data directory')
+    parser.add_argument('--respect-cadence',action='store_true')
     parser.add_argument('--ack', action='append', default=[], metavar='EVENT_ID')
     args = parser.parse_args(argv)
     if args.ack:
         acknowledge(args.project_root, args.ack, data_dir=args.data_dir)
         return 0
+    if args.respect_cadence:
+        p=paths(args.project_root.resolve(),args.data_dir);last=storage.read(p['events'].with_name('timer.json'),{}).get('last_patrol',0)
+        if time.time()-last<cadence.minutes(p['data'],'night_watch')*60:return 0
     events = patrol(args.project_root, data_dir=args.data_dir)
+    if args.respect_cadence:
+        with storage.locked(p['data']):storage.write(p['events'].with_name('timer.json'),dict(last_patrol=time.time()))
     if events:
         print(json.dumps({'events': events}, ensure_ascii=False))
     return 0

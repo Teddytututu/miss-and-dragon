@@ -1,6 +1,7 @@
 """File-backed task transitions, deadline checks and visible assistant patrols."""
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from . import cadence
 import re
 
 from . import storage
@@ -401,8 +402,8 @@ def check(root, *, now=None, owner=None):
             forecast = declared_eta(row['status'], updated)
             if DECLARED_ETA.search(row['status']) and forecast is None:
                 add('GPT', task, 'eta_invalid', 'Declared ETA requires a valid clock and date', 'Correct the progress ETA')
-            elif forecast and at > forecast + timedelta(minutes=30):
-                add('GPT', task, 'eta_overdue', 'Declared ETA passed thirty minutes ago', 'Update progress and ETA or record the dependency')
+            elif forecast and at > forecast + timedelta(minutes=cadence.minutes(root,"eta_overdue")):
+                add('GPT', task, 'eta_overdue', 'Declared ETA is overdue', 'Update progress and ETA or record the dependency')
         age = (at - updated).total_seconds() / 3600
         limit = {'delivered': 2, 'blocked': 2, 'rejected': 2, 'running': 3}.get(status)
         until = re.search(r'(?:until|到)\s*(\d{2})-(\d{2})', row['status'], re.I)
@@ -438,8 +439,8 @@ def check(root, *, now=None, owner=None):
         last = moment(patrol.get('at'))
         due = moment(patrol.get('next_at'))
         if due is None and last:
-            due = last + timedelta(minutes=120 if who == 'Claude' else 45)
-        if due is None or at > due + timedelta(minutes=15):
+            due = last + timedelta(minutes=cadence.minutes(root,'lead' if who=='Claude' else 'execution'))
+        if due is None or at > due + timedelta(minutes=cadence.minutes(root,"patrol_overdue")):
             add(who, '-', 'patrol_overdue', who + ' patrol is due', 'Inspect assigned events and run patrol_log.py')
         if who == 'Claude' and last and at - last > timedelta(hours=3.5):
             add('GPT', '-', 'lead_patrol_overdue', 'Research-lead patrol is overdue', 'Record the decision and recommendation in the exchange; continue authorized work')

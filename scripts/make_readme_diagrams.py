@@ -323,7 +323,7 @@ def mistake_to_program():
           cross(lx + 4, ly, RED), ink_text(lx + 20, ly + 8, 'seen twice', 22, RED, 'start', True),
           f"<path d='M{lx + 150} {ly} L{lx + 205} {ly}' stroke='{INK}' stroke-width='1.6' marker-end='url(#a)'/>",
           tick(lx + 232, ly + 1, GREEN), ink_text(lx + 250, ly + 8, 'move into code', 22, GREEN, 'start', True)]
-    stickers = {1: ('avatar-executor.png', 'right'), 3: ('avatar-lead.png', 'left')}
+    stickers = {}
     for i, (old, old_detail, new, new_detail, tag, col) in enumerate(pairs):
         AUDIT[key] += [dict(title=old, lines=[], detail=old_detail), dict(title=new, lines=[], detail=new_detail)]
         c, r = i % 2, i // 2
