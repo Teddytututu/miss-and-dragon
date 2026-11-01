@@ -32,6 +32,12 @@ def lead_review_issues(root,at):
     text=path.read_text('utf-8-sig') if path.exists() else ''
     return [] if re.search(r'^#{2,3}\s+'+local.strftime('%Y-%m-%d')+r'\s*$',text,re.M) else ['Write today’s four-line lead review and update the error log']
 
+def task_todo_issues(todos,rows):
+    from . import lifecycle as life
+    states={row['task']:life.state_of(row['status']) for row in rows}
+    return [dict(task=todo['task'],what=str(todo.get('what',''))[:80]) for todo in todos
+            if todo.get('task') and states.get(todo['task']) not in {'blocked','queued'}]
+
 def idle_roles(root,rows):
     from . import lifecycle as life
     config=storage.read(life.data_file(root,'project.json'),{})

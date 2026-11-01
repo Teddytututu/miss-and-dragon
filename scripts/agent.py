@@ -131,10 +131,12 @@ def cmd_file(a):
 def cmd_todo(a):
     if a.op == 'add':
         until=agent_tools.expiry(a.until)
+        task=getattr(a,'task',None)
+        if task and not lifecycle.TASK.fullmatch(task):raise ValueError('--task requires a task ID')
         if not a.what:
             raise ValueError('todo add needs --what')
         def add(value):
-            value.setdefault('todo', []).append({k: v for k, v in dict(what=a.what, when=a.when, how=a.how, note=a.note,until=until).items() if v})
+            value.setdefault('todo', []).append({k: v for k, v in dict(what=a.what, when=a.when, how=a.how, note=a.note,until=until,task=task).items() if v})
         overview_update(a.data_dir, add)
         return dict(added=a.what)
     def done(value):
@@ -170,7 +172,7 @@ def build_parser():
     f = add('file'); f.add_argument('op', choices=['add', 'archive','edit']); f.add_argument('--title', required=True)
     f.add_argument('--path'); f.add_argument('--cat', default='研究');f.add_argument('--until');f.add_argument('--under');f.add_argument('--new-title')
     td = add('todo'); td.add_argument('op', choices=['add', 'done']); td.add_argument('--what', required=True)
-    td.add_argument('--when'); td.add_argument('--how'); td.add_argument('--note');td.add_argument('--until')
+    td.add_argument('--when'); td.add_argument('--how'); td.add_argument('--note');td.add_argument('--until');td.add_argument('--task')
     e = add('events'); e.add_argument('--ack', action='append', default=[]);e.add_argument('--result',default='')
     for command in ('ask', 'note'):
         q = add(command); q.add_argument('title'); q.add_argument('body')

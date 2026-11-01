@@ -54,6 +54,7 @@ def files():
     names += ['board/exchange.py','board/stability.py','board/workflow_checks.py','scripts/check_eol.py']
     names += ['docs/prompt-writing.md','docs/prompt-writing.zh-CN.md']
     names += ['docs/plain-notes.md','docs/plain-notes.zh-CN.md']
+    names += ['docs/task-notes.md','docs/task-notes.zh-CN.md']
     for folder in ['personas','protocol','templates']:
         names += [p.relative_to(ROOT).as_posix() for p in (ROOT/folder).glob('*') if p.suffix in ['.md','.json']]
     names += ['skills/research-report-writing/'+name for name in [

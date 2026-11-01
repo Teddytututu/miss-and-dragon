@@ -52,5 +52,22 @@ class Workflow(unittest.TestCase):
         self.assertTrue(w.lead_review_issues(self.root,late))
         p.write_text('## 2026-01-12\n- Judgment: Checked the wrong total.\n- Cause: Used an old row.\n- Change: Read the current row.\n- Tomorrow: Check counts.\n')
         self.assertEqual(w.lead_review_issues(self.root,late),[])
+    def test_task_linked_todos_prompt_review_after_task_starts_and_keep_other_notes(self):
+        from board import workflow_checks as w
+        notes=[dict(what='Choose schedule',task='T001'),dict(what='Keep the application note')]
+        row=dict(task='T001',owner='GPT',status='queued: waiting for owner')
+        self.assertEqual(w.task_todo_issues(notes,[row]),[])
+        row['status']='1/3 · Work · 约 21:00'
+        self.assertEqual(w.task_todo_issues(notes,[row])[0]['task'],'T001')
+        self.assertEqual(len(notes),2)
+        self.assertTrue(w.task_todo_issues(notes,[]))
+    def test_todo_cli_accepts_task_and_retains_unrelated_overview_fields(self):
+        import importlib.util
+        from types import SimpleNamespace
+        spec=importlib.util.spec_from_file_location('workflow_agent',Path(__file__).resolve().parents[1]/'scripts/agent.py')
+        agent=importlib.util.module_from_spec(spec);spec.loader.exec_module(agent)
+        storage.write(self.root/'overview.json',dict(sentinel=7))
+        agent.cmd_todo(SimpleNamespace(op='add',until=None,what='Choose schedule',when='today',how='Open the course page',note='Group choice',task='T001',data_dir=self.root,who='GPT'))
+        value=storage.read(self.root/'overview.json');self.assertEqual(value['todo'][0]['task'],'T001');self.assertEqual(value['sentinel'],7)
 
 if __name__=='__main__':unittest.main()
