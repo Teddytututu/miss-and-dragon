@@ -10,7 +10,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import make_readme_diagrams as M
-from make_readme_diagrams import (ROSE, ORANGE, LAV, TEAL, SAND, INK, MUTED, NOTE, HAND, SANS,
+from make_readme_diagrams import (ROSE, ORANGE, LAV, TEAL, SAND, INK, MUTED, NOTE, HAND, SANS, RED,
                                   avatar, curve, doodles, ink_text, svg, tape)
 from diagram_labels import ZH, outlined
 
@@ -24,6 +24,8 @@ FIX = {'You · Big Fish': 'You', 'Claude · Miss': 'Claude · Lead', 'GPT · Dra
            'You, Claude and GPT share plain-file records; plain programs watch them and wake GPT',
        'Authority levels, five question kinds, decision records and only-owner escalation':
            'Authority levels, five question kinds, decision records and what only you decide',
+       '1 · events': '1 · messages, events', 'handle, acknowledge': 'read, handle, ack',
+       '4 · open tasks': '4 · open + returned', 'move each a step': 'move each a step',
        'Question life across You, Claude, GPT, programs and files':
            'A question travels through you, Claude, GPT, programs and files'}
 
@@ -53,6 +55,7 @@ ZH_ARCH = {
         '你、Claude 和 GPT 共用文件记录；普通程序看着记录并叫醒 GPT',
     # wake loop
     'event or heartbeat': '事件或兜底心跳', '1 · events': '1 · 事件', 'handle, acknowledge': '处理并登记',
+    '1 · messages, events': '1 · 消息与事件', 'read, handle, ack': '读、处理、登记', '4 · open + returned': '4 · 进行中与退回的活',
     '2 · idle GPUs': '2 · 空卡', 'fill the queue': '补满队列', '3 · Claude orders': '3 · Claude 的指令', 'do each one': '逐条做完',
     '4 · open tasks': '4 · 进行中的任务', 'move each a step': '每项推进一步', 'only waiting?': '只剩等待？',
     'patrol, then sleep': '登记巡检再休息',
@@ -103,13 +106,13 @@ TEXT = {
         room='Discussion room', room1='You, Claude and GPT', room2='Results in one sentence;', room3='your questions and asks.',
         priv='Private chats', priv1='You with Claude, you with GPT', priv2='One-to-one and kept apart;', priv3='never mixed into the room.',
         exch='Exchange notes', exch1='Claude and GPT', exch2='ask · answer · decide · veto;', exch3='every question has a number.',
-        ev='Events', ev1='Programs to the right chat', ev2='Changes become events;', ev3='the bridge wakes a chat.',
+        ev='Events', ev1='Programs to the right chat', ev2='Task changes become events;', ev3='an optional bridge wakes a chat.',
         ch_label='Discussion room, private chats, exchange notes and events, each with its participants',
         ca_title='What wakes the assistants', ca_sub='Programs watch all the time; the model chats work when there is something to do.',
         progs='Plain programs: no model', chats='Model chats',
         nw='Night watch', nw1='every 10 min', gd='Guardian', gd1='every 5 min; restarts the board', br='Event bridge', br1='on each event',
         sc='Quota scheduler', sc1='after each patrol',
-        gpt='GPT chats', gpt1='woken by events;', gpt2='fallback 60–120 min',
+        gpt='GPT chats', gpt1='woken by events or mentions;', gpt2='fallback 60–120 min',
         cl='Claude', cl1='patrol about every 2 h;', cl2='sooner when mentioned',
         e1='events', e2='wake', e3='next interval', e4='restarts the board',
         ca_label='Programs watch continuously and wake the GPT and Claude chats on events or by quota-based intervals'),
@@ -118,12 +121,12 @@ TEXT = {
         room='讨论室', room1='你、Claude、GPT', room2='一句话说结果；', room3='你的提问和要求。',
         priv='私聊', priv1='你和 Claude，你和 GPT', priv2='一对一，各自分开；', priv3='不混进讨论室。',
         exch='交流板', exch1='Claude 和 GPT', exch2='提问 · 回答 · 自定 · 否决；', exch3='每个问题都有编号。',
-        ev='事件', ev1='程序发给对应会话', ev2='变化写成事件；', ev3='事件桥叫醒会话。',
+        ev='事件', ev1='程序发给对应会话', ev2='任务变化写成事件；', ev3='可选的事件桥叫醒会话。',
         ch_label='讨论室、私聊、交流板和事件，各自的参与者和用处',
         ca_title='谁来叫醒助手', ca_sub='程序一直盯着；模型会话有事才干活。',
         progs='普通程序：不用模型', chats='模型会话',
         nw='守夜人', nw1='每 10 分钟', gd='卫士', gd1='每 5 分钟，看板挂了就拉起', br='事件桥', br1='每个事件立即', sc='额度调度', sc1='每次巡检后',
-        gpt='GPT 会话', gpt1='有事件就叫醒；', gpt2='兜底 60–120 分钟',
+        gpt='GPT 会话', gpt1='有事件、被点名就叫醒；', gpt2='兜底 60–120 分钟',
         cl='Claude', cl1='约每 2 小时巡检；', cl2='被点名就提前',
         e1='事件', e2='叫醒', e3='下次间隔', e4='拉起看板',
         ca_label='程序持续观察，按事件或按额度算出的间隔叫醒 GPT 和 Claude 会话'),
@@ -217,17 +220,92 @@ def cadence(lang):
     return svg(W, 572, ''.join(b), t['ca_label'])
 
 
+QTEXT = {
+    'en': dict(title="A question's life", sub='From your question to the result: who picks it up, who wakes whom, who reviews.',
+               lanes=['You', 'Claude', 'GPT', 'Plain programs', 'Files'],
+               A=('You ask', ['in the room, or', 'in a chat window']), B=('Record message', ['kept word for word']),
+               C=('Patrol moves up', ['mentioned: within 20 min']), D=('Make a task', ['Claude writes the', 'delivery terms']),
+               E=('GPT takes it', ['unclear? ask #2884', 'and Claude answers']), F=('Dispatcher', ['optional: queue', 'GPU jobs']),
+               G=('Night watch', ['every 10 min:', 'job finished']), H=('Deliver', ['first line is', 'a number']),
+               I=('Review', ['accept, or', 'send it back']), J=('Write finding', ['keep the accepted', 'result']),
+               K=('Result arrives', ['one sentence', 'in the room']),
+               a1='said in the room', a2='said in a window: right away', a3='wake', a4='needs a GPU', a5='done without GPU',
+               a6='wake', a7='send back', a8='record',
+               foot='The night watch watches tasks and GPUs, not messages; a mention moves the next patrol up instead.',
+               label='A question goes from you to Claude and GPT, through programs and files, and back as a result'),
+    'zh-CN': dict(title='一个问题的一生', sub='从你提问到结果送达：谁接手、谁叫醒谁、谁验收。',
+                  lanes=['你', 'Claude', 'GPT', '普通程序', '文件'],
+                  A=('你提问', ['在讨论室，或', '在对话窗口里']), B=('记下消息', ['原话原样保留']),
+                  C=('巡检提前', ['被点名：20 分钟内']), D=('拆成任务', ['Claude 写清', '交付要求']),
+                  E=('GPT 接手', ['有疑问先提问', '#2884，Claude 作答']), F=('调度器', ['可选：把显卡', '作业排进空卡']),
+                  G=('守夜人', ['每 10 分钟', '发现作业完成']), H=('交付', ['第一句', '就是数字']),
+                  I=('验收', ['通过，或', '退回重做']), J=('写进研究发现', ['保留验收', '过的结果']),
+                  K=('结果送达', ['讨论室里', '一句话说结果']),
+                  a1='在讨论室说', a2='在窗口里说：立刻', a3='叫醒', a4='要显卡时', a5='不用显卡直接交', a6='叫醒', a7='退回',
+                  a8='记录', foot='守夜人只看任务和显卡，不读消息；消息靠“被点名”把下一次巡检提前。',
+                  label='一个问题从你出发，经过 Claude、GPT、程序和文件，变成结果回到你手里'),
+}
+
+
+def question_flow(lang):
+    q = QTEXT[lang]
+    W, H = 1200, 1000
+    lane_y = [100, 260, 420, 580, 740]
+    colors = [ROSE, ORANGE, LAV, TEAL, SAND]
+    b = [ink_text(32, 46, q['title'], 34, INK, 'start', True), ink_text(34, 76, q['sub'], 17, MUTED, 'start')]
+    for y, col, name in zip(lane_y, colors, q['lanes']):
+        b.append(M.band(18, y, 1164, 140, col, name))
+    cols = [52, 240, 428, 616, 804, 992]
+    w, h = 176, 100
+    place = dict(A=(0, 0), B=(1, 4), C=(1, 3), D=(2, 1), E=(3, 2), F=(4, 3), G=(5, 3), H=(5, 2), I=(5, 1), J=(4, 4), K=(5, 0))
+    rot = dict(A=-1, B=.7, C=-.6, D=.8, E=-.7, F=.6, G=-.8, H=.7, I=-.6, J=.8, K=-.7)
+    box = {}
+    for key, (c, l) in place.items():
+        x, y = cols[c], lane_y[l] + 26
+        box[key] = (x, y)
+    def cx(k): return box[k][0] + w / 2
+    def top(k): return box[k][1]
+    def bot(k): return box[k][1] + h
+    def left(k): return box[k][0]
+    def right(k): return box[k][0] + w
+    def mid(k): return box[k][1] + h / 2
+    E_ = M.elbow
+    arrows = [
+        E_([(cx('A'), bot('A')), (cx('A'), mid('B')), (left('B') - 2, mid('B'))], label=q['a1'], label_xy=(cx('A') + 50, mid('B') - 70)),
+        E_([(cx('B'), top('B')), (cx('B'), bot('C') + 2)]),
+        E_([(right('C'), mid('C')), (cx('D') - 30, mid('C')), (cx('D') - 30, bot('D') + 2)], label=q['a3'], label_xy=(cx('D') - 4, mid('C') - 60)),
+        E_([(right('A'), mid('A')), (cx('D'), mid('A')), (cx('D'), top('D') - 2)], dash=True, label=q['a2'], label_xy=(right('A') + 110, mid('A') - 10)),
+        E_([(right('D'), mid('D')), (cx('E'), mid('D')), (cx('E'), top('E') - 2)]),
+        E_([(cx('E'), bot('E')), (cx('E'), mid('F')), (left('F') - 2, mid('F'))], label=q['a4'], label_xy=(cx('E') - 62, mid('F') - 26)),
+        E_([(right('F'), mid('F')), (left('G') - 2, mid('G'))]),
+        E_([(cx('G'), top('G')), (cx('G'), bot('H') + 2)], label=q['a6'], label_xy=(cx('G') + 44, top('G') - 18)),
+        E_([(right('E'), mid('E')), (left('H') - 2, mid('H'))], dash=True, label=q['a5'], label_xy=((right('E') + left('H')) / 2, mid('H') - 12)),
+        E_([(cx('H'), top('H')), (cx('H'), bot('I') + 2)]),
+        E_([(left('I'), mid('I') + 20), (cx('E') + 40, mid('I') + 20), (cx('E') + 40, top('E') - 2)], RED, True, q['a7'], (cx('E') + 120, mid('I') + 10)),
+        E_([(right('I'), mid('I')), (1170, mid('I')), (1170, mid('J')), (right('J') + 2, mid('J'))], label=q['a8'], label_xy=(1150, mid('G') + 70)),
+        E_([(cx('I'), top('I')), (cx('I'), bot('K') + 2)]),
+    ]
+    b.append(''.join(arrows).replace("font-size='16'", "font-size='20'"))  # 箭头上的字放大
+    for key in place:
+        x, y = box[key]
+        title, lines = q[key]
+        col = colors[place[key][1]]
+        b.append(M.note(x, y, w, h, col, title, lines, rot=rot[key], title_size=24))
+    b += [ink_text(34, 930, q['foot'], 17, MUTED, 'start'), doodles([('heart', 1154, 42, ROSE), ('star', 1150, 950, TEAL)])]
+    return svg(W, 960, ''.join(b), q['label'])
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     ZH.update(ZH_ARCH)
-    reused = {'01-overview': M.how_it_works, '03-question': M.question_life, '05-authority': M.who_decides, '06-wake-loop': M.wake_loop}
+    reused = {'01-overview': M.how_it_works, '05-authority': M.who_decides, '06-wake-loop': M.wake_loop}
     for name, render in reused.items():
         raw = relabel(render())
         missing = sorted({s for s in re.findall(r'>([^<>]+)</text>', raw) if s not in ZH})
         assert not missing, (name, missing)
         (OUT / f'{name}.svg').write_text(outlined(raw, 'en'), encoding='utf-8')
         (OUT / f'{name}.zh-CN.svg').write_text(outlined(raw, 'zh-CN'), encoding='utf-8')
-    for name, render in {'02-channels': channels, '04-cadence': cadence}.items():
+    for name, render in {'02-channels': channels, '03-question': question_flow, '04-cadence': cadence}.items():
         (OUT / f'{name}.svg').write_text(outlined(render('en'), 'en'), encoding='utf-8')
         zh = render('zh-CN')
         ZH.update({s: s for s in re.findall(r'>([^<>]+)</text>', zh)}); ZH.update({m: m for m in re.findall(r"aria-label='([^']*)'", zh)})

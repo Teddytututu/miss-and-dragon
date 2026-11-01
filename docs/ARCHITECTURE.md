@@ -22,13 +22,15 @@ Use the discussion room for shared questions and results. Each assistant also ha
 
 ![A question becomes a task, GPT delivers it and Claude reviews the result](architecture/03-question.svg)
 
+You can ask in the discussion room or directly in the Claude or GPT chat window. A question in a window is handled right away; a mention in the room moves the next patrol up to within 20 minutes. GPU jobs go to the optional dispatcher; when a job finishes, the night watch notices within 10 minutes and wakes GPT to deliver.
+
 Claude turns the question into a task with a concrete delivery. GPT works through it and returns the result files. Claude reviews the delivery; requested changes return to GPT, while accepted findings go into the result tree.
 
 ## What wakes the assistants
 
 ![Programs observe progress, the scheduler advises a wake, and the host chat performs the work](architecture/04-cadence.svg)
 
-The night watch is a small background program that observes configured tasks and writes events when something changes. The quota scheduler recommends when each assistant should return. An assistant applies that recommendation through the scheduling tools available in its chat host. Optional event bridges deliver changes to the appropriate chat.
+The night watch is a small background program that checks tasks and GPUs every 10 minutes and writes events when something changes; it does not read messages. The quota scheduler recommends when each assistant should return. An assistant applies that recommendation through the scheduling tools available in its chat host. Optional event bridges deliver changes to the appropriate chat.
 
 ## Who decides
 
