@@ -1,3 +1,4 @@
+
 :root{
   --mo-out:cubic-bezier(.22,1,.36,1);      
   --mo-spring:cubic-bezier(.34,1.56,.64,1); 
@@ -9,21 +10,18 @@
 
   
   @supports (animation-timeline: view()){
-    main > section:not(#msgs):not(#hero){animation:mo-rise linear both;animation-timeline:view();animation-range:entry 0% entry 35%}
-    :is(.todo-item,.task-group,.research-topic,.fcard,#lines .card,#plan-body .day,.nd):not(#msgs *){animation:mo-drop linear both;animation-timeline:view();animation-range:entry 0% entry 70%}
-    html.theme-pink :is(.todo-item,.fcard):not(#msgs *):nth-child(3n+1){--mo-tilt:-1.2deg}
-    html.theme-pink :is(.todo-item,.fcard):not(#msgs *):nth-child(3n+2){--mo-tilt:1deg}
+    
+    main > section:not(#msgs):not(#hero){animation:mo-rise linear both;animation-timeline:view();animation-range:entry 0% entry 30%}
+    :is(.task-group,.research-topic,.fcard,#plan-body .day,.nd):not(#msgs *){animation:mo-drop linear both;animation-timeline:view();animation-range:entry 0% entry 60%}
   }
   
-  @keyframes mo-rise{from{opacity:.001;translate:0 22px}}
-  @keyframes mo-drop{from{opacity:.001;translate:0 14px;rotate:var(--mo-tilt,0deg);scale:.98}}
+  @keyframes mo-rise{from{opacity:.001}}
+  @keyframes mo-drop{from{opacity:.001;translate:0 5px}}
   .bar > i{transition:width 900ms var(--mo-out)}
 
   
   :is(.todo-item,.fcard,.research-topic,.task-group,.nd,.findex-tab){transition:transform var(--mo-mid) var(--mo-spring),box-shadow var(--mo-mid) var(--mo-out),border-color var(--mo-fast) linear,background-color var(--mo-fast) linear}
-  :is(.todo-item,.fcard,.research-topic):hover{transform:translateY(-3px)}
-  html.theme-pink :is(.todo-item,.fcard):hover{transform:translateY(-3px) rotate(-.4deg)}
-  html.theme-pink :is(.todo-item,.fcard):nth-child(even):hover{transform:translateY(-3px) rotate(.4deg)}
+  :is(.fcard,.research-topic):hover{transform:translateY(-2px)}
   :is(button,.fchip,nav a,summary):active{transform:scale(.97);transition:transform 90ms ease-out}
   button,.fchip{transition:transform var(--mo-mid) var(--mo-spring),background-color var(--mo-fast) linear,color var(--mo-fast) linear,box-shadow var(--mo-mid) var(--mo-out)}
 
@@ -32,16 +30,14 @@
   .research-topic-head::after,.task-summary::after{transition:transform var(--mo-mid) var(--mo-spring)}
 
   
-  nav a .ni{transition:transform var(--mo-mid) var(--mo-spring)}
-  nav a:hover .ni{transform:translateY(-2px) rotate(-6deg) scale(1.08)}
-  nav a{transition:transform var(--mo-mid) var(--mo-spring),background-color var(--mo-mid) var(--mo-out),box-shadow var(--mo-mid) var(--mo-out)}
-  html.theme-pink nav a:hover{transform:translateX(3px)}
-  html.theme-pink nav a.on::before{animation:mo-sway 3.2s ease-in-out infinite alternate}
-  @keyframes mo-sway{from{rotate:-2deg}to{rotate:2deg}}
+  nav a{transition:background-color var(--mo-mid) var(--mo-out),box-shadow var(--mo-mid) var(--mo-out)}
 
   
-  #hero::before{transition:transform var(--mo-slow) var(--mo-spring)}
-  #hero:hover::before{transform:translateY(-6px) rotate(-4deg)}
+  
+  html.theme-pink #hero::before{animation:mo-breathe 4.8s ease-in-out infinite;transform-origin:50% 90%}
+  html.theme-pink #hero:hover::before{animation:mo-hop .55s var(--mo-spring) 1,mo-breathe 4.8s ease-in-out .55s infinite}
+  @keyframes mo-breathe{0%,100%{translate:0 0;rotate:-1.2deg}50%{translate:0 -4px;rotate:1.2deg}}
+  @keyframes mo-hop{0%{translate:0 0}40%{translate:0 -12px;rotate:-3deg}100%{translate:0 0}}
 
   
   .drawer{transition:transform 380ms var(--mo-out)!important}
@@ -56,3 +52,7 @@
   html.theme-default .mo-changed{animation-name:mo-flash-blue}
   @keyframes mo-flash-blue{0%{box-shadow:0 0 0 0 rgba(70,120,170,0)}15%{box-shadow:0 0 0 4px rgba(70,120,170,.25)}100%{box-shadow:0 0 0 0 rgba(70,120,170,0)}}
 }
+
+
+html.theme-pink .hero::before{width:168px!important;height:168px!important}
+@media (max-width:720px){html.theme-pink .hero::before{width:132px!important;height:132px!important}}
