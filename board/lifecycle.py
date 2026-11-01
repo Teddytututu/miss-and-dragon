@@ -461,6 +461,9 @@ def check(root, *, now=None, owner=None):
             add('GPT', '-', 'lead_patrol_overdue', 'Research-lead patrol is overdue', 'Record the decision and recommendation in the exchange; continue authorized work')
     from . import stability
     issues.extend(stability.issues(root, at, overview, owner=owner))
+    from .workflow_checks import idle_roles
+    for role in idle_roles(root,rows):
+        add('Claude','-','idle_executor',role+' has no active or ready task','Queue a concrete authorized task or record an explicit role pause')
     return [i for i in issues if owner is None or i['owner'] == owner]
 
 
