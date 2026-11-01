@@ -255,6 +255,8 @@ def create_server(root,port=8780,open_file=None):
                 who='user' if who=='owner' else who.lower()
                 bundled=ASSETS/'art'/(f'avatar-{who}.png' if mood=='avatar' else f'{who}-{mood}.png')
                 if bundled.is_file():return self.respond(200,bundled.read_bytes(),'image/png')
+                portrait=ASSETS/'art'/f'avatar-{who}.png'
+                if portrait.is_file():return self.respond(200,portrait.read_bytes(),'image/png')
                 fallback=ASSETS/'art'/(f'avatar-{who}.svg' if mood=='avatar' else f'{who}-{mood}.svg')
                 if not fallback.is_file():fallback=ASSETS/'art'/f'{who}-{MOOD_ALIASES.get(mood,"calm")}.svg'
                 return self.respond(200,fallback.read_bytes(),'image/svg+xml',headers=svg_headers)

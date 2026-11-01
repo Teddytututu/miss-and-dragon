@@ -46,10 +46,11 @@ class GeneratedArtwork(unittest.TestCase):
                 self.assertEqual(headers['Content-Type'],'image/svg+xml')
         self.assertEqual(self.request('/generated/Claude/thinking')[1],SVG)
         self.assertEqual(self.request('/generated/Claude/happy.png')[1],SVG)
-    def test_original_placeholder_remains_when_generated_set_is_absent(self):
+    def test_bundled_character_png_covers_missing_mood_and_preserves_legacy_files(self):
         status,body,headers=self.request('/generated/GPT/calm')
-        self.assertEqual(status,200);self.assertIn(b'<svg',body)
-        self.assertEqual(headers['Content-Type'],'image/svg+xml')
+        self.assertEqual(status,200);self.assertTrue(body.startswith(b'\x89PNG'))
+        self.assertEqual(headers['Content-Type'],'image/png')
+        self.assertTrue((Path(__file__).resolve().parents[1]/'board/art/gpt-calm.svg').is_file())
         self.assertEqual(self.request('/generated/Other/avatar.svg')[0],404)
 
 if __name__=='__main__':unittest.main()
