@@ -24,5 +24,14 @@ class Workflow(unittest.TestCase):
         self.assertEqual(w.idle_roles(self.root,[row]),['chores'])
         value['paused_executor_roles']=['chores'];storage.write(p,value)
         self.assertEqual(w.idle_roles(self.root,[row]),[])
+    def test_prompt_checks_lengths_jargon_and_archived_references(self):
+        from board import workflow_checks as w
+        (self.root/'instructions.md').write_text('T007\n'+'a'*4501)
+        (self.root/'tasks/archive.md').write_text('| T007 | Example | accepted | GPT | 2026-01-01 |\n')
+        storage.write(self.root/'attachments/wake-prompts.json',{'GPT':'x'*1201,'Claude':'identity boundary and admission gate'})
+        values=w.prompt_readability_issues(self.root)
+        self.assertTrue(any('instructions.md' in v and 'T007' in v for v in values))
+        self.assertTrue(any('GPT' in v for v in values));self.assertTrue(any('Claude' in v for v in values))
+        self.assertTrue(any(r['code']=='prompt_readability' and r['owner']=='Claude' for r in lifecycle.check(self.root,now=self.now)))
 
 if __name__=='__main__':unittest.main()
