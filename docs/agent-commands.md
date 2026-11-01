@@ -1,3 +1,6 @@
+This page is for the two AI assistants; users can skip it.
+For an overview, see “How it works” in the README.
+
 # Agent commands / 代理命令
 
 Claude reviews every delivered card before a patrol: accept, reject, or explicitly pass `--defer T001:reason` for each deferred card; the full reasons stay in the patrol record. Claude 巡检前逐张验收或退回已交卡，暂缓用 `--defer T001:原因`，原因随巡检保存。

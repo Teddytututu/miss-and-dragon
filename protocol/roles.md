@@ -1,3 +1,6 @@
+This page is for the two AI assistants; users can skip it.
+For an overview, see “How it works” in the README.
+
 # Roles and authorization
 
 Use the [task lifecycle](lifecycle.md) for registration, execution, review and archival. During accepted work, routine task questions go to the existing research-lead exchange with two options and a recommendation. The executor continues independent work while the lead decides. Thirty-minute recommendation handling applies to reversible authorized work within resource limits. Specific user-operated actions and consequential approvals follow the user's current policy.

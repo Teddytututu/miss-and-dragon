@@ -1,27 +1,31 @@
-# Optional: GPU slot dispatcher / 可选能力：卡位自动调度
+# Queue approved experiments on a shared GPU server
 
-Not part of the board. An assistant may set this up on a shared GPU server when the owner asks for it. It solves one problem: an approved experiment waits while a card sits idle, or our job finishes and someone else takes the card before the next one starts.
+[简体中文](optional-gpu-dispatcher.zh-CN.md) · [Project overview](../README.md)
 
-## Shape
+Tell Miss which server you can use and the resource limits agreed with its users. She decides which experiments may run. Dragon can then build and connect a dispatcher for that deployment: a small program that starts approved jobs when resources become available.
 
-A small process on the GPU server, started with `nohup`, wakes every 60 seconds:
+This is an optional deployment recipe. The board supplies task records, a local queue runner and progress events; the remote dispatcher follows the server's actual access and resource rules.
 
-1. Read `nvidia-smi`: memory, processes and owning user per card. A free card has under 1 GiB in use and no processes.
-2. Apply the agreed limit. Example rule: at most 3 of our cards while anyone else is using the server, otherwise 5 by day and 7 between 00:00 and 08:00, with night jobs expected to finish before 08:00. Exclude cards reserved for other people.
-3. Look in `queue/`, one JSON spec per approved job: `task`, `priority`, `cmd`, `cwd`, `mem_gb`, `disk_gb`, `est_hours`, `approved` (who approved and when). Take the highest priority, oldest first.
-4. If a card is free, the limit allows it and the disk has `disk_gb` spare, start it with `CUDA_VISIBLE_DEVICES=<card> nohup <cmd>`, move the spec to `running/` with process id, card and start time.
-5. When the process exits, move the spec to `done/` or `failed/` with the exit code. Permit at most three retries with a recorded attempt number and bounded backoff. A deterministic configuration or authorization error returns directly for review.
-6. Write `status.json`: who holds each card, what of ours is running, what is still queued.
+## What you get
 
-The night watch on the owner's computer reads `status.json` over one SSH call and turns it into events: job done, job failed, free cards with an empty queue (the research lead should queue the next approved job), low disk.
+An approved experiment waits in a queue. When an eligible GPU and enough disk space are available, the dispatcher starts it. Its status file shows running, waiting, completed and failed jobs. The night watch can read that status through a configured adapter and turn changes into events for the assistants.
 
-## Rules
+## Agree on the limits first
 
-- **Start only, never stop.** The dispatcher never ends any process, including ours, and never touches other users' files.
-- Only specs the research lead approved enter `queue/`.
-- The executor's job shrinks to two things: put approved specs in `queue/`, handle `failed/`.
-- Pull back results, scores, configs and logs; leave large intermediate states on the server unless they are needed, since they can be recomputed from the same seeds.
+Miss and Dragon need the approved server access, resource allowance, reservations, disk requirement and stopping conditions. Big Fish approves spending and any account action under the current authorization policy. Store server names, users, device preferences and limits in the deployment's own configuration.
 
-Keep the server name, user name, card numbers and limits in the deployment's own configuration, outside this repository.
+The dispatcher starts jobs within that agreement. Running processes and other users' files keep their existing ownership. Results, scores, settings and logs return to the project; large reproducible intermediate files follow the project's retention plan.
 
-Device numbers in a job spec express preferences. At launch, recompute eligibility from live ownership, reservations, memory and the agreed concurrency limit. Choose another eligible device when a preferred one is occupied; preserve every running process. Shared-server efficiency includes only the configured owner's jobs.
+<details>
+<summary>For developers: dispatch cycle</summary>
+
+1. Observe live GPU memory, processes and ownership using `nvidia-smi`. Apply the configured reservations, eligibility rule and concurrency allowance.
+2. Read approved job specifications from `queue/`, highest priority first and oldest first within a priority. Specifications include `task`, `priority`, `cmd`, `cwd`, `mem_gb`, `disk_gb`, `est_hours` and the approval record.
+3. Treat device numbers as preferences. Recompute eligibility at launch and choose another eligible device when appropriate. Check capacity before loading.
+4. Start the approved command with the selected `CUDA_VISIBLE_DEVICES`. Save process identity, device and start time in `running/`.
+5. Move finished specifications into `done/` or `failed/`, preserving the exit status. Permit at most three retries with an attempt count and bounded backoff. Return deterministic configuration and authorization errors for review. Handle planned time limits through the deployment's checkpoint and requeue policy.
+6. Write `status.json` for the configured observer. Include actual progress and utilization observations so the assistants can distinguish occupied resources from useful work.
+
+Use the [resource guard](optional-resource-guard.md) during loading and the [event bridge](optional-event-bridge.md) for delivery to chats. Keep credentials and machine-specific commands outside the public repository.
+
+</details>

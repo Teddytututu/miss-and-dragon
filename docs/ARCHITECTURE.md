@@ -1,96 +1,63 @@
-# Architecture
+# Questions, decisions and results stay together
 
-[Project overview](../README.md) · [Interactive diagrams](architecture/index.html)
+[简体中文](ARCHITECTURE.zh-CN.md) · [Project overview](../README.md)
 
-The local board and CLI retain questions, decisions, tasks and results in files. Lead designs and accepts work; Executor implements it; ordinary programs validate records and transitions.
+Tell Miss what you want to investigate and what you want to receive. She turns that into a research plan and reviews the results. Dragon builds the agreed work, runs experiments and brings back the files. Big Fish chooses the direction, budget and models used by the chats.
 
-## How does a question reach an accepted result?
+The board keeps the conversation beside the tasks, findings and reports. Each step has a file behind it, so the next chat can continue from the same project records.
 
-<img src="images/question-life.svg" alt="A question moves through five role lanes to an accepted finding" width="1200">
+## Who does what
 
-Follow the original question through its message record, event, numbered design question, task and delivery. The red return path sends rejected work to Executor while the records retain the accepted finding and final reply.
+![Big Fish chooses direction, Miss plans and reviews, Dragon implements, programs keep records](architecture/01-overview.svg)
 
-## Who decides which choices?
+Big Fish makes the consequential choices. Miss designs the work and accepts the delivery. Dragon handles implementation within the agreed scope. Small programs save records, check task transitions and observe progress.
 
-<img src="images/who-decides.svg" alt="Owner actions, Lead decisions, five ask kinds and Executor decision records" width="1200">
+## Where conversations go
 
-The left stack assigns authority, while the central gate routes the five question kinds to Lead. Routine choices enter the decision ledger, and Lead escalates the actions that require Owner.
+![Shared discussion, separate private chats, exchange notes and decisions retain different conversations](architecture/02-channels.svg)
 
-## How does a GPU job finish or recover?
+Use the discussion room for shared questions and results. Each assistant also has a separate private conversation with Big Fish. The exchange keeps research questions, answers and implementation choices together across chats.
 
-<img src="images/gpu-job-life.svg" alt="GPU dispatch, completion, time-limit requeue, crash retries and idle checks" width="1200">
+## How a question becomes a result
 
-Follow completed work through both evaluators, checksum-verified local return and Lead review. Time-limit exits preserve finished items and requeue the rest; crash exits follow bounded retries, and the lower panels show idle intervention and rental preparation.
+![A question becomes a task, Dragon delivers it and Miss reviews the result](architecture/03-question.svg)
 
-## How do repeated mistakes become safeguards?
+Miss turns the question into a task with a concrete delivery. Dragon works through it and returns the result files. Miss reviews the delivery; requested changes return to Dragon, while accepted findings go into the result tree.
 
-<img src="images/mistake-to-program.svg" alt="Six repeated operational mistakes become executable checks" width="1200">
+## What wakes the assistants
 
-Each red note connects an observed failure mode to a teal program rule. The pairings cover incomplete wakes, idle observation, time limits, message content, model identity and local evidence retention.
+![Programs observe progress, the scheduler advises a wake, and the host chat performs the work](architecture/04-cadence.svg)
 
-## Components
+The night watch is a small background program that observes configured tasks and writes events when something changes. The quota scheduler recommends when each assistant should return. An assistant applies that recommendation through the scheduling tools available in its chat host. Optional event bridges deliver changes to the appropriate chat.
 
-| Component | Source | Responsibility |
-| --- | --- | --- |
-| Owner, Lead and Executor | `protocol/roles.md`, `personas/` | Set direction, design and accept work, then execute within the agreed role. |
-| Board and CLI | `board/app.py`, `scripts/agent.py` | Display project records and validate command inputs. |
-| Task contracts and lifecycle | `templates/`, `board/lifecycle.py`, `scripts/task_flow.py` | Create, queue, run, block, deliver and accept work through allowed transitions. |
-| Discussion and private conversations | `board/private_notes.py`, `scripts/private_chat.py`, `scripts/post_message.py` | Retain separate conversations, replies and message state. |
-| Questions, decisions and factual requests | `board/exchange.py`, `board/agent_tools.py` | Join numbered questions and answers; retain choices and lead overrides. |
-| Night watch and event IDs | `scripts/night_watch.py`, `board/watch_rules.py` | Observe configured tasks and retain actionable, deduplicated events. |
-| Inbox and status | `scripts/agent.py`, `board/agent_tools.py` | Read inbox changes and the current task workload. |
-| GPU hosts, resource guard and dispatcher | `docs/optional-gpu-dispatcher.md`, `docs/optional-resource-guard.md` | Connect deployment-specific jobs, loading checks, receipts and utilization. |
-| Guardian and chat-delivery bridge | `docs/night-watch.md`, `docs/optional-event-bridge.md` | Configure service recovery and model-chat event delivery. |
-| Efficiency observations | `scripts/agent.py efficiency`, `board/agent_tools.py` | Record observed work and waiting, with missing observations represented explicitly. |
+## Who decides
 
-## 1. People, chats and persistent records
+![Big Fish authorizes consequential actions, Miss decides research questions, Dragon chooses implementation details](architecture/05-authority.svg)
 
-<img src="architecture/01-overview.svg" alt="People, chats and persistent records" width="920">
+Miss handles research design and review. Dragon sends routine questions to Miss and continues other authorized work. Actions involving the user's account, spending or external commitments follow Big Fish's current authorization policy. Big Fish selects each chat's model and approves model changes.
 
-The owner sets direction, Lead designs and accepts results, and Executor implements the agreed work. Model chats write records; ordinary programs check and retain them.
+## What happens on a wake
 
-## 2. Communication channels
+![An assistant reads events and tasks, continues available work, then records its next patrol](architecture/06-wake-loop.svg)
 
-<img src="architecture/02-channels.svg" alt="Communication channels behind the board" width="920">
+The assistant reads messages, events and open tasks, then completes the work available within its role. Experiment chats handle jobs, front desk chats handle messages, and chores chats handle interface and documents when that split is configured. A final patrol records the outcome, next task and concrete dependency.
 
-Discussion and private conversations retain messages, while exchange notes carry numbered questions and answers. The decision ledger preserves routine choices and lead vetoes across chats.
+<details>
+<summary>For developers: the files behind the board</summary>
 
-## 3. From question to accepted result
+| Part | Implementation |
+| --- | --- |
+| Project board and file storage | `board/app.py`, `board/storage.py`, `board/project.py` |
+| Tasks and allowed state changes | `board/lifecycle.py`, `scripts/task_flow.py` |
+| Questions, answers and decisions | `board/exchange.py`, `board/agent_tools.py` |
+| Discussion and private conversations | `scripts/post_message.py`, `board/private_notes.py` |
+| Progress events and quota advice | `scripts/night_watch.py`, `board/scheduler.py` |
+| Provider-native controls | `board/provider_bridge.py` |
 
-<img src="architecture/03-question.svg" alt="A question travels through review and delivery" width="920">
+The web service binds to loopback. Local project records and deployment credentials stay in the installation's runtime directory. File updates use process-safe locks. GPU dispatch and remote event delivery use separately configured adapters.
 
-A question becomes a task contract, an executable run, a result and an acceptance decision. Follow the arrows in that order to locate the record that connects each step.
+[Agent commands](agent-commands.md) · [Wake contract](../protocol/heartbeat.md) · [GPU dispatcher](optional-gpu-dispatcher.md) · [Event bridge](optional-event-bridge.md)
 
-## 4. Model chats and ordinary programs
+The HTML diagram companion is `docs/architecture/index.html`; open it through a local static server. GitHub displays HTML as source. The SVG figures above render directly in this page.
 
-<img src="architecture/04-cadence.svg" alt="Daily cadence" width="920">
-
-Orange and purple lanes represent model chats; teal lanes represent ordinary programs. Provider schedules deliver wakes, Night watch observes tasks, and Guardian handles configured service recovery.
-
-## 5. Decision authority and audit
-
-<img src="architecture/05-authority.svg" alt="Decision authority and the audit loop" width="920">
-
-Five consequential categories enter the lead's ask queue; routine choices enter the decide ledger. Audit findings become engineering changes, and the next review checks their effect.
-
-## 6. One complete wake
-
-<img src="architecture/06-wake-loop.svg" alt="The wake loop finishes actionable work" width="920">
-
-The wake contract checks events, eligible work capacity, lead instructions, open tasks and returned work. The closing patrol records the current outcome and concrete dependency.
-
-## Wake loop
-
-`wake` reads inbox changes and `status` exposes the full workload. The bundled CLI retains events, questions, tasks and issues; deployment adapters add role-chat delivery and eligible resource observations.
-
-Experiment checks eligible work capacity, then handles events, instructions and open work. Chores handles events, engineering instructions and independent open tasks. Front desk handles messages, completes scoped local work and records concrete handoffs.
-
-Each role continues until a real dependency remains, then records its patrol and mood. The [heartbeat contract](../protocol/heartbeat.md) and [role cards](../protocol/roles.md) define the complete closing conditions.
-
-## Failure cases
-
-The [observed failures and resulting constraints](../README.md#lessons-learned) are maintained in the README.
-
-## Deployment boundaries
-
-The board binds to loopback. Provider wakes, GPU scheduling and service recovery have separate configuration paths in the deployment adapters; project data and credentials live in local runtime records.
+</details>

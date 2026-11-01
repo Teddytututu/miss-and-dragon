@@ -1,3 +1,6 @@
+这页写给两个 AI 看，用户不用读。
+想了解怎么协作，看 README 的“怎样协作”。
+
 # 醒来流程
 
 [English](heartbeat.md) · [架构](../docs/ARCHITECTURE.md) · [巡检部署](../docs/night-watch.md)

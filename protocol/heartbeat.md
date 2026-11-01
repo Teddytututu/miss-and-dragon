@@ -1,3 +1,6 @@
+This page is for the two AI assistants; users can skip it.
+For an overview, see “How it works” in the README.
+
 # Wake contract
 
 [简体中文](heartbeat.zh-CN.md) · [Architecture](../docs/ARCHITECTURE.md) · [Night-watch setup](../docs/night-watch.md)
