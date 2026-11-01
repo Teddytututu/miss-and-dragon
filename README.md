@@ -43,13 +43,13 @@ Want a look first? Send Codex: `Using that guide, start a demo project for me fi
 
 <img src="docs/images/screen-pink.en.png" alt="Pink notebook theme" width="920">
 
-[↗ Open full-size image](docs/images/screen-pink.en.png?raw=true)
+[↗ Open full-size image](https://raw.githubusercontent.com/Teddytututu/miss-and-dragon/main/docs/images/screen-pink.en.png)
 
 <details><summary>Blue theme</summary>
 
 <img src="docs/images/screen-blue.en.png" alt="Blue workbench theme" width="920">
 
-[↗ Open full-size image](docs/images/screen-blue.en.png?raw=true)
+[↗ Open full-size image](https://raw.githubusercontent.com/Teddytututu/miss-and-dragon/main/docs/images/screen-blue.en.png)
 
 </details>
 

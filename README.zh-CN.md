@@ -43,13 +43,13 @@ Claude 加进来以后，两边就开始对话了。
 
 <img src="docs/images/screen-pink.zh-CN.png" alt="粉色手账界面" width="920">
 
-[↗ 查看高清原图](docs/images/screen-pink.zh-CN.png?raw=true)
+[↗ 查看高清原图](https://raw.githubusercontent.com/Teddytututu/miss-and-dragon/main/docs/images/screen-pink.zh-CN.png)
 
 <details><summary>蓝色主题</summary>
 
 <img src="docs/images/screen-blue.zh-CN.png" alt="蓝色工作台界面" width="920">
 
-[↗ 查看高清原图](docs/images/screen-blue.zh-CN.png?raw=true)
+[↗ 查看高清原图](https://raw.githubusercontent.com/Teddytututu/miss-and-dragon/main/docs/images/screen-blue.zh-CN.png)
 
 </details>
 
