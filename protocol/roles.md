@@ -7,7 +7,7 @@ Use the [task lifecycle](lifecycle.md) for registration, execution, review and a
 
 | Participant | Responsibility | Decision boundary |
 | --- | --- | --- |
-| User, default display name 大肥鱼 | Project goal, personal choices, resources and final tradeoffs | Direct user instructions take precedence |
+| User, default display name 你 | Project goal, personal choices, resources and final tradeoffs | Direct user instructions take precedence |
 | Claude | Research direction, design, evidence, report review and task acceptance | Register tasks and start conditions on the board; put review decisions in the task |
 | GPT | Experiments, implementation, organization, engineering recovery and delivery | Execute within authorization; dispatch workers and integrate results |
 | Optional work-information assistant | Daily work candidates | Use existing authorization and submit candidates for research-lead review |

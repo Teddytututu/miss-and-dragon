@@ -2,7 +2,7 @@
 
 [简体中文](README.zh-CN.md) · [Project overview](../README.md)
 
-The board starts with the bundled portraits of Big Fish, Miss and Dragon, plus stickers and mood illustrations. Original SVGs provide fallback pictures. A deployment's generated personal artwork takes priority when configured.
+The board starts with the bundled portraits of you, Claude and GPT, plus stickers and mood illustrations. Original SVGs provide fallback pictures. A deployment's generated personal artwork takes priority when configured.
 
 ## Choose your reactions
 

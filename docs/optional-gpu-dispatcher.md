@@ -2,7 +2,7 @@
 
 [简体中文](optional-gpu-dispatcher.zh-CN.md) · [Project overview](../README.md)
 
-Tell Miss which server you can use and the resource limits agreed with its users. She decides which experiments may run. Dragon can then build and connect a dispatcher for that deployment: a small program that starts approved jobs when resources become available.
+Tell Claude which server you can use and the resource limits agreed with its users. She decides which experiments may run. GPT can then build and connect a dispatcher for that deployment: a small program that starts approved jobs when resources become available.
 
 This is an optional deployment recipe. The board supplies task records, a local queue runner and progress events; the remote dispatcher follows the server's actual access and resource rules.
 
@@ -12,7 +12,7 @@ An approved experiment waits in a queue. When an eligible GPU and enough disk sp
 
 ## Agree on the limits first
 
-Miss and Dragon need the approved server access, resource allowance, reservations, disk requirement and stopping conditions. Big Fish approves spending and any account action under the current authorization policy. Store server names, users, device preferences and limits in the deployment's own configuration.
+Claude and GPT need the approved server access, resource allowance, reservations, disk requirement and stopping conditions. you approves spending and any account action under the current authorization policy. Store server names, users, device preferences and limits in the deployment's own configuration.
 
 The dispatcher starts jobs within that agreement. Running processes and other users' files keep their existing ownership. Results, scores, settings and logs return to the project; large reproducible intermediate files follow the project's retention plan.
 

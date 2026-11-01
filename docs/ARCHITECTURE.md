@@ -2,27 +2,27 @@
 
 [简体中文](ARCHITECTURE.zh-CN.md) · [Project overview](../README.md)
 
-Tell Miss what you want to investigate and what you want to receive. She turns that into a research plan and reviews the results. Dragon builds the agreed work, runs experiments and brings back the files. Big Fish chooses the direction, budget and models used by the chats.
+Tell Claude what you want to investigate and what you want to receive. She turns that into a research plan and reviews the results. GPT builds the agreed work, runs experiments and brings back the files. You choose the direction, budget and models used by the chats.
 
 The board keeps the conversation beside the tasks, findings and reports. Each step has a file behind it, so the next chat can continue from the same project records.
 
 ## Who does what
 
-![Big Fish chooses direction, Miss plans and reviews, Dragon implements, programs keep records](architecture/01-overview.svg)
+![You choose direction, Claude plans and reviews, GPT implements, programs keep records](architecture/01-overview.svg)
 
-Big Fish makes the consequential choices. Miss designs the work and accepts the delivery. Dragon handles implementation within the agreed scope. Small programs save records, check task transitions and observe progress.
+You make the consequential choices. Claude designs the work and accepts the delivery. GPT handles implementation within the agreed scope. Small programs save records, check task transitions and observe progress.
 
 ## Where conversations go
 
 ![Shared discussion, separate private chats, exchange notes and decisions retain different conversations](architecture/02-channels.svg)
 
-Use the discussion room for shared questions and results. Each assistant also has a separate private conversation with Big Fish. The exchange keeps research questions, answers and implementation choices together across chats.
+Use the discussion room for shared questions and results. Each assistant also has a separate private conversation with you. The exchange keeps research questions, answers and implementation choices together across chats.
 
 ## How a question becomes a result
 
-![A question becomes a task, Dragon delivers it and Miss reviews the result](architecture/03-question.svg)
+![A question becomes a task, GPT delivers it and Claude reviews the result](architecture/03-question.svg)
 
-Miss turns the question into a task with a concrete delivery. Dragon works through it and returns the result files. Miss reviews the delivery; requested changes return to Dragon, while accepted findings go into the result tree.
+Claude turns the question into a task with a concrete delivery. GPT works through it and returns the result files. Claude reviews the delivery; requested changes return to GPT, while accepted findings go into the result tree.
 
 ## What wakes the assistants
 
@@ -32,9 +32,9 @@ The night watch is a small background program that observes configured tasks and
 
 ## Who decides
 
-![Big Fish authorizes consequential actions, Miss decides research questions, Dragon chooses implementation details](architecture/05-authority.svg)
+![You authorize consequential actions, Claude decides research questions, GPT chooses implementation details](architecture/05-authority.svg)
 
-Miss handles research design and review. Dragon sends routine questions to Miss and continues other authorized work. Actions involving the user's account, spending or external commitments follow Big Fish's current authorization policy. Big Fish selects each chat's model and approves model changes.
+Claude handles research design and review. GPT sends routine questions to Claude and continues other authorized work. Actions involving the user's account, spending or external commitments follow your current authorization policy. you selects each chat's model and approves model changes.
 
 ## What happens on a wake
 
