@@ -70,3 +70,5 @@ Read [authorization roles](protocol/roles.md) and [self-contained maintenance](p
 Before patrol, accept or reject every delivered task, or give each card an explicit `--defer TASK:reason`; patrol records preserve the full reasons. 巡检前逐张验收或退回已交卡，暂缓逐卡写明原因。
 
 When accepting, state the owner's remaining step with `--owner-step` (or `none`); a real step becomes an owner to-do. 验收时用 `--owner-step` 写明用户还要做什么，没有就写 `none`。
+
+Before replying to the owner, read `protocol/answering.md` (or `protocol/answering.zh-CN.md`) and identify what the question asks. Keep interpretation with the assistant.

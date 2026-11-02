@@ -72,3 +72,5 @@ Read [workers](protocol/workers.md) and [execution](protocol/execution.md). The 
 Read [authorization roles](protocol/roles.md) and [self-contained maintenance](protocol/maintenance.md). Reserve a task number before registration, keep closed rows in the task archive, and append daily exchange through the shared helper.
 
 For every owner message, decide whether text is needed. Reply with `say --reply ID`, or explicitly choose `react ID EMOJI --enough`. Ordinary and automatic reactions keep the message pending.
+
+Before replying to the owner, read `protocol/answering.md` (or `protocol/answering.zh-CN.md`) and identify what the question asks. Keep interpretation with the assistant.

@@ -114,9 +114,7 @@ data/        首次启动创建的本地项目记录
 
 </details>
 
-## 许可与致谢
-
-代码和原创 SVG 采用 [MIT](LICENSE)。小赖字体采用 SIL Open Font License，字体随附许可原文。角色 PNG 的权利归原作者和角色权利人，使用范围见[图像说明](assets/README.md)。[第三方声明](docs/third-party-notices.md)记录随附材料。
+### 日常流程改进
 
 每条发起人消息由助手逐条决定答法：文字回复，或用 `react --enough` 明确选择表情就够；普通表情保留待办。
 
@@ -126,3 +124,8 @@ Claude 的可选消息时间提示与 Codex 醒来先看钟，见[安装说明](
 
 流程检查按连续达标次数收口：示例核对每个执行角色都有能开工的活，连续十次达标后解决，失败归零。详见[连续检查](docs/process-checks.zh-CN.md)。
 
+[答问指引](protocol/answering.zh-CN.md)帮助助手先认清进展、概念、关系、来源、原因、方法、价值、安排与交付这九类问题，再给直接回答。
+
+## 许可与致谢
+
+代码和原创 SVG 采用 [MIT](LICENSE)。小赖字体采用 SIL Open Font License，字体随附许可原文。角色 PNG 的权利归原作者和角色权利人，使用范围见[图像说明](assets/README.md)。[第三方声明](docs/third-party-notices.md)记录随附材料。

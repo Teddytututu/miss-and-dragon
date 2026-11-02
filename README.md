@@ -114,9 +114,7 @@ data/        Local project records created at first run
 
 </details>
 
-## License and acknowledgements
-
-Code and original SVGs use [MIT](LICENSE). Xiaolai uses the SIL Open Font License; its notice is bundled with the font. Character PNG rights remain with their owners and artists under the [artwork policy](assets/README.md). [Third-party notices](docs/third-party-notices.md) records the bundled materials.
+### Everyday workflow improvements
 
 Each owner message stays pending until an assistant replies or explicitly chooses `react --enough`; ordinary reactions remain acknowledgements.
 
@@ -126,3 +124,8 @@ Optional local-clock context for Claude prompts and clock-first Codex wakes are 
 
 Process checks retain consecutive observations: the default example checks that each active execution role has actionable work. Ten due successes close it; a failed observation resets the count. See [process checks](docs/process-checks.md).
 
+The [answering guide](protocol/answering.md) helps each assistant identify whether a message asks about progress, meaning, relationships, origin, cause, method, value, next action or readiness before replying.
+
+## License and acknowledgements
+
+Code and original SVGs use [MIT](LICENSE). Xiaolai uses the SIL Open Font License; its notice is bundled with the font. Character PNG rights remain with their owners and artists under the [artwork policy](assets/README.md). [Third-party notices](docs/third-party-notices.md) records the bundled materials.
