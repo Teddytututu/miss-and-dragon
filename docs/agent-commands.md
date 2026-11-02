@@ -115,3 +115,5 @@ Schedule task rows have an owner checkbox with persistent completion and undo. R
 Use `react MESSAGE_ID 💡 --enough` when the assistant decides that a reaction fully answers an owner message. Ordinary and automatic reactions leave the message pending. Removing that reaction or changing the message reopens it; each assistant records its own decision.
 
 `task new` returns advisory `similar_tasks` and `warnings` when titles share at least two meaningful two-character fragments or match exactly after normalization. It checks the live board and archive, keeps creation successful and leaves the scope decision to the lead.
+
+`checks run` records due process observations; `checks show` reads saved counts. Normal `wake` also samples due checks through the existing wake cadence. [Process checks](process-checks.md) explains the three-hour interval and ten-success default.

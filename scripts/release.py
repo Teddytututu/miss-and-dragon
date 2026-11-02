@@ -58,6 +58,7 @@ def files():
     names += ['docs/open-source-sync.md','docs/open-source-sync.zh-CN.md']
     names += ['scripts/citation_chain.py','docs/literature-search.md','docs/literature-search.zh-CN.md']
     names += ['board/wake_prompt.py','scripts/prompt_time.py']
+    names += ['board/checks.py','scripts/checks.py','docs/process-checks.md','docs/process-checks.zh-CN.md']
     names += ['board/report_reader.py','board/reader_assets.py','board/md_render.py','docs/report-reader.md','docs/report-reader.zh-CN.md']
     for folder in ['personas','protocol','templates']:
         names += [p.relative_to(ROOT).as_posix() for p in (ROOT/folder).glob('*') if p.suffix in ['.md','.json']]

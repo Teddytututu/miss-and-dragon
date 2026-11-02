@@ -40,6 +40,7 @@ COMMANDS = {
     'note': 'Append a note or answer to the daily exchange with a standard heading',
     'mood': 'Register my mood using an expression already available for my role',
     'commands': 'List these commands',
+    'checks': 'Run due process observations or show their consecutive success counts',
 }
 COMMANDS.update(wake='Read actionable inbox changes and pending questions',answer='Answer a numbered question',
                 decide='Record an execution choice and its reason',veto='Lead review of an execution choice',
@@ -160,7 +161,7 @@ def build_parser():
     common.add_argument('--data-dir', type=Path, default=argparse.SUPPRESS)
     sub = p.add_subparsers(dest='command', required=True)
     add = lambda name: sub.add_parser(name, parents=[common])
-    add('status'); add('check'); add('commands');add('wake');add('efficiency');add('react-owed')
+    add('checks').add_argument('op', choices=['run','show'], nargs='?', default='run'); add('status'); add('check'); add('commands');add('wake');add('efficiency');add('react-owed')
     t = add('task'); t.add_argument('action', choices=TASK_ACTIONS); t.add_argument('task')
     for field in TASK_FIELDS:
         t.add_argument('--' + field.replace('_', '-'))
@@ -201,10 +202,15 @@ def main(argv=None):
     a.data_dir = Path(a.data_dir).resolve()  # board helpers walk up to the data root, so it must be absolute
     data = str(a.data_dir)
     try:
+        if a.command=='checks':
+            from board import checks
+            return emit(True,name,checks.run(a.data_dir,show_only=a.op=='show'))
         if a.command=='wake':
             agent_tools.expire_due(a.data_dir);status=cmd_status(a);inbox=agent_tools.inbox(a.data_dir,a.who);questions=agent_tools.pending(a.data_dir,a.who)
+            from board import checks
+            status['process_checks']=checks.run(a.data_dir)
             actionable=bool(status['my_issues'] or status['pending_events'] or status['unread_owner_messages'] or inbox['new_messages'] or inbox['pending_replies'] or questions)
-            return emit(True,name,dict(status=status,inbox=inbox,questions=questions) if actionable else dict(nothing_to_do=True,schedule_completion=status['schedule_completion']))
+            return emit(True,name,dict(status=status,inbox=inbox,questions=questions) if actionable else dict(nothing_to_do=True,schedule_completion=status['schedule_completion'],process_checks=status['process_checks']))
         if a.command=='react-owed':return emit(True,name,agent_tools.react_owed(a.data_dir,a.who))
         if a.command=='efficiency':return emit(True,name,agent_tools.efficiency(a.data_dir,a.who))
         if a.command=='answer':return emit(True,name,agent_tools.answer(a.data_dir,a.who,a.identifier,a.body))
