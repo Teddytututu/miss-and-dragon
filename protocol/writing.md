@@ -36,6 +36,8 @@ Use at most **three sentences**: what finished, the key number, and the next ste
 
 Organize findings for the reader's question. Keep logs, checks and provenance in companion records. Use the [research report skill](../skills/research-report-writing/SKILL.md) for reports and result pages.
 
+Submit reports through [lead refinement](report-review.md) before owner delivery. The lead reviews and refines the artifact, assigns its single completion reply and appends reusable corrections to the project's local writing guidance.
+
 Before posting, check that the line states the current position, a useful completion time when available, and the concrete user action when one applies.
 
 ## Concrete language across the project
