@@ -95,3 +95,7 @@ python scripts/onboarding.py plans Claude --subscriptions 1 --tier normal
 ```
 
 `--tier` 使用 `free`、`normal` 或 `highest`。固定覆盖单独保存；修改守夜人频率后，预览并重新应用本项目安装器。事件桥适配器从 `/api/cadence` 或 `board.cadence.minutes` 读取 `event_cooldown`，合并同会话叫醒。
+
+## 本机时间提示
+
+希望 Claude 每次接到消息时附上本机日期、时间、星期和 UTC 偏移，可把 `templates/claude-settings.example.json` 的 `hooks.UserPromptSubmit` 项合并到本项目的 `.claude/settings.json`，保留已有钩子和设置。从项目根目录启动 Claude，命令使用可用的 Python 解释器。先运行 `python scripts/prompt_time.py --language zh-CN` 看输出，并把示例中的 `en` 换成 `zh-CN`。脚本只输出时间文本，由用户选择是否安装。Codex 醒来先看本机钟，再读收件箱与日程；历史消息中的相对日期沿原消息日期理解。

@@ -121,3 +121,5 @@ Code and original SVGs use [MIT](LICENSE). Xiaolai uses the SIL Open Font Licens
 Each owner message stays pending until an assistant replies or explicitly chooses `react --enough`; ordinary reactions remain acknowledgements.
 
 New tasks include an advisory list of similar titles from the live board and archive, so the lead can compare scopes before repeating work.
+
+Optional local-clock context for Claude prompts and clock-first Codex wakes are described in the [installation guide](docs/install-with-agent.md#local-clock-context).

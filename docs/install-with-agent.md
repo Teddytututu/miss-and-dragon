@@ -95,3 +95,7 @@ python scripts/onboarding.py plans Claude --subscriptions 1 --tier normal
 ```
 
 Use `free`, `normal` or `highest` for `--tier`. Cadence settings stores fixed overrides separately; after changing night-watch frequency, preview and reapply its installer for this project. Event-bridge adapters read `event_cooldown` from `/api/cadence` (or `board.cadence.minutes`) before scheduling a session wake.
+
+## Local clock context
+
+To include the current local date, time, weekday and UTC offset on each Claude prompt, merge the `hooks.UserPromptSubmit` entry from `templates/claude-settings.example.json` into this project's `.claude/settings.json`, preserving existing hooks and settings. Run Claude from the project root and use its available Python interpreter in the command. Preview with `python scripts/prompt_time.py --language en`; use `--language zh-CN` for Chinese. The script prints clock context only. Installation remains an explicit project choice. Codex wake prompts read the host clock before the inbox and schedules; relative words in older messages keep their original dates.
