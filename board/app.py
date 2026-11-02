@@ -90,6 +90,13 @@ def snapshot(root,channel=None):
         if type(day.get('relative_day')) is int:day['date']=(today+timedelta(days=day['relative_day'])).strftime('%m-%d')
     overview['schedule']=plan_checks.project(overview.get('schedule',[]),storage.read(root/'attachments/plan-checks.json',{}),today)
     overview=task_eta.project(root,overview)
+    from .report_reader import catalog
+    readers={str(path):url for url,path in catalog(root).items()}
+    for row in overview.get('links',[]):
+        value=row.get('path')
+        if isinstance(value,str):
+            url=readers.get(str((root/value).resolve()))
+            if url:row['reader_url']=url
     if not storage.read(root/'project.json',{}).get('onboarding_complete'):
         overview['todo']=[dict(what='告诉 Claude 你的研究问题和想要的成果',when='开始时',how='在讨论室告诉大小姐')] + [r for r in overview.get('todo',[]) if r.get('what') not in ['写下一句研究问题与希望得到的成果','告诉 Claude 你的研究问题和想要的成果']]
     for task in tasks:task['eta']=overview.get('task_etas',{}).get(task['id'])
@@ -137,7 +144,10 @@ def create_server(root,port=8780,open_file=None):
             if isinstance(value,dict):value=json.dumps(value,ensure_ascii=False,allow_nan=False).encode()
             if isinstance(value,str):value=value.encode()
             self.send_response(status)
-            for key,val in [('Content-Type',mime),('Content-Length',str(len(value))),('Cache-Control','no-store, private'),('X-Content-Type-Options','nosniff'),('Referrer-Policy','no-referrer'),('Content-Security-Policy',"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'"),*headers]:self.send_header(key,val)
+            overridden={key.lower() for key,_ in headers}
+            for key,val in [('Content-Type',mime),('Content-Length',str(len(value))),('Cache-Control','no-store, private'),('X-Content-Type-Options','nosniff'),('Referrer-Policy','no-referrer'),('Content-Security-Policy',"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'")]:
+                if key.lower() not in overridden:self.send_header(key,val)
+            for key,val in headers:self.send_header(key,val)
             self.end_headers()
             if self.command!='HEAD':self.wfile.write(value)
         def body(self,limit=100_000):
@@ -160,6 +170,8 @@ def create_server(root,port=8780,open_file=None):
             query=parse_qs(urlsplit(self.path).query,keep_blank_values=True)
             channel=project.channel_id((query.get('channel') or ['main'])[0])
             if self.command=='POST' and self.headers.get('Origin')!='http://'+authority:return self.respond(403,dict(error='Use the board page to send requests'))
+            from . import report_reader
+            if report_reader.dispatch(self,root,route):return
             from . import private_notes
             if private_notes.dispatch(self,root,route,query):return
             if self.command=='POST':

@@ -1244,7 +1244,7 @@ function renderFiles(links) {
   const liveParents = new Set((links || []).filter(l => l.path && !l.archived && !l.under).map(l => l.path)), kids = new Map();
   (links || []).forEach((l, i) => { if (l.path && l.under && !l.archived && liveParents.has(l.under)) {
     if (!kids.has(l.under)) kids.set(l.under, []); kids.get(l.under).push([l, i]); } });
-  const opener = (l, i, cls, flash) => () => (cls === 'k-web' || l.path === '/help') ? window.open(l.path === '/help' ? (window.BoardI18n?.language === 'en' ? '/help.en.html' : '/help.html') : l.path, '_blank', 'noopener')
+  const opener = (l, i, cls, flash) => () => (cls === 'k-web' || l.path === '/help' || l.reader_url?.startsWith('/report/')) ? window.open(l.reader_url?.startsWith('/report/') ? l.reader_url : l.path === '/help' ? (window.BoardI18n?.language === 'en' ? '/help.en.html' : '/help.html') : l.path, '_blank', 'noopener')
       : fetch('/api/open', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({i})})
           .then(r => flash(r.ok ? (cls === 'k-dir' ? '已在资源管理器打开' : '已打开') : r.status === 403 ? '只能在电脑上打开' : '找不到这个文件', r.ok))
           .catch(() => flash('打开失败', false));
