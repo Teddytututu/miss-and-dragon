@@ -66,6 +66,25 @@ def parse_board(text):
     return rows
 
 
+def similar_tasks(task, title, rows):
+    """Advisory title overlap; the lead decides whether scopes duplicate work."""
+    import unicodedata
+    def plain(value):
+        value = re.sub(r'\[([^\]]+)\]\([^)]*\)', r'\1', str(value))
+        return ''.join(c for c in unicodedata.normalize('NFKC', value).casefold() if c.isalnum())
+    title = plain(title)
+    grams = {title[i:i+2] for i in range(len(title)-1)} - {'复测', '任务', '结果'}
+    found = {}
+    for row in rows:
+        if row['task'] == task or row['task'] in found:
+            continue
+        candidate = plain(row['title'])
+        shared = sum(g in candidate for g in grams)
+        if title and (candidate == title or shared >= 2):
+            found[row['task']] = dict(task=row['task'], title=row['title'], shared_fragments=shared)
+    return sorted(found.values(), key=lambda row: (-row['shared_fragments'], row['task']))[:8]
+
+
 def nodes(overview):
     def walk(node):
         yield node
@@ -282,6 +301,13 @@ def transition(root, action, task, *, by, now=None, **fields):
             state.setdefault('tasks', {}).setdefault(task, {}).update(status=status, owner=cells[3], updated_at=stamp, lifecycle_managed=True)
         record = dict(at=stamp, task=task, action=action, by=by, status=status,
                       evidence=fields.get('evidence'), tree_nodes=changed)
+        if action == 'new':
+            matches = similar_tasks(task, fields['title'], rows + parse_board(archive))
+            if matches:
+                record['similar_tasks'] = matches
+                record['warnings'] = ['Similar previous task ' + m['task'] + ': ' + m['title'] +
+                    '; compare its scope before starting duplicate work.' for m in matches]
+
         if '## Transition history' not in spec_text:
             spec_before = append_text(spec_before, '\n## Transition history\n')
         spec_before = append_text(spec_before, '- ' + stamp + ' · ' + by + ' · ' + action + ' · ' + status + ((' · ' + fields['evidence']) if action == 'deliver' else '') + '\n')

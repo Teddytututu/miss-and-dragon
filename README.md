@@ -119,3 +119,5 @@ data/        Local project records created at first run
 Code and original SVGs use [MIT](LICENSE). Xiaolai uses the SIL Open Font License; its notice is bundled with the font. Character PNG rights remain with their owners and artists under the [artwork policy](assets/README.md). [Third-party notices](docs/third-party-notices.md) records the bundled materials.
 
 Each owner message stays pending until an assistant replies or explicitly chooses `react --enough`; ordinary reactions remain acknowledgements.
+
+New tasks include an advisory list of similar titles from the live board and archive, so the lead can compare scopes before repeating work.

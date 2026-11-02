@@ -119,3 +119,5 @@ data/        首次启动创建的本地项目记录
 代码和原创 SVG 采用 [MIT](LICENSE)。小赖字体采用 SIL Open Font License，字体随附许可原文。角色 PNG 的权利归原作者和角色权利人，使用范围见[图像说明](assets/README.md)。[第三方声明](docs/third-party-notices.md)记录随附材料。
 
 每条发起人消息由助手逐条决定答法：文字回复，或用 `react --enough` 明确选择表情就够；普通表情保留待办。
+
+新建任务时会提示看板和归档中的相似名字，方便主线先核对旧任务的范围。

@@ -113,3 +113,5 @@ Schedule task rows have an owner checkbox with persistent completion and undo. R
 时间表的任务行支持勾选、撤销与保存，休息、用餐和固定活动沿原样展示。勾选按日期和条目身份独立保存；同日单项任务调时后保留状态。重复任务需要改名或调时，可沿用条目的显式 `id`；`checkable` 布尔字段可由排表方指定该行是否作为任务。科研任务状态与排表继续沿原命令维护。
 
 Use `react MESSAGE_ID 💡 --enough` when the assistant decides that a reaction fully answers an owner message. Ordinary and automatic reactions leave the message pending. Removing that reaction or changing the message reopens it; each assistant records its own decision.
+
+`task new` returns advisory `similar_tasks` and `warnings` when titles share at least two meaningful two-character fragments or match exactly after normalization. It checks the live board and archive, keeps creation successful and leaves the scope decision to the lead.
