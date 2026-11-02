@@ -70,3 +70,5 @@ Run `python -B scripts/verify.py`. This uses the project environment and scoped 
 Read [workers](protocol/workers.md) and [execution](protocol/execution.md). The dispatcher records quota capacity, assigns disjoint write scopes and one task per worker. Verify the current lease before each write; heartbeat every ten minutes and reacquire after expiry. Reuse or create the authorized task goal with concrete acceptance criteria. Record ETA and observed process/checkpoint state.
 
 Read [authorization roles](protocol/roles.md) and [self-contained maintenance](protocol/maintenance.md). Reserve a task number before registration, keep closed rows in the task archive, and append daily exchange through the shared helper.
+
+For every owner message, decide whether text is needed. Reply with `say --reply ID`, or explicitly choose `react ID EMOJI --enough`. Ordinary and automatic reactions keep the message pending.

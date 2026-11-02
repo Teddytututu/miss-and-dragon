@@ -75,7 +75,8 @@ class StabilityTests(unittest.TestCase):
     def test_reaction_removal_reopens_only_that_assistants_issue(self):
         mid = self.room()
         reactions = self.root / 'attachments/discussion/reactions.jsonl'
-        storage.append(reactions, dict(actor='GPT', message_id=mid, emoji='💡', active=True))
+        from board.agent_tools import react_message
+        react_message(self.root, 'GPT', mid, '💡', enough=True)
         self.assertEqual([i['owner'] for i in self.issues('owner_reply_overdue')], ['Claude'])
         storage.append(reactions, dict(actor='GPT', message_id=mid, emoji='💡', active=False))
         self.assertEqual(len(self.issues('owner_reply_overdue')), 2)

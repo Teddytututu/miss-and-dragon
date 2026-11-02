@@ -127,9 +127,50 @@ def retitle(root,task,title):
         old=spec.read_bytes();text=re.sub(r'^# [^\r\n]*','# '+task+' '+title,old.decode('utf-8-sig'),count=1,flags=re.M)
         storage.write_bytes(spec,lifecycle.encode_like(text,old));storage.write_bytes(path,lifecycle.encode_like('\n'.join(lines)+'\n',raw))
     return dict(task=task,title=title)
+def message_digest(row):
+    import hashlib,json
+    fields = {key: row.get(key) for key in ('id', 'author', 'body', 'images', 'files', 'channel', 'created_at')}
+    return hashlib.sha256(json.dumps(fields, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+
+def enough_messages(root, who):
+    """Explicit assistant choices, tied to current message content and an active reaction."""
+    from .message_controls import reaction_state
+    active = reaction_state(storage.lines(lifecycle.data_file(root, 'attachments/discussion/reactions.jsonl')))
+    decisions = {}
+    for row in storage.lines(lifecycle.data_file(root, 'attachments/inbox/ack-only.jsonl')):
+        if row.get('actor') == who:
+            decisions[row.get('message_id')] = row
+    posts = project.all_posts(root)
+    return {p['id'] for p in posts if p.get('author') == 'owner' and not p.get('deleted')
+            and (d := decisions.get(p['id'])) and d.get('active') is True
+            and d.get('message_digest') == message_digest(p)
+            and (p['id'], who, d.get('emoji')) in active}
+
+def react_message(root, who, message_id, emoji, *, enough=False, remove=False):
+    from .app import REACTIONS
+    if who not in ('Claude', 'GPT') or emoji not in REACTIONS:
+        raise ValueError('Choose an assistant and an available reaction')
+    if enough and remove:
+        raise ValueError('Use --enough with an active reaction')
+    reaction_path = lifecycle.data_file(root, 'attachments/discussion/reactions.jsonl')
+    ack_path = lifecycle.data_file(root, 'attachments/inbox/ack-only.jsonl')
+    with storage.locked(root):
+        posts = [p for p in project.all_posts(root) if p['id'] == message_id and not p.get('deleted')]
+        if len(posts) != 1:
+            raise ValueError('Choose one live message')
+        post = posts[0]
+        if enough and (post.get('author') != 'owner' or post.get('channel', 'main') == 'library'):
+            raise ValueError('--enough applies to owner conversation messages')
+        storage.append(reaction_path, dict(actor=who, message_id=message_id, emoji=emoji, active=not remove))
+        previous = [d for d in storage.lines(ack_path) if d.get('actor') == who and d.get('message_id') == message_id]
+        if enough or (remove and previous and previous[-1].get('emoji') == emoji):
+            storage.append(ack_path, dict(actor=who, message_id=message_id, emoji=emoji,
+                message_digest=message_digest(post), active=enough, at=stamp().isoformat()))
+    return dict(message_id=message_id, reacted=not remove, enough=enough)
+
 def inbox(root,who):
-    posts=[r for r in project.all_posts(root) if not r.get('deleted') and r.get('author')!=who and r.get('channel','main')=='main']
-    replied={r.get('parent_id') for r in project.all_posts(root) if r.get('author')==who}
+    posts=[r for r in project.all_posts(root) if not r.get('deleted') and r.get('author')!=who and r.get('channel','main')!='library']
+    replied={r.get('parent_id') for r in project.all_posts(root) if r.get('author')==who and not r.get('deleted')}
     path=lifecycle.data_file(root,'attachments/inbox/'+who+'.json')
     with storage.locked(root):
         seen=set(storage.read(path,{}).get('seen',[]));fresh=[]
@@ -141,11 +182,10 @@ def inbox(root,who):
                 if re.fullmatch(r'[a-f0-9]{32}\.(?:png|jpg|webp|gif)',name):value['image_paths'].append(str(lifecycle.data_file(root,'attachments/discussion/images/'+name).resolve()))
             fresh.append(value)
         storage.write(path,dict(seen=[p['id'] for p in posts][-5000:]))
-    # Every owner message stays pending until this assistant replies or reacts; assistant @mentions of this assistant need a reply.
-    from .message_controls import reaction_state
-    reacted={mid for mid,actor,_ in reaction_state(storage.lines(lifecycle.data_file(root,'attachments/discussion/reactions.jsonl'))) if actor==who}
+    # The assistant chooses whether text or an explicit reaction is sufficient.
+    acknowledged=enough_messages(root,who)
     pending_rows=[dict(id=p['id'],author=p['author'],body=p.get('body','')) for p in posts if p['id'] not in replied and (
-        p.get('author')=='owner' and p['id'] not in reacted or p.get('author') in ('Claude','GPT') and (p.get('body') or '').lstrip().startswith('@'+who))]
+        p.get('author')=='owner' and p['id'] not in acknowledged or p.get('author') in ('Claude','GPT') and (p.get('body') or '').lstrip().startswith('@'+who))]
     return dict(new_messages=fresh[-50:],pending_replies=pending_rows[-50:])
 def react_owed(root,who):
     from .message_controls import reaction_state

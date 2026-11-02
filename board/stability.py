@@ -141,6 +141,8 @@ def issues(root, at, overview, *, owner=None):
         data_file(root, relative)
     room = [r for r in project.all_posts(root) if not r.get('deleted') and r.get('channel', 'main') != 'library']
     reacted = {(actor, mid) for mid, actor, _ in reaction_state(storage.lines(data_file(root, 'attachments/discussion/reactions.jsonl')))}
+    from .agent_tools import enough_messages
+    acknowledged = {who: enough_messages(root, who) for who in ROLES}
     replied = {(r.get('author'), r.get('parent_id')) for r in room
                if r.get('parent_id') and moment(r.get('created_at')) and moment(r['created_at']) <= at}
     for row in room:
@@ -152,8 +154,8 @@ def issues(root, at, overview, *, owner=None):
             mention = re.match(r'^\s*@(Claude|GPT)(?=$|[^A-Za-z0-9_])', row.get('body') or '')
             targets = (mention[1],) if mention else ROLES
             for who in targets:
-                if age > limits[who] and (who, mid) not in reacted and (who, mid) not in replied:
-                    add(who, 'owner_reply_overdue', f'Owner discussion message {mid} awaits {who}', 'Reply with say --reply or react')
+                if age > limits[who] and mid not in acknowledged[who] and (who, mid) not in replied:
+                    add(who, 'owner_reply_overdue', f'Owner discussion message {mid} awaits {who}', 'Reply with say --reply or explicitly choose react --enough')
         if (row.get('author') == 'GPT' and str(row.get('client_id', '')).startswith('executor-greeting-')
                 and limits['Claude'] < age <= 24*3600
                 and ('Claude', mid) not in reacted and ('Claude', mid) not in replied):

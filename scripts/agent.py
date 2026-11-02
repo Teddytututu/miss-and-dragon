@@ -166,7 +166,7 @@ def build_parser():
         t.add_argument('--' + field.replace('_', '-'))
     pt = add('patrol'); pt.add_argument('note'); pt.add_argument('--every', type=int, default=120);pt.add_argument('--mood');pt.add_argument('--defer', action='append', default=[], metavar='TASK:reason')
     s = add('say'); s.add_argument('text'); s.add_argument('--reply'); s.add_argument('--image', action='append', default=[])
-    r = add('react'); r.add_argument('message_id'); r.add_argument('emoji',nargs='?',default='👀'); r.add_argument('--remove','--off',dest='remove',action='store_true')
+    r = add('react'); r.add_argument('message_id'); r.add_argument('emoji',nargs='?',default='👀'); r.add_argument('--remove','--off',dest='remove',action='store_true'); r.add_argument('--enough',action='store_true')
     d = add('dm'); d.add_argument('--reply', metavar='TEXT')
     c = add('counter'); c.add_argument('run'); c.add_argument('done', type=int); c.add_argument('total', type=int)
     f = add('file'); f.add_argument('op', choices=['add', 'archive','edit']); f.add_argument('--title', required=True)
@@ -220,7 +220,7 @@ def main(argv=None):
         if a.command=='patrol':
             lifecycle.patrol_reviews(a.data_dir,a.who,a.defer)
             if not a.mood:raise ValueError('patrol requires --mood from this assistant’s existing expressions')
-            stability.set_mood(a.data_dir,a.who,a.mood,a.note);agent_tools.react_owed(a.data_dir,a.who);agent_tools.expire_due(a.data_dir)
+            stability.set_mood(a.data_dir,a.who,a.mood,a.note);agent_tools.expire_due(a.data_dir)
         if a.command == 'status':
             return emit(True, name, cmd_status(a))
         if a.command == 'check':
@@ -255,7 +255,7 @@ def main(argv=None):
             argv2 += ['--image', image]
         ok, out, err = run_script('post_message.py', argv2)
     elif a.command == 'react':
-        ok, out, err = run_script('react.py', [a.who, a.message_id, a.emoji, '--root', data] + (['--remove'] if a.remove else []))
+        ok, out, err = run_script('react.py', [a.who, a.message_id, a.emoji, '--root', data] + (['--remove'] if a.remove else []) + (['--enough'] if a.enough else []))
     elif a.command == 'dm':
         argv2 = ['--data-dir', data, '--actor', a.who, '--peer', a.who] + (['--body', a.reply] if a.reply else [])
         ok, out, err = run_script('private_chat.py', argv2)

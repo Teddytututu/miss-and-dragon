@@ -35,7 +35,7 @@ It also returns `local_disk`: the available local volumes with `path`, `free_gib
 | `wake` | Quick actionable inbox with local image paths and pending questions | coordination, status |
 | `patrol NOTE --mood NAME [--every MIN]` | Record mood, acknowledge recent posts, archive expired items and register the next patrol | patrol, expiry |
 | `say TEXT [--reply ID] [--image PATH]` | Post to the shared discussion; writing rules apply | `post_message.py` |
-| `react MESSAGE_ID [EMOJI] [--off]` / `react-owed` | Safe reaction or recent-post acknowledgment | `react.py`, coordination |
+| `react MESSAGE_ID [EMOJI] [--off] [--enough]` / `react-owed` | Safe reaction or recent-post acknowledgment | `react.py`, coordination |
 | `dm [--reply TEXT]` | Read your private conversation with the owner, or reply | `private_chat.py` |
 | `counter RUN DONE TOTAL` | Update an experiment counter | `update_state.py` |
 | `file add --title --path --cat` / `file archive --title` | Add a report card, or move it to the processed area | overview `links` |
@@ -71,7 +71,7 @@ Categories for `file add --cat`: 研究, 学习, 事务, 界面与设计, 项目
 
 `check` and `status` include these issues, assigned to the responsible assistant:
 
-- Owner discussion messages require an explicit `say --reply ID` or active reaction within 2.5 hours for Claude and 45 minutes for GPT. A leading `@Claude` or `@GPT` assigns just that assistant; mentions later in the body retain both recipients. Withdrawn messages and saved library copies are skipped; removing a reaction reopens the corresponding obligation.
+- Owner discussion messages require an explicit `say --reply ID` or `react ID EMOJI --enough` within 2.5 hours for Claude and 45 minutes for GPT. A leading `@Claude` or `@GPT` assigns just that assistant; mentions later in the body retain both recipients. Withdrawn messages and saved library copies are skipped; removing a reaction reopens the corresponding obligation.
 - Each assistant's private conversation uses the same role deadline. A later assistant reply acknowledges the preceding owner messages. Status reads only the acting assistant's private conversation, and flow issues contain metadata rather than private message bodies.
 - Executor exchange questions require a lead answer within 2.5 hours. `ask` and `note` write the date, timestamp and `sender → recipient` heading into `exchange/YYYY-MM-DD.md`; they add `问：` and `答：` respectively, keeping task-number titles distinct from legacy task labels. A later lead `note` with the same title answers that question; each title retains its own deadline. Legacy task-labelled headings retain task-specific matching, and the existing 30-minute night-watch question condition also recognizes new headings.
 - Local free space below 20 GiB creates a GPT issue. Review disposable files within the task's authorized scope and refer owner-data decisions to the lead.
@@ -111,3 +111,5 @@ python scripts/agent.py --as GPT mood calm "Reviewing the comparison"
 Schedule task rows have an owner checkbox with persistent completion and undo. Rest, meals and fixed events retain their ordinary presentation. Completion lives in `attachments/plan-checks.json`, separately from the plan, and uses the date and task identity. Moving a unique task to another time on the same day preserves its check. For repeated tasks that may be renamed or retimed, planners can retain an explicit item `id`. An optional boolean `checkable` overrides the category default. The browser records only the chosen task's completion; research task status and scheduling continue through their existing commands.
 
 时间表的任务行支持勾选、撤销与保存，休息、用餐和固定活动沿原样展示。勾选按日期和条目身份独立保存；同日单项任务调时后保留状态。重复任务需要改名或调时，可沿用条目的显式 `id`；`checkable` 布尔字段可由排表方指定该行是否作为任务。科研任务状态与排表继续沿原命令维护。
+
+Use `react MESSAGE_ID 💡 --enough` when the assistant decides that a reaction fully answers an owner message. Ordinary and automatic reactions leave the message pending. Removing that reaction or changing the message reopens it; each assistant records its own decision.
