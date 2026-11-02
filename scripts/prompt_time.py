@@ -19,6 +19,9 @@ def context(now=None, language='en'):
 
 
 if __name__ == '__main__':
+    import sys
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8')  # Windows consoles default to a local code page
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--language', choices=('en', 'zh-CN'), default='en')
     print(context(language=parser.parse_args().language))
