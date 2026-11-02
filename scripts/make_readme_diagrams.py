@@ -422,14 +422,14 @@ def cast_card(language):
              f"<circle cx='{cx}' cy='{top + 100}' r='66' fill='#fff' stroke='{col}' stroke-width='4'/>",
              avatar(cx, top + 100, files[i], r=62),
              f"<text x='{cx}' y='{top + 206}' text-anchor='middle' font-family=\"{HAND}\" font-size='{34 if zh else 38}' font-weight='700' fill='{col}'>{name}</text>",
-             f"<text x='{cx}' y='{top + 234}' text-anchor='middle' font-family=\"{SANS}\" font-size='18' fill='{MUTED}'>{role}</text>"]
+             f"<text x='{cx}' y='{top + 234}' text-anchor='middle' font-family=\"{HAND}\" font-size='{18 if zh else 22}' fill='{MUTED}'>{role}</text>"]
         for r, row in enumerate(pill_rows(duties, zh, w - 30)):
             widths = [pill_width(d, zh) for d in row]
             px = cx - (sum(widths) + 8 * (len(row) - 1)) / 2
             for d, pw in zip(row, widths):
                 y = top + 252 + r * 42
                 g.append(f"<rect x='{px}' y='{y}' width='{pw}' height='34' rx='17' fill='#fffdfb' stroke='{col}' stroke-width='1.2'/>"
-                         f"<text x='{px + pw / 2}' y='{y + 23}' text-anchor='middle' font-family=\"{SANS}\" font-size='17' font-weight='600' fill='{INK}'>{d}</text>")
+                         f"<text x='{px + pw / 2}' y='{y + 23}' text-anchor='middle' font-family=\"{HAND}\" font-size='{17 if zh else 21}' font-weight='600' fill='{INK}'>{d}</text>")
                 px += pw + 8
         g.append('</g>')
         b += g + [tape(cx, top, col, w=74, rot=rots[i] * 2)]
