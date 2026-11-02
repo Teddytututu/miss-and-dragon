@@ -20,4 +20,6 @@ Give every unfamiliar concept a definition and a connection to the project. Give
 
 Use the task's short descriptive name in conversation and keep internal identifiers in the working records. Put detailed logs and verification records beside the deliverable. Link the readable result in the completion message. Route routine decisions through the established lead exchange and continue independent authorized work; account actions and consequential commitments follow the owner's current authorization policy.
 
+Each assistant posts one text reply to a given message within thirty minutes. Combine completed results in that reply. The posting command rejects a second text reply during that window; idempotent retries return the original message. Another assistant and another reply target have their own windows.
+
 [中文](answering.zh-CN.md)

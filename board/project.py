@@ -54,6 +54,20 @@ def _post(root,author,body,parent_id=None,client_id=None,images=None,channel='ma
                 if previous.get('request_digest')!=request_digest:raise ValueError('Retry content must match')
             elif previous['body']!=body.strip() or previous.get('parent_id')!=parent_id or previous.get('images',[])!=(images or []):raise ValueError('Retry content must match')
             return project_message(root,previous)
+    # The caller holds the project lock; retries return above before this check.
+    if author in ('Claude','GPT') and parent_id and body.strip():
+        now=datetime.now().astimezone()
+        for previous in all_posts(root):
+            if (previous.get('author')!=author or previous.get('parent_id')!=parent_id
+                    or previous.get('deleted') or not (previous.get('body') or '').strip()
+                    or not session_message(previous)):
+                continue
+            try:
+                created=datetime.fromisoformat(previous.get('created_at',''))
+                if created.tzinfo is None:created=created.astimezone()
+            except (TypeError,ValueError):continue
+            if 0 <= (now-created).total_seconds() < 30*60:
+                raise ValueError('One reply per message within 30 minutes. Say each thing once; combine new results in one update.')
     p=dict(id=uuid.uuid4().hex,author=author,body=body.strip(),parent_id=parent_id,client_id=client_id,images=images or [],files=files or [],channel=channel,created_at=datetime.now().astimezone().isoformat())
     if reference:p['reference']=reference
     if request_digest:p['request_digest']=request_digest
