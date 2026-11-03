@@ -9,6 +9,7 @@ from .lifecycle import ROLES, append_text, data_file, moment
 
 HEAD = re.compile(r'^### (\d{4}-\d\d-\d\d[T ][^·\n]+?)\s*·\s*(GPT|Claude)\s*→\s*(GPT|Claude)(?:\s*·\s*(T\d+))?(?:\s*·\s*(.*))?\s*$')
 ASK = re.compile(r'please (?:decide|confirm|approve)|decision requested|请定|请明确|请确认|请批', re.I)
+QUESTION_ID = re.compile(r'^(?:问|答)[:：]\s*\[([A-Za-z0-9_]{4,32})\]')
 
 def validate_plain(who,body,options=(),lean=None):
     if who!='GPT':return
@@ -101,10 +102,11 @@ def open_questions(root, *, now=None):
     for row in entries(root):
         if now is not None and row['at'] > moment(now):
             continue
-        title = re.sub(r'^(?:问|答)：', '', row['title'], count=1).strip()
-        key = row['task'] + ':' + title if title else row['task']
-        if row['author'] == 'GPT' and row['peer'] == 'Claude' and (
-                row['title'].startswith('问：') or ASK.search(row['body'])):
+        title = re.sub(r'^(?:问|答)[:：]', '', row['title'], count=1).strip()
+        identifier = QUESTION_ID.match(row['title'])
+        key = row['task'] + ':' + ('id:' + identifier[1] if identifier else title) if title else row['task']
+        asks = re.match(r'^问[:：]', row['title']) or (not row['title'].strip() and ASK.search(row['body']))
+        if row['author'] == 'GPT' and row['peer'] == 'Claude' and asks:
             pending.setdefault(key, row)
         elif row['author'] == 'Claude' and row['peer'] == 'GPT' and not row['title'].startswith('问：'):
             pending.pop(key, None)
