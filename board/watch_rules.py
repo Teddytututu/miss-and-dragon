@@ -32,8 +32,11 @@ def conditions(root, state, at):
         out.append(dict(type='idle_cards_unfinished_work', task='resources', generation=[tasks, free],
                         tasks=tasks, available_slots=free,
                         action='Start eligible queued work within the existing resource cap'))
-    for task, asked in open_questions(root).items():
-        if at - asked >= 1800:
+    from . import exchange
+    for task, question in exchange.open_questions(root, now=at).items():
+        asked = question['at'].timestamp()
+        sensitive = any('[' + kind + ']' in question['title'] for kind in ('external', 'deletion', 'conclusion'))
+        if at - asked >= 1800 and not sensitive and exchange.execution_decision(root, question, now=at) is None:
             out.append(dict(type='question_unanswered_30min', task=task, generation=asked, asked=asked,
                             action='Apply the recorded recommendation for reversible authorized work within the resource cap; approvals for sending, payments and deletion remain with the user'))
     for issue in check(root, now=at, owner='GPT'):

@@ -111,3 +111,28 @@ def open_questions(root, *, now=None):
         elif row['author'] == 'Claude' and row['peer'] == 'GPT' and not row['title'].startswith('问：'):
             pending.pop(key, None)
     return pending
+
+
+def execution_decision(root, question, *, now=None):
+    """Find an executor choice linked to this exact still-open question."""
+    identifier = QUESTION_ID.match(question['title'])
+    if identifier is None:
+        return None
+    at = moment(now) or datetime.now().astimezone()
+    rows = storage.lines(data_file(Path(root).resolve(), 'attachments/coordination.jsonl'))
+    token = re.compile(r'(?<![A-Za-z0-9_])' + re.escape(identifier[1]) + r'(?![A-Za-z0-9_])')
+    task = re.search(r'\[(T\d+)\]', question['title'])
+    task = task[1] if task else question['task'] if question['task'] != 'exchange' else None
+    for row in reversed(rows):
+        recorded = moment(row.get('at'))
+        if (row.get('kind') != 'decision' or row.get('by') != 'GPT' or not row.get('id')
+                or recorded is None or not question['at'] <= recorded <= at
+                or (task and row.get('task') != task)
+                or not token.search(str(row.get('body', '')) + ' ' + str(row.get('why', '')))):
+            continue
+        vetoed = any(v.get('kind') == 'veto' and v.get('by') == 'Claude'
+                     and v.get('ref') == row['id'] and moment(v.get('at')) is not None
+                     and recorded <= moment(v['at']) <= at for v in rows)
+        if not vetoed:
+            return row
+    return None
