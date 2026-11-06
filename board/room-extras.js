@@ -104,6 +104,10 @@ window.RoomExtras = (() => {
       actions.append(cancel,confirm);dialog.append(title,text,actions);document.body.append(dialog);dialog.showModal();cancel.focus({preventScroll:true});
     });
   }
+  api.hasUnread = (items, seen, author) => {
+    const boundary = Date.parse(seen) || 0;
+    return api.discussionItems(items).some(item => !item.deleted && item.author !== author && (Date.parse(item.created_at) || 0) > boundary);
+  };
   api.messageActions = (item,article,handlers) => {
     if(api.readOnly()||item.deleted||item.can_delete!==true)return null;
     const more=button('⋯','room-actions-button');more.setAttribute('aria-label','消息操作');more.setAttribute('aria-haspopup','menu');more.setAttribute('aria-expanded','false');

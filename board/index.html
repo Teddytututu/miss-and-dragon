@@ -1376,7 +1376,7 @@ DiscussionRoom.init();
   const set = v => { open = v; localStorage.setItem('dockOpen', v ? '1' : '0'); apply(); };
   tab.onclick = () => set(true); close.onclick = () => set(false);
   window.addEventListener('resize', apply); apply();
-  window.dockUnread = items => { const seen = lastSeen(), fresh = (items || []).some(m => !['owner','owner'].includes(m.author) && String(m.created_at) > seen);
+  window.dockUnread = items => { const seen = lastSeen(), fresh = RoomExtras.hasUnread(items, seen, BoardIdentity.me.id);
     tab.querySelector('.dot').style.display = !open && fresh ? 'inline-block' : 'none'; if (open) localStorage.setItem('dockSeen', new Date().toISOString()); };
 })();
 load().then(spy); setInterval(load, 20000); setInterval(() => { lastRev = ''; load(); }, 300000);

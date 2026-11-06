@@ -113,3 +113,13 @@ test('deleted messages expose no reaction control and stop grouping',()=>{
 test('both themes and narrow layout retain attribution and tombstone rules',()=>{
  const css=fs.readFileSync(path.join(assets,'discussion.css'),'utf8')+fs.readFileSync(path.join(assets,'room-features.css'),'utf8');for(const marker of ['room-deleted-marker','room-message-menu','room-delete-dialog','room-reaction-avatar','room-reaction-actors','room-reaction.mine','html.theme-pink','@media(max-width:600px)'])assert.ok(css.includes(marker),marker);
 });
+
+test('unread entry compares instants across offsets and filters own or deleted messages',()=>{
+ const h=harness(),seen='2030-01-01T08:30:00+08:00';
+ const row={id:'u1',author:'Claude',created_at:'2030-01-01T00:31:00Z'};
+ assert.equal(h.api.hasUnread([row],seen,'owner'),true);
+ assert.equal(h.api.hasUnread([{...row,created_at:'2030-01-01T01:00:00+01:00'}],seen,'owner'),false);
+ assert.equal(h.api.hasUnread([{...row,author:'owner'}],seen,'owner'),false);
+ assert.equal(h.api.hasUnread([{...row,deleted:true}],seen,'owner'),false);
+ assert.equal(h.api.hasUnread([{...row,created_at:'invalid'}],seen,'owner'),false);
+});

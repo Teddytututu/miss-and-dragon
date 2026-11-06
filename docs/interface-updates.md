@@ -11,3 +11,7 @@ Avatars and reaction art use a private one-minute browser cache. Content-based E
 ## Message actions / 消息操作
 
 Use the visible Reply control beneath a message. The overflow menu contains the permitted withdrawal or administrator deletion action. It appears when the server grants deletion permission and supports keyboard navigation and touch hold.
+
+## Unread entry / 入口未读提示
+
+The discussion entry lights up for newer messages from other authors while closed. Timestamp offsets are compared as instants. Deleted entries and the current author are excluded.
