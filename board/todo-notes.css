@@ -1,0 +1,31 @@
+#todo{position:relative}
+.todo-item{position:relative;touch-action:pan-y}
+.note-replies{font-family:var(--display-font),sans-serif;font-size:13px;line-height:1.6;color:var(--ink)}
+.note-reply{padding-top:8px;border-top:1px dashed color-mix(in srgb,var(--muted) 24%,transparent);margin-top:8px;overflow-wrap:anywhere}
+.note-write{margin-top:10px;border-top:1px dashed var(--muted);padding-top:6px}
+.note-write input{font:inherit;font-family:var(--display-font),sans-serif;width:100%;box-sizing:border-box;background:transparent;border:0;border-bottom:1px solid var(--muted);outline-offset:3px;padding:4px 0;color:var(--ink)}
+.note-write-status{display:block;font-size:11px;color:var(--red)}
+.note-announcement:empty{display:none}
+
+.note-actions{display:flex;justify-content:flex-end;margin-top:8px}
+.note-reply-trigger{font:inherit;font-size:12px;color:var(--ink);background:transparent;border:0;border-bottom:1px dashed var(--muted);padding:2px 0;cursor:pointer}
+.note-reply-trigger:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.todo-item:has(.note-write)>.note-actions{display:none}
+@media(hover:hover) and (pointer:fine){.todo-item{user-select:text;-webkit-user-select:text}}
+
+
+.note-reply-trigger{font-size:12px;color:var(--accent,#c2386f);background:color-mix(in srgb,#fff 70%,transparent);border:1px dashed color-mix(in srgb,var(--accent,#c2386f) 45%,transparent);border-radius:999px;padding:1px 9px;line-height:1.6;opacity:.85;transition:opacity .15s,background .15s}
+.note-reply-trigger:hover{opacity:1;background:#fff}
+.note-write input{border-bottom:1.5px dashed color-mix(in srgb,var(--accent,#c2386f) 55%,transparent);outline:none}
+.note-write input:focus{border-bottom-style:solid}
+.note-write-bar{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:11px}
+.note-write-count{color:var(--muted);margin-right:auto}
+.note-write-count.full{color:var(--red)}
+.note-write-cancel,.note-write-send{font:inherit;font-size:11px;border-radius:999px;padding:1px 9px;cursor:pointer}
+.note-write-cancel{background:transparent;border:1px solid color-mix(in srgb,var(--muted) 40%,transparent);color:var(--muted)}
+.note-write-send{background:var(--accent,#c2386f);border:1px solid var(--accent,#c2386f);color:#fff}
+.note-write-send:disabled{opacity:.5}
+.note-replies .note-reply span{font-size:13px}
+
+@media (hover:hover) and (pointer:fine){.todo-item .note-reply-trigger{opacity:0;transition:opacity .15s}.todo-item:hover .note-reply-trigger,.todo-item:focus-within .note-reply-trigger,.note-reply-trigger:focus-visible{opacity:.85}.todo-item .note-reply-trigger:hover{opacity:1}}
+.note-actions{gap:8px}

@@ -19,7 +19,7 @@ def write_report(path,value):
 
 def files():
     names=['.gitattributes','.gitignore','LICENSE','README.md','README.zh-CN.md','当前指令.md','AGENTS.md','CLAUDE.md','pyproject.toml','requirements.txt','发言.py']
-    names += ['board/motion.css', 'board/motion.js']
+    names += ['board/motion.css', 'board/motion.js','board/todo_notes.py','board/todo-notes.js','board/todo-notes.css']
     names += ['templates/report-kit/report_kit.py', 'templates/report-kit/check_report.py', 'templates/report-kit/example_build.py', 'templates/report-kit/example.html', 'templates/report-kit/README.md', 'templates/report-kit/FORMAT.md', 'templates/report-kit/FORMAT.zh-CN.md', 'docs/writing-reports.md', 'docs/writing-reports.zh-CN.md']
     names += ['tests/room-sizing.test.cjs', 'tests/interface-updates.test.cjs', 'docs/interface-updates.md', 'docs/interface-updates.zh-CN.md']
     names+=['board/'+n for n in ['__init__.py','__main__.py','app.py','contacts.py','project.py','maintenance.py','scheduler.py','provider_bridge.py','onboarding.py','artwork.py','assets.py','environment.py','storage.py','workers.py','task_eta.py','eta-view.js','eta-view.css','fanart.css','index.html','identity.js','identity.css','discussion.js','discussion.css','room-extras.js','room-markdown.js','room-features.css','v02.js','v02.css','room-collection.js','mood.js','room-collection.css','help.html']]

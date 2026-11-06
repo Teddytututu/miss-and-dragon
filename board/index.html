@@ -899,6 +899,7 @@ html.theme-pink #nav .brand .brand-person img{transform:scale(1.45);transform-or
 <script src="/lifecycle-view.js"></script>
 <link rel="stylesheet" href="/index-tabs.css">
 <link rel="stylesheet" href="/private-notes.css">
+<link rel="stylesheet" href="/todo-notes.css">
 <link rel="stylesheet" href="/notebook.css">
 <link rel="stylesheet" href="/visual.css">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -986,6 +987,7 @@ function whenClass(w) {  // urgency pill: today/overdue -> urgent, within 3 days
   return days <= 0 ? 'w-urgent' : days <= 3 ? 'w-soon' : 'w-later';
 }
 function renderTodo(todo) {
+  if(window.TodoNotes)return TodoNotes.render(todo,[],{whenClass,linkOrText,refresh:load});
   const box = $('#todo-list'); box.replaceChildren();
   $('#todo-n').textContent = todo.length || '';
   if (!todo.length) { box.append(el('div', 'muted', '现在没有要你做的事。')); return; }
@@ -1459,6 +1461,7 @@ load().then(spy); setInterval(load, 20000); setInterval(() => { lastRev = ''; lo
 <script src="/v02.js"></script>
 <link rel="stylesheet" href="/cadence.css">
 <script src="/cadence.js"></script>
+<script src="/todo-notes.js"></script>
 <script src="/notebook.js"></script>
 <link rel="stylesheet" href="/motion.css">
 <script src="/motion.js"></script>

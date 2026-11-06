@@ -19,3 +19,7 @@ The discussion entry lights up for newer messages from other authors while close
 ## Phone discussion / 手机讨论室
 
 On phones the discussion fills the visible screen and tracks the software keyboard. Drag the input handle or use its arrow keys to change input height. The preference survives reloads. Tablet drawers retain their height stops. Long filenames wrap inside the composer.
+
+## Sticky-note replies / 便利贴回一句
+
+Hover over a note to reveal Reply. Enter on a focused card or a long press on touch opens the same composer. Replies accept 40 characters, with a counter, Send and Cancel. Each reply also reaches the assigning assistant in the discussion. Retried requests keep a single message.

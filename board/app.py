@@ -12,7 +12,7 @@ STATIC={n for n in ['index.html','discussion.js','discussion.css','identity.js',
 STATIC.update({'lifecycle-view.js','lifecycle-view.css','index-tabs.js','index-tabs.css','private-notes.js','private-notes.css'})
 STATIC.update({'i18n.js','i18n.css','help.en.html'})
 STATIC.update({'notebook.css','notebook.js','XiaolaiSC-subset.woff2','visual.css','favicon-32.png','apple-touch-icon.png'})
-STATIC.update({'motion.css','motion.js'})
+STATIC.update({'motion.css','motion.js','todo-notes.js','todo-notes.css'})
 STATIC.update({'plan-checks.js','plan-checks.css','cadence.js','cadence.css'})
 REACTIONS={'👍':'done','❤️':'care','😂':'smile','🎉':'celebrate','👀':'review','💡':'idea'}
 REACTION_KEYS=list(dict.fromkeys([*REACTIONS,*(x['key'] for x in assets.emote_manifest())]))
@@ -100,6 +100,8 @@ def snapshot(root,channel=None):
     if not storage.read(root/'project.json',{}).get('onboarding_complete'):
         overview['todo']=[dict(what='告诉 Claude 你的研究问题和想要的成果',when='开始时',how='在讨论室告诉大小姐')] + [r for r in overview.get('todo',[]) if r.get('what') not in ['写下一句研究问题与希望得到的成果','告诉 Claude 你的研究问题和想要的成果']]
     for task in tasks:task['eta']=overview.get('task_etas',{}).get(task['id'])
+    from . import todo_notes
+    overview.update(todo_notes.view(overview))
     result=dict(overview=overview,tasks=tasks,discussion=conversation(root,channel),project=storage.read(root/'project.json'),modified=datetime.now().astimezone().isoformat())
     result['revision']=hashlib.sha256(json.dumps({k:v for k,v in result.items() if k!='modified'},sort_keys=True).encode()).hexdigest();return result
 
@@ -183,6 +185,9 @@ def create_server(root,port=8780,open_file=None):
             if private_notes.dispatch(self,root,route,query):return
             if self.command=='POST':
                 p=self.body(68*1024**2 if route=='/api/discussion' else 100_000)
+                if route=='/api/todo/action':
+                    from . import todo_notes
+                    return self.respond(200,todo_notes.choose(root,'owner',p))
                 if route=='/api/plan/check':
                     from datetime import datetime
                     with storage.locked(root):
