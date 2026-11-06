@@ -131,3 +131,33 @@ def idle_roles(root,rows):
                    life.state_of(r['status'])=='queued' and re.search(r'ready now|now|现在可开工|立即',r['status'],re.I) for r in mine):
             out.append(role)
     return out
+
+
+def result_report_issues(root,at):
+    """Find accepted tasks whose lead result report is overdue."""
+    from . import lifecycle as life, project
+    from datetime import timedelta
+    accepted={}
+    for row in storage.lines(life.data_file(root,'attachments/task-flow.jsonl')):
+        if row.get('action')=='accept' and row.get('by')=='Claude':
+            stamp=life.moment(row.get('at'))
+            task=row.get('task')
+            if isinstance(task,str) and re.fullmatch(r'T\d+',task) and stamp and stamp<=at:
+                if task not in accepted or stamp>accepted[task]:accepted[task]=stamp
+    posts=[row for row in project.all_posts(root) if row.get('author')=='Claude'
+           and row.get('channel','main')=='main' and not row.get('deleted')
+           and project.session_message(row)]
+    out=[]
+    for task,stamp in accepted.items():
+        if at-stamp<=timedelta(hours=2):continue
+        for row in posts:
+            created=life.moment(row.get('created_at'))
+            if created is None or created<stamp-timedelta(hours=2):continue
+            explicit=row.get('task')
+            if explicit==task or explicit is None and re.search(r'(?<![A-Za-z0-9_])'+re.escape(task)+r'(?![A-Za-z0-9_])',row.get('body','')):
+                break
+        else:
+            out.append(dict(owner='Claude',task=task,code='result_report_late',
+                            what='Accepted task result report is due: '+task,
+                            fix='Post the completed result with say --task '+task))
+    return out

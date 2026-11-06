@@ -38,18 +38,20 @@ def message_metadata(row):
 
 def session_message(row):return message_metadata(row)['message_kind']=='assistant'
 
-def post(root,author,body,parent_id=None,client_id=None,images=None,channel='main',files=None,request_digest=None):
+def post(root,author,body,parent_id=None,client_id=None,images=None,channel='main',files=None,request_digest=None,task=None):
     if author not in ['owner','Claude','GPT']:raise ValueError('Choose the user, Claude or GPT')
     if not isinstance(body,str) or len(body)>6000 or not body.strip() and not images and not files:raise ValueError('Provide text or an attachment')
     if client_id is not None and (not isinstance(client_id,str) or not re.fullmatch(r'[a-zA-Z0-9_-]{16,80}',client_id)):raise ValueError('Message identifier format')
-    with storage.locked(root):return _post(root,author,body,parent_id,client_id,images,channel,files,request_digest=request_digest)
+    with storage.locked(root):return _post(root,author,body,parent_id,client_id,images,channel,files,request_digest=request_digest,task=task)
 
-def _post(root,author,body,parent_id=None,client_id=None,images=None,channel='main',files=None,reference=None,request_digest=None):
+def _post(root,author,body,parent_id=None,client_id=None,images=None,channel='main',files=None,reference=None,request_digest=None,task=None):
+    if task is not None and (not isinstance(task,str) or not re.fullmatch(r'T\d+',task)):raise ValueError('Task identifier format')
     channel=channel_id(channel);path=ledger(root,channel);rows=storage.lines(path)
     if parent_id and not any(p['id']==parent_id for p in (all_posts(root) if channel=='main' else rows)):raise ValueError('Reply target must exist')
     if client_id:
         previous=next((p for p in rows if p.get('client_id')==client_id and p['author']==author),None)
         if previous:
+            if previous.get('task')!=task:raise ValueError('Retry task must match')
             if request_digest:
                 if previous.get('request_digest')!=request_digest:raise ValueError('Retry content must match')
             elif previous['body']!=body.strip() or previous.get('parent_id')!=parent_id or previous.get('images',[])!=(images or []):raise ValueError('Retry content must match')
@@ -69,6 +71,7 @@ def _post(root,author,body,parent_id=None,client_id=None,images=None,channel='ma
             if 0 <= (now-created).total_seconds() < 30*60:
                 raise ValueError('One reply per message within 30 minutes. Say each thing once; combine new results in one update.')
     p=dict(id=uuid.uuid4().hex,author=author,body=body.strip(),parent_id=parent_id,client_id=client_id,images=images or [],files=files or [],channel=channel,created_at=datetime.now().astimezone().isoformat())
+    if task is not None:p['task']=task
     if reference:p['reference']=reference
     if request_digest:p['request_digest']=request_digest
     storage.append(path,p);return project_message(root,p)

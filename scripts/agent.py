@@ -166,7 +166,7 @@ def build_parser():
     for field in TASK_FIELDS:
         t.add_argument('--' + field.replace('_', '-'))
     pt = add('patrol'); pt.add_argument('note'); pt.add_argument('--every', type=int, default=120);pt.add_argument('--mood');pt.add_argument('--defer', action='append', default=[], metavar='TASK:reason')
-    s = add('say'); s.add_argument('text'); s.add_argument('--reply'); s.add_argument('--image', action='append', default=[])
+    s = add('say'); s.add_argument('text'); s.add_argument('--reply'); s.add_argument('--task'); s.add_argument('--image', action='append', default=[])
     r = add('react'); r.add_argument('message_id'); r.add_argument('emoji',nargs='?',default='👀'); r.add_argument('--remove','--off',dest='remove',action='store_true'); r.add_argument('--enough',action='store_true')
     d = add('dm'); d.add_argument('--reply', metavar='TEXT')
     c = add('counter'); c.add_argument('run'); c.add_argument('done', type=int); c.add_argument('total', type=int)
@@ -256,7 +256,7 @@ def main(argv=None):
         for item in a.defer: args += ['--defer', item]
         ok, out, err = run_script('patrol_log.py', args)
     elif a.command == 'say':
-        argv2 = [a.who, a.text, '--root', data] + (['--reply', a.reply] if a.reply else [])
+        argv2 = [a.who, a.text, '--root', data] + (['--reply', a.reply] if a.reply else []) + (['--task', a.task] if a.task else [])
         for image in a.image:
             argv2 += ['--image', image]
         ok, out, err = run_script('post_message.py', argv2)

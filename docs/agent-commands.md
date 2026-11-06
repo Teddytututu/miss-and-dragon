@@ -121,3 +121,10 @@ Use `react MESSAGE_ID 💡 --enough` when the assistant decides that a reaction 
 `task new` returns advisory `similar_tasks` and `warnings` when titles share at least two meaningful two-character fragments or match exactly after normalization. It checks the live board and archive, keeps creation successful and leaves the scope decision to the lead.
 
 `checks run` records due process observations; `checks show` reads saved counts. Normal `wake` also samples due checks through the existing wake cadence. [Process checks](process-checks.md) explains the three-hour interval and ten-success default.
+
+
+### Task-linked result reports / 按任务关联结果汇报
+
+Use `say "The result page is ready." --task T1` to attach a task identifier as hidden message metadata while keeping the displayed message focused on the result. A retry retains the same task identifier. Accepted tasks have a two-hour reporting grace period; the check matches Claude's active main-conversation reports by exact task metadata, with whole task IDs in historical message text as a fallback. Reports from more than two hours before acceptance stay historical.
+
+使用 `say "结果页已做好。" --task T1` 将任务号存入消息元数据，正文保留实际成果。重试沿用同一任务号。验收后有两小时汇报宽限；检查优先精确匹配 Claude 在主讨论室的有效消息元数据，历史正文按完整任务号兼容匹配。验收两小时前的消息作为历史记录保留。

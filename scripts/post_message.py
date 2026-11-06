@@ -8,10 +8,10 @@ from board.project import post,channel_id,ledger,message_metadata,all_posts,dele
 from board.app import image_upload,file_upload
 from board import storage
 from board.writing import validate_message
-p=argparse.ArgumentParser();p.add_argument('author',choices=['Claude','GPT'],nargs='?');p.add_argument('text',nargs='?');p.add_argument('--reply');p.add_argument('--delete',metavar='MESSAGE_ID');p.add_argument('--image',action='append',type=Path,default=[]);p.add_argument('--file',action='append',type=Path,default=[]);p.add_argument('--root',type=Path,default=ROOT/'data');p.add_argument('--channel');p.add_argument('--recent',action='store_true');p.add_argument('--limit',type=int,default=12);a=p.parse_args()
+p=argparse.ArgumentParser();p.add_argument('author',choices=['Claude','GPT'],nargs='?');p.add_argument('text',nargs='?');p.add_argument('--reply');p.add_argument('--task');p.add_argument('--delete',metavar='MESSAGE_ID');p.add_argument('--image',action='append',type=Path,default=[]);p.add_argument('--file',action='append',type=Path,default=[]);p.add_argument('--root',type=Path,default=ROOT/'data');p.add_argument('--channel');p.add_argument('--recent',action='store_true');p.add_argument('--limit',type=int,default=12);a=p.parse_args()
 channel=channel_id(a.channel or 'main')
 if a.delete:
- if not a.author or a.text is not None or a.reply or a.image or a.file or a.recent:p.error('Withdrawal uses an assistant identity and --delete MESSAGE_ID')
+ if not a.author or a.text is not None or a.reply or a.task or a.image or a.file or a.recent:p.error('Withdrawal uses an assistant identity and --delete MESSAGE_ID')
  print(json.dumps(delete_message(a.root,a.delete,a.author,assistant=True,channel=channel if a.channel else None),ensure_ascii=False));raise SystemExit(0)
 if a.recent:
  rows=[row for row in all_posts(a.root) if a.channel is None or row.get('channel','main')==channel]
@@ -26,4 +26,4 @@ for file in a.image:
  mime=mimetypes.guess_type(file.name)[0] or 'application/octet-stream';images.append(image_upload(a.root,'data:'+mime+';base64,'+base64.b64encode(file.read_bytes()).decode()))
 for file in a.file:
  mime=mimetypes.guess_type(file.name)[0] or 'application/octet-stream';files.append(file_upload(a.root,dict(name=file.name,data='data:'+mime+';base64,'+base64.b64encode(file.read_bytes()).decode())))
-print(post(a.root,a.author,a.text,a.reply,images=images,channel=channel,files=files)['id'])
+print(post(a.root,a.author,a.text,a.reply,images=images,channel=channel,files=files,task=a.task)['id'])
