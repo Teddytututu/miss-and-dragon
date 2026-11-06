@@ -105,12 +105,11 @@ window.RoomExtras = (() => {
     });
   }
   api.messageActions = (item,article,handlers) => {
-    if(api.readOnly()||item.deleted)return null;
+    if(api.readOnly()||item.deleted||item.can_delete!==true)return null;
     const more=button('⋯','room-actions-button');more.setAttribute('aria-label','消息操作');more.setAttribute('aria-haspopup','menu');more.setAttribute('aria-expanded','false');
     let busy=false;
     const show=()=>{
       const menu=el('div','room-message-menu');menu.setAttribute('role','menu');menu.setAttribute('aria-label','消息操作');
-      const reply=button('回复','room-menu-reply');reply.setAttribute('role','menuitem');reply.onclick=()=>{api.closeMenus();handlers.reply();};menu.append(reply);
       if(item.can_delete===true){
         const remove=button(api.deleteAction(item)==='delete'?'管理员删除':'撤回','room-menu-delete');remove.setAttribute('role','menuitem');
         remove.onclick=async()=>{

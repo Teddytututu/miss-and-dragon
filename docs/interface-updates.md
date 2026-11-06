@@ -7,3 +7,7 @@ Discussion opens with the latest 18 messages. Load older messages explicitly. Th
 ## Private image cache / 图片私有缓存
 
 Avatars and reaction art use a private one-minute browser cache. Content-based ETags revalidate unchanged files and refresh replaced artwork after expiry. SVG restrictions continue to apply. Discussion records and document downloads use their existing response policies.
+
+## Message actions / 消息操作
+
+Use the visible Reply control beneath a message. The overflow menu contains the permitted withdrawal or administrator deletion action. It appears when the server grants deletion permission and supports keyboard navigation and touch hold.

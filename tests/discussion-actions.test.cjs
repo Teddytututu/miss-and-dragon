@@ -44,7 +44,7 @@ function harness({guest=false}={}){
  h.article=()=>{const n=new Element('article');n.dataset.discussionId='m1';document.body.append(n);return n;};
  h.loadDiscussion=()=>{
   for(const id of ['room-threads','room-status','room-latest','room-reply-context','room-reply-label','room-submit','room-text']){const n=new Element('div');n.id=id;document.body.append(n);}
-  let source=fs.readFileSync(path.join(assets,'discussion.js'),'utf8');source=source.replace('return {init,update,cleanText,jumpTo};','return {init,update,cleanText,jumpTo,_message:message,_set:(rows)=>{items=rows;draft={};}};');
+  let source=fs.readFileSync(path.join(assets,'discussion.js'),'utf8');source=source.replace('return {init,update,cleanText,jumpTo,sizing};','return {init,update,cleanText,jumpTo,_message:message,_set:(rows)=>{items=rows;draft={};}};');
   vm.runInNewContext(source,context);return context.window.DiscussionRoom;
  };
  return h;
@@ -70,7 +70,7 @@ test('a deleted message renders only a marker and replies redact its quote',()=>
  const reply=room._message({id:'m2',author:'Claude',body:'Reply',parent_id:'m1'},new Map([['m1',deleted]]));assert.match(reply.querySelector('.room-quote').textContent,/原消息已撤回/);assert.doesNotMatch(reply.querySelector('.room-quote').textContent,/SECRET/);
 });
 test('server can_delete exclusively controls deletion entry and guests stay read-only',()=>{
- for(const guest of [false,true]){const h=harness({guest}),a=h.article();const menu=h.api.messageActions({id:'m1',can_delete:true},a,{reply(){}});if(guest){assert.equal(menu,null);continue;}a.append(menu);menu.click();assert.ok(h.document.querySelector('.room-menu-delete'));h.api.closeMenus();const denied=h.api.messageActions({id:'m2',can_delete:false},a,{reply(){}});a.append(denied);denied.click();assert.equal(h.document.querySelector('.room-menu-delete'),null);}
+ for(const guest of [false,true]){const h=harness({guest}),a=h.article();const menu=h.api.messageActions({id:'m1',can_delete:true},a,{reply(){}});if(guest){assert.equal(menu,null);continue;}a.append(menu);menu.click();assert.ok(h.document.querySelector('.room-menu-delete'));h.api.closeMenus();const denied=h.api.messageActions({id:'m2',can_delete:false},a,{reply(){}});assert.equal(denied,null);}
 });
 test('administrator and author actions have distinct labels before a tombstone exists',()=>{
  const h=harness();assert.equal(h.api.deleteAction({author:'Claude',delete_action:'withdraw'}),'delete');assert.equal(h.api.deleteAction({author:'owner',delete_action:'withdraw'}),'withdraw');
@@ -90,7 +90,7 @@ test('backend denial preserves the original message and reports the failure',asy
  const h=harness(),a=h.article();let failed='';h.context.fetch=async()=>({ok:false,json:async()=>({error:'权限已更新'})});const menu=h.api.messageActions({id:'m1',body:'Keep me',can_delete:true},a,{reply(){},failed:value=>failed=value,deleted:assert.fail});a.append(menu);menu.click();h.document.querySelector('.room-menu-delete').click();h.document.querySelector('.room-delete-confirm').click();await h.flush();assert.equal(failed,'权限已更新');assert.ok(menu.isConnected);
 });
 test('menu supports arrows, Escape and an outside click',()=>{
- const h=harness(),a=h.article(),menu=h.api.messageActions({id:'m1',can_delete:true},a,{reply(){}});a.append(menu);menu.click();const panel=h.document.querySelector('.room-message-menu');assert.equal(h.document.activeElement.className,'room-menu-reply');panel.emit('keydown',{key:'ArrowDown'});assert.equal(h.document.activeElement.className,'room-menu-delete');h.escape();assert.equal(h.document.querySelector('.room-message-menu'),null);assert.equal(h.document.activeElement,menu);menu.click();h.document.emit('pointerdown',{target:h.document.body});assert.equal(h.document.querySelector('.room-message-menu'),null);
+ const h=harness(),a=h.article(),menu=h.api.messageActions({id:'m1',can_delete:true},a,{reply(){}});a.append(menu);menu.click();const panel=h.document.querySelector('.room-message-menu');assert.equal(h.document.querySelector('.room-menu-reply'),null);assert.equal(h.document.activeElement.className,'room-menu-delete');panel.emit('keydown',{key:'ArrowDown'});assert.equal(h.document.activeElement.className,'room-menu-delete');h.escape();assert.equal(h.document.querySelector('.room-message-menu'),null);assert.equal(h.document.activeElement,menu);menu.click();h.document.emit('pointerdown',{target:h.document.body});assert.equal(h.document.querySelector('.room-message-menu'),null);
 });
 test('touch hold opens actions and movement cancels the gesture',()=>{
  const h=harness(),a=h.article(),bubble=new h.Element('div');a.append(bubble);a.append(h.api.messageActions({id:'m1',can_delete:true},a,{reply(){}}));a.emit('pointerdown',{target:bubble,pointerType:'touch',clientX:0,clientY:0});a.emit('pointermove',{clientX:30,clientY:0});h.advance(500);assert.equal(h.document.querySelector('.room-message-menu'),null);a.emit('pointerdown',{target:bubble,pointerType:'touch',clientX:0,clientY:0});h.advance(500);assert.ok(h.document.querySelector('.room-message-menu'));
