@@ -27,3 +27,7 @@ Hover over a note to reveal Reply. Enter on a focused card or a long press on to
 ## Free paper wall / 自由贴墙
 
 Notes size themselves to their content and fill the available wall with staggered positions and alternating angles. Adjacent papers use contrasting theme colours. Positions are deterministic across refreshes, and resizing recomputes the layout.
+
+## Notes in Today / 便利贴放进今天
+
+Drag the note handle into Today, click the handle, or choose Today from the touch menu. Unassigned notes show Pending. Checked tasks remain in place for the whole day and support undo through their checkbox. The next day, completed notes enter the archive and unfinished notes return in their original order. Dates follow the host workspace timezone.

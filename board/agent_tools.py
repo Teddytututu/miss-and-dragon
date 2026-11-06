@@ -52,6 +52,8 @@ def expiry(value):
     if at is None:raise ValueError('--until requires an ISO date and time')
     return at.isoformat()
 def expire_due(root,*,now=None):
+    from . import note_schedule
+    note_schedule.rollover(root,(now or stamp()).date())
     at=stamp(now);changed=[]
     def update(d):
         for row in d.get('links',[]):

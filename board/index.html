@@ -986,8 +986,8 @@ function whenClass(w) {  // urgency pill: today/overdue -> urgent, within 3 days
   const now = new Date(), d = new Date(now.getFullYear(), +m[1] - 1, +m[2]), days = Math.floor((d - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 864e5);
   return days <= 0 ? 'w-urgent' : days <= 3 ? 'w-soon' : 'w-later';
 }
-function renderTodo(todo) {
-  if(window.TodoNotes)return TodoNotes.render(todo,[],{whenClass,linkOrText,refresh:load});
+function renderTodo(todo,done=[]) {
+  if(window.TodoNotes)return TodoNotes.render(todo,done,{whenClass,linkOrText,refresh:load});
   const box = $('#todo-list'); box.replaceChildren();
   $('#todo-n').textContent = todo.length || '';
   if (!todo.length) { box.append(el('div', 'muted', '现在没有要你做的事。')); return; }
@@ -1007,6 +1007,7 @@ function slotRow(s, isToday) {
   const r = el('div', 'slot' + (s.kind === '考试' ? ' exam' : ''));
   r.append(el('span', 't', s.time), el('span', 'w', s.what), el('span', 'kind k-' + s.kind, s.kind));
   if(window.PlanChecks)PlanChecks.attach(r,s);
+  if(s.scheduled_from_note&&!s.time){const badge=r.querySelector('.kind');badge.textContent='待排';badge.classList.add('note-plan-pending');}
   if (isToday) {
     const m = (s.time || '').match(/(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/);
     if (m) { const now = new Date(), cur = now.getHours() * 60 + now.getMinutes();
@@ -1031,6 +1032,7 @@ function renderPlan(days) {
   const t = el('div', 'card day');
   t.append(el('h3', null, todayDay ? '今天 · ' + todayDay.date : '今天'));
   if (todayDay) for (const s of todayDay.items) t.append(slotRow(s, true)); else t.append(el('div', 'muted', '今天没有排具体安排。'));
+  if(window.TodoNotes)TodoNotes.attachToday(t);
   box.append(t);
   if (tomDay) { const [d, b] = fold('plan-tomorrow', '明天 · ' + tomDay.date, false); for (const s of tomDay.items) b.append(slotRow(s)); box.append(d); }
   if (later.length) { const [d, b] = fold('plan-later', '后面的安排', false);
@@ -1348,7 +1350,7 @@ async function load() {
     const o = d.overview || {};
     window.dispatchEvent(new CustomEvent("overview",{detail:{overview:o,tasks:d.tasks||[]}}));
     BOARD = {tasks: d.tasks || [], names: taskNames(o.task_groups)};
-    renderTodo(o.todo || []); renderPlan(o.schedule || []);
+    renderTodo(o.todo || [],o.todo_done||[]); renderPlan(o.schedule || []);
     renderProgress(o); renderTree(o);
     renderTasks(o, d.tasks || []); renderFiles(o.links);
     DiscussionRoom.update(d.discussion); window.dockUnread && window.dockUnread((d.discussion || {}).items);

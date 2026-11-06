@@ -72,6 +72,8 @@ def conversation(root,channel=None):
     result['revision']=hashlib.sha256(json.dumps(result,sort_keys=True).encode()).hexdigest();return result
 
 def snapshot(root,channel=None):
+    from . import note_schedule
+    note_schedule.rollover(root)
     overview=storage.read(root/'overview.json',{});state=storage.read(root/'attachments/state.json',{});tasks=[]
     if overview.get('patrols'):
         from .lifecycle import check

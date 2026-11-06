@@ -29,3 +29,23 @@
 
 @media (hover:hover) and (pointer:fine){.todo-item .note-reply-trigger{opacity:0;transition:opacity .15s}.todo-item:hover .note-reply-trigger,.todo-item:focus-within .note-reply-trigger,.note-reply-trigger:focus-visible{opacity:.85}.todo-item .note-reply-trigger:hover{opacity:1}}
 .note-actions{gap:8px}
+
+.note-reply time,.todo-archive-line time{font:10px/1.4 system-ui,sans-serif;color:var(--muted);margin-left:8px;white-space:nowrap}
+.todo-archive{margin:16px 0;color:var(--muted);font-size:12px}
+.todo-archive>summary{cursor:pointer;display:list-item}
+.todo-archive-line{padding:6px 0;border-bottom:1px dashed var(--line)}
+.note-schedule-drag{font:inherit;font-size:14px;padding:0 6px;border:0;background:transparent;color:var(--muted);cursor:grab;opacity:0}
+.todo-item:hover .note-schedule-drag,.todo-item:focus-within .note-schedule-drag{opacity:1}
+.note-schedule-drag:active{cursor:grabbing}
+.note-schedule-drag:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.note-today-drop{position:relative}
+.note-today-drop.note-drop-active{outline:2px dashed var(--blue);outline-offset:4px}
+.note-today-drop.note-drop-active::after{content:'松手放进今天';position:absolute;right:12px;top:10px;background:var(--card);color:var(--blue);font-size:12px;padding:2px 8px}
+.note-plan-pending,.note-returned{display:inline-block;font-size:11px;border-radius:6px;padding:1px 6px;color:#7b43bd;background:color-mix(in srgb,#a778e6 15%,var(--card));white-space:nowrap}
+html:is(.theme-default,.theme-pink) #plan .slot .kind.note-plan-pending{--kc:#7b43bd;background:#efe5ff!important;color:#7b43bd;border:1px solid currentColor}
+.note-returned{margin-top:6px}
+.note-menu{border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);padding:12px;min-width:200px;max-width:calc(100vw - 32px)}
+.note-menu::backdrop{background:rgba(20,30,45,.25)}
+.note-menu button{display:block;width:100%;font:inherit;text-align:left;min-height:44px;color:inherit;border:0;border-bottom:1px solid var(--line);background:transparent;padding:8px 12px}
+.note-menu button:last-child{border-bottom:0;color:var(--muted)}
+@media(pointer:coarse){.note-schedule-drag{display:none}}
