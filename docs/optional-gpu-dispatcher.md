@@ -19,7 +19,7 @@ The dispatcher starts jobs within that agreement. Running processes and other us
 <details>
 <summary>For developers: dispatch cycle</summary>
 
-1. Observe live GPU memory, processes and ownership using `nvidia-smi`. Apply the configured reservations, eligibility rule and concurrency allowance.
+1. Observe live GPU memory, processes and ownership using `nvidia-smi`. Apply the configured reservations, eligibility rule and concurrency allowance. Use one shared capacity policy for the dispatcher and its observers, evaluated at each admission. Count each device once across active computation, model loading and valid job reservations. When the allowance drops below current occupancy, preserve approved running jobs and resume admissions as capacity becomes available.
 2. Read approved job specifications from `queue/`, highest priority first and oldest first within a priority. Specifications include `task`, `priority`, `cmd`, `cwd`, `mem_gb`, `disk_gb`, `est_hours` and the approval record.
 3. Treat device numbers as preferences. Recompute eligibility at launch and choose another eligible device when appropriate. Check capacity before loading.
 4. Start the approved command with the selected `CUDA_VISIBLE_DEVICES`. Save process identity, device and start time in `running/`.
