@@ -200,8 +200,9 @@ class NightWatchTests(unittest.TestCase):
         self.assertEqual(previous[:2], (cache.read_bytes(), cache.stat().st_mtime_ns))
         before = json.loads(previous[2])
         after = storage.read(self.state)
-        self.assertEqual({k: v for k, v in before.items() if k != 'eta_tracking'},
-                         {k: v for k, v in after.items() if k != 'eta_tracking'})
+        self.assertEqual({k: v for k, v in before.items() if k not in ('eta_tracking', 'watchdog')},
+                         {k: v for k, v in after.items() if k not in ('eta_tracking', 'watchdog')})
+        self.assertGreater(after['watchdog']['last_checked_at'], before['watchdog']['last_checked_at'])
         self.assertEqual(len(after['eta_tracking']['observations']['T001']), 2)
         self.assertIn(previous[2], [p.read_bytes() for p in (self.state.parent / 'history').glob('*')])
 

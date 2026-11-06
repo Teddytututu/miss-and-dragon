@@ -12,7 +12,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from board import storage, task_eta, cadence
+from board import storage, task_eta, cadence, watch_clock
 from board.environment import use_project_environment
 from board.watch_rules import conditions as workflow_conditions
 from scripts.run_queue import atomic_json, project_path
@@ -45,6 +45,7 @@ def acknowledge(project_root, identifiers, *, data_dir='data'):
 
 
 def patrol(project_root=ROOT, *, data_dir='data', now=None):
+    started = time.monotonic()
     root = Path(project_root).resolve()
     at = time.time() if now is None else now
     p = paths(root, data_dir)
@@ -225,6 +226,13 @@ def patrol(project_root=ROOT, *, data_dir='data', now=None):
             storage.write(p['state'], state)
         atomic_json(p['cache'], dict(tracking=tracking, active=sorted(conditions),periods=issued,first_seen=first_seen))
     task_eta.refresh(p['data'], storage.read(p['data'] / 'overview.json', {}), now=at)
+    elapsed = time.monotonic()-started
+    with storage.locked(p['data']):
+        latest = storage.read(p['state'], {})
+        latest['watchdog'] = dict(
+            last_checked_at=datetime.fromtimestamp(at+elapsed, timezone.utc).isoformat(),
+            run_seconds=elapsed, sleep_ms=watch_clock.sleep_milliseconds())
+        storage.write(p['state'], latest)
     return fresh
 
 

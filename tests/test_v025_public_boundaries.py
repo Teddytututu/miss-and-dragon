@@ -67,9 +67,12 @@ class ReadOwnership(unittest.TestCase):
         state = storage.read(self.root / 'attachments/state.json')
         self.assertEqual(state['eta_tracking']['observations']['sample'][0]['done'], 1)
         self.assertEqual(state['keep'], {'value': 7})
-        first = (self.root / 'attachments/state.json').read_bytes()
+        first = storage.read(self.root / 'attachments/state.json')
         watch.patrol(parent, data_dir=data, now=1100)
-        self.assertEqual((self.root / 'attachments/state.json').read_bytes(), first)
+        second = storage.read(self.root / 'attachments/state.json')
+        self.assertEqual({k: v for k, v in first.items() if k != 'watchdog'},
+                         {k: v for k, v in second.items() if k != 'watchdog'})
+        self.assertGreater(second['watchdog']['last_checked_at'], first['watchdog']['last_checked_at'])
         self.assertEqual(len(storage.read(self.root / 'attachments/state.json')
                              ['eta_tracking']['observations']['sample']), 1)
 

@@ -122,6 +122,10 @@ Use `react MESSAGE_ID 💡 --enough` when the assistant decides that a reaction 
 
 `checks run` records due process observations; `checks show` reads saved counts. Normal `wake` also samples due checks through the existing wake cadence. [Process checks](process-checks.md) explains the three-hour interval and ten-success default.
 
+The night-watch health observation allows fifteen awake minutes since its last successful completion and a five-minute run duration. On Windows it subtracts system sleep within the same boot session; other platforms and restarted counters use elapsed wall time. Missing or invalid completion records yield an unknown observation. A successful patrol records its completion time, monotonic run duration and optional boot-session sleep counter in `attachments/state.json`.
+
+守夜人健康检查允许距上次成功结束十五分钟醒着时间、单轮耗时五分钟。Windows 同次开机期间扣除系统睡眠，其他平台与重启后的计数采用实际经过时间。结束记录缺失或无效时标记为待观察。巡检成功后将结束时间、单调时钟耗时和可用的开机睡眠计数存入 `attachments/state.json`。
+
 
 ### Task-linked result reports / 按任务关联结果汇报
 

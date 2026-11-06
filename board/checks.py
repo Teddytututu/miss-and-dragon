@@ -1,7 +1,7 @@
 """Due observations close a process issue after consecutive successful checks."""
 from datetime import datetime, timedelta
 import math
-from . import lifecycle, storage, workflow_checks
+from . import lifecycle, storage, workflow_checks, watch_clock
 
 
 def task_ready(root):
@@ -72,7 +72,29 @@ def owner_answered(root, *, now=None):
     return dict(ok=True, detail='Owner messages have a reply or an explicit reaction decision within the audit window.')
 
 
+def watchdog_alive(root, *, now=None):
+    """Measure time since a successful patrol, excluding recorded system sleep."""
+    at = _observation_time(now)
+    row = storage.read(lifecycle.data_file(root, 'attachments/state.json'), {}).get('watchdog')
+    if not isinstance(row, dict):
+        return dict(ok=None, detail='A successful night-watch record is awaited.')
+    last = lifecycle.moment(row.get('last_checked_at'))
+    run = row.get('run_seconds')
+    if (last is None or last > at or type(run) not in (int, float)
+            or not math.isfinite(run) or run < 0):
+        return dict(ok=None, detail='Night-watch time and duration require a valid observation.')
+    elapsed = (at-last).total_seconds()
+    current, previous = watch_clock.sleep_milliseconds(), row.get('sleep_ms')
+    if (type(current) in (int, float) and type(previous) in (int, float)
+            and math.isfinite(current) and math.isfinite(previous) and 0 <= previous <= current):
+        elapsed = max(0, elapsed-(current-previous)/1000)
+    return dict(ok=elapsed <= 15*60 and run <= 300,
+                detail=f'Night watch: {elapsed:.0f} awake seconds since completion; last run {run:.1f} seconds.')
+
+
 CHECKS = {
+    'watchdog_alive': dict(title='Night watch completes on time', target=10,
+                          every_minutes=180, run=watchdog_alive, clocked=True),
     'task_ready': dict(title='Work for each execution role', target=10,
                       every_minutes=180, run=task_ready),
     'patrols_on_time': dict(title='Assistant patrols on time', target=10,

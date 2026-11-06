@@ -5,7 +5,7 @@ from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 class BoardHTTPServer(ThreadingHTTPServer):
     request_queue_size = 128
 from urllib.parse import urlsplit,unquote,parse_qs
-import base64,hashlib,html,io,ipaddress,json,mimetypes,os,re,uuid
+import base64,hashlib,html,io,ipaddress,json,mimetypes,os,re,time,uuid
 from . import project,storage,scheduler,contacts,task_eta,assets,onboarding,plan_checks,cadence
 ASSETS=Path(__file__).resolve().parent
 STATIC={n for n in ['index.html','discussion.js','discussion.css','identity.js','identity.css','room-extras.js','room-markdown.js','room-features.css','room-collection.js','mood.js','room-collection.css','v02.js','v02.css','eta-view.js','eta-view.css','fanart.css','help.html']}
@@ -144,6 +144,26 @@ def create_server(root,port=8780,open_file=None):
     root=Path(root).resolve()
     class Handler(BaseHTTPRequestHandler):
         def log_message(self,*args):pass
+        def reject(self,message):
+            # Consume a small, fixed-length rejected body before closing the socket.
+            # Windows can otherwise reset the connection with the 403 still unread.
+            fields=self.headers.get_all('Content-Length',[])
+            if self.command=='POST' and len(fields)==1 and fields[0].isascii() and fields[0].isdigit() and len(fields[0])<=6 and not self.headers.get('Transfer-Encoding'):
+                size=int(fields[0])
+                if 0<size<=100_000:
+                    previous=self.connection.gettimeout()
+                    deadline=time.monotonic()+0.25
+                    try:
+                        while size:
+                            remaining=deadline-time.monotonic()
+                            if remaining<=0:break
+                            self.connection.settimeout(remaining)
+                            chunk=self.rfile.read1(size)
+                            if not chunk:break
+                            size-=len(chunk)
+                    except OSError:pass
+                    finally:self.connection.settimeout(previous)
+            return self.respond(403,dict(error=message))
         def respond(self,status,value=b'',mime='application/json; charset=utf-8',headers=()):
             if isinstance(value,dict):value=json.dumps(value,ensure_ascii=False,allow_nan=False).encode()
             if isinstance(value,str):value=value.encode()
@@ -173,14 +193,14 @@ def create_server(root,port=8780,open_file=None):
         def dispatch(self):
             authority=self.headers.get('Host','');host=urlsplit('http://'+authority).hostname
             hosts={'127.0.0.1','localhost','::1'}
-            if host not in hosts or self.headers.get('Forwarded') or any(k.lower().startswith('x-forwarded-') for k in self.headers):return self.respond(403,dict(error='Use the direct board address'))
+            if host not in hosts or self.headers.get('Forwarded') or any(k.lower().startswith('x-forwarded-') for k in self.headers):return self.reject('Use the direct board address')
             local=ipaddress.ip_address(self.client_address[0]).is_loopback
-            if not local:return self.respond(403,dict(error='Use the local board address'))
-            if self.command=='POST' and self.headers.get('X-Board-Identity') not in {None,'owner'}:return self.respond(403,dict(error='Browser identity is the project owner'))
+            if not local:return self.reject('Use the local board address')
+            if self.command=='POST' and self.headers.get('X-Board-Identity') not in {None,'owner'}:return self.reject('Browser identity is the project owner')
             route=unquote(urlsplit(self.path).path)
             query=parse_qs(urlsplit(self.path).query,keep_blank_values=True)
             channel=project.channel_id((query.get('channel') or ['main'])[0])
-            if self.command=='POST' and self.headers.get('Origin')!='http://'+authority:return self.respond(403,dict(error='Use the board page to send requests'))
+            if self.command=='POST' and self.headers.get('Origin')!='http://'+authority:return self.reject('Use the board page to send requests')
             from . import report_reader
             if report_reader.dispatch(self,root,route):return
             from . import private_notes
