@@ -35,3 +35,7 @@ Drag the note handle into Today, click the handle, or choose Today from the touc
 ## Result tree
 
 Tree nodes show a one-sentence summary, direct report links and cause/effect jumps. Read markers follow summary and file versions. Filter unread results or highlight one causal chain. Detail views retain counts and full results.
+
+## Resizable detail drawer
+
+Drag the detail drawer edge or focus its separator and use arrow keys. Double-click restores 460px. Desktop widths stay between 320px and 80% of the window, and phones use the full width. The browser remembers the desktop preference and returns focus when closed.
