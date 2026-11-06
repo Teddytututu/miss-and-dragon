@@ -23,3 +23,7 @@ On phones the discussion fills the visible screen and tracks the software keyboa
 ## Sticky-note replies / 便利贴回一句
 
 Hover over a note to reveal Reply. Enter on a focused card or a long press on touch opens the same composer. Replies accept 40 characters, with a counter, Send and Cancel. Each reply also reaches the assigning assistant in the discussion. Retried requests keep a single message.
+
+## Free paper wall / 自由贴墙
+
+Notes size themselves to their content and fill the available wall with staggered positions and alternating angles. Adjacent papers use contrasting theme colours. Positions are deterministic across refreshes, and resizing recomputes the layout.
