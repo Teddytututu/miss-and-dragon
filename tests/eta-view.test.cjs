@@ -141,3 +141,22 @@ test('three-line details omit duplicate progress and keep generic metadata',()=>
  assert.deepEqual(Array.from(current,row=>row.label),['目标','交付','现在']);
  assert.equal(current[2].text,'Original output is ready');
 });
+
+test('blocked task rows show a compact first-sentence reason',()=>{
+ const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
+ const html=fs.readFileSync(path.join(__dirname,'../board/index.html'),'utf8');
+ const context={EtaView:eta,CODE:/T\d+/g};
+ vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../board/lifecycle-view.js'),'utf8'),context);
+ vm.runInNewContext(html.slice(html.indexOf('function taskState('),html.indexOf('function renderTasks(')),context);
+ const entry=status=>context.taskEntries({},[{id:'T002',title:'Sample task',status}])[0];
+ for(const separator of ['；',';', '，',',','。'])
+  assert.equal(entry('卡住：等待 Claude 选图'+separator+'完整细节保留').timing,'等Claude 选图');
+ const long='等Claude审核🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪🧪文件';
+ const shown=entry('卡住：'+long).timing;
+ assert.equal(shown,Array.from(long).slice(0,17).join('')+'…');
+ assert.equal(Array.from(shown).length,18);
+ assert.equal(entry('进行中 · 3/8').timing,eta.task({status:'进行中 · 3/8'}));
+ assert.equal(entry('卡住：').timing,eta.task({status:'卡住：'}));
+ const task={id:'T002',title:'Sample task',status:'卡住：等待Claude选图；完整说明'};
+ context.taskEntries({},[task]);assert.equal(task.status,'卡住：等待Claude选图；完整说明');
+});
