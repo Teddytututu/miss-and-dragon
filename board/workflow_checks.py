@@ -1,9 +1,59 @@
 """Portable, read-only checks for work allocation and collaboration habits."""
 import re
+from datetime import datetime
 from . import storage
 
 JARGON=('identity boundary','admission gate','byte contract','field lock','canonical projection',
         '原字节','字段锁','完整身份','沿原','准入','现役')
+
+def timestamp_issues(root,at,overview):
+    """Compare recent authored timestamps with file modification time."""
+    from . import lifecycle as life
+    out=[]
+    pattern=re.compile(r'Claude[^\n（）()]{0,16}?(?:(\d{4})-)?(?:(\d{1,2})-(\d{1,2}) )?(\d{1,2}):(\d{2})')
+    candidates=[]
+    for folder in ('tasks','experiment-design'):
+        candidates.extend((p,False) for p in life.data_file(root,folder).glob('*.md'))
+    for link in overview.get('links',[]):
+        relative=link.get('path','')
+        if link.get('archived') or not isinstance(relative,str) or not relative.lower().endswith('.html'):
+            continue
+        try:path=life.data_file(root,relative)
+        except ValueError:continue
+        candidates.append((path,True))
+    seen=set()
+    for path,html in candidates:
+        try:
+            path=life.data_file(root,path.relative_to(root))
+            if path in seen or not path.is_file():continue
+            seen.add(path)
+            modified=datetime.fromtimestamp(path.stat().st_mtime,life.TAIPEI)
+            if (at-modified).total_seconds()>48*3600:continue
+            with path.open(encoding='utf-8-sig') as stream:
+                text=stream.read(4000) if html else stream.read()
+        except (OSError,ValueError):continue
+        for line in text.splitlines():
+            if re.match(r'\s*- \d{4}-\d\d-\d\d \d\d:\d\d HKT · ',line):continue
+            matches=(re.finditer(r'Claude (\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})',line)
+                     if html else pattern.finditer(line))
+            found=False
+            for match in matches:
+                if not html and re.search(r'截止|约|预计|之前|以前|前交|ETA|做好|·|due|before|expected',match[0],re.I):continue
+                year,month,day,hour,minute=match.groups()
+                try:
+                    stamp=modified.replace(year=int(year or modified.year),month=int(month or modified.month),
+                                           day=int(day or modified.day),hour=int(hour),minute=int(minute),second=0,microsecond=0)
+                except ValueError:continue
+                gap=(stamp-modified).total_seconds()
+                if gap>(300 if html else 180) and (html or month or gap<3600):
+                    task=re.search(r'T\d+',path.stem)
+                    out.append(dict(owner='Claude',task=task[0] if task else '-',code='future_timestamp',
+                                    what='Authored timestamp is ahead of file modification time: '+path.relative_to(root).as_posix(),
+                                    fix='Correct the authored timestamp to the actual completion time'))
+                    found=True
+                    break
+            if found:break
+    return out
 
 def prompt_readability_issues(root):
     from . import lifecycle as life
