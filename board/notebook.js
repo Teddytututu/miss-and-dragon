@@ -76,6 +76,13 @@
   new MutationObserver(() => { if (!busy) { clearTimeout(pending); layout(); } }).observe(list, {childList: true, subtree: true, characterData: true});
   new MutationObserver(later).observe(document.documentElement, {attributes: true, attributeFilter: ['class']});
   addEventListener('resize', later);
+  // Room resizing changes wall width without resizing the browser window.
+  // Ignore height changes caused by layout itself.
+  let wallWidth = list.clientWidth;
+  new ResizeObserver(() => {
+    const width = list.clientWidth;
+    if (width !== wallWidth) { wallWidth = width; later(); }
+  }).observe(list);
   document.fonts?.ready.then(later);
   later();
 })();
