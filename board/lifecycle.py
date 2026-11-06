@@ -243,6 +243,18 @@ def transition(root, action, task, *, by, now=None, **fields):
                    'reject': {'delivered'}, 'stop': {'queued', 'running', 'blocked', 'rejected', 'delivered', 'daily', 'unknown'}}
         if current not in allowed[action]:
             raise ValueError('Transition ' + str(current) + ' -> ' + action + ' requires a valid lifecycle state')
+        if action == 'deliver' and re.search(
+                r'(?:Execution spec|执行规格)\s*[:：]\s*(?:experiment-design|实验设计)/E\d',
+                spec_text, re.I):
+            record = data_file(root, f'attachments/{task}/experiment-record.md')
+            if not record.is_file():
+                raise ValueError(f'Execution spec requires attachments/{task}/experiment-record.md')
+            record_text = record.read_text(encoding='utf-8-sig')
+            missing = [i for i in range(1, 10)
+                       if not re.search(rf'^## {i}\. ', record_text, re.M)]
+            if missing:
+                raise ValueError('Experiment record requires sections 1-9; missing sections: '
+                                 + ', '.join(map(str, missing)))
         overview = storage.read(paths['overview'], {})
         tree = list(nodes(overview))
         attached = [n for n in tree if n.get('title') == fields.get('node')]

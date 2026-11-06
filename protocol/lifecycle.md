@@ -40,6 +40,8 @@ python scripts/patrol_log.py GPT "Reviewed events and updated comparison" --ever
 
 Transitions append `attachments/task-flow.jsonl` and the task history. Changed board rows retain the four existing fields and add an ISO update time. Shared storage retains original bytes. Accept/stop move rows into `tasks/archive.md` and remove active task/run projections. A node becomes done when all attached tasks are archived. The lead records scientific conclusions in `findings.md` within two days of closure and attaches result cards to the node's `results`.
 
+Tasks declaring `Execution spec: experiment-design/E001-example.md` (or `执行规格：实验设计/E001-example.md`) require `attachments/T001/experiment-record.md` before delivery. Replace `T001` with the task ID; the record must contain all nine numbered level-two headings, `## 1. ` through `## 9. `.
+
 ## Deadlines
 
 | Condition | Owner | Action |

@@ -40,6 +40,8 @@ python scripts/patrol_log.py GPT "已处理事件并更新比较" --every 30
 
 流转记录追加到 `attachments/task-flow.jsonl` 与任务文件。看板保留四个既有字段，更新行增加 ISO 时间；共享存储保留原字节。accept、stop 将任务移入 `tasks/archive.md`，清理活跃投影，节点任务全部归档后标为 done。负责人在研究任务结束后两天内写入 `findings.md`，结果卡片挂到节点的 `results`。
 
+任务声明 `Execution spec: experiment-design/E001-example.md` 或 `执行规格：实验设计/E001-example.md` 时，交付前须备齐 `attachments/T001/experiment-record.md`。其中 `T001` 使用实际任务编号，记录包含 `## 1. ` 至 `## 9. ` 九个二级标题。
+
 ## 时限
 
 | 条件 | 处理者 | 动作 |
