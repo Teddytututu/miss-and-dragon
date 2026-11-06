@@ -18,3 +18,11 @@ Two further checks audit the collaboration records. `patrols_on_time` checks bot
 Time-sensitive runners use `clocked=True` in their registry entry and accept `now` as a keyword argument. The run supplies its actual observation clock, including explicit clocks used for reproducible checks. The observers read workflow records; their saved counters use the existing project lock.
 
 The module saves the current count, last observation, next due time and up to sixty observations in `data/attachments/checks.json`, under the existing project lock. Storage retains previous bytes. Reaching the target sets `solved`; solved checks retain their history and stop sampling. Changing a registered target or interval starts a fresh count with the old history retained. `checks show` reads the record directly.
+
+## Authored timestamps
+
+The workflow checker also reports `future_timestamp` issues when an authored completion time is ahead of the file's modification time. This check runs separately from the consecutive-observation counters and assigns corrections to Claude.
+
+It reads Markdown files directly under `tasks/` and `experiment-design/` that were modified within the last forty-eight hours. A Claude timestamp with a date is reported when it leads modification time by more than three minutes. A time-only stamp uses the modification date and is reported only when the lead is also less than one hour. Recognized deadline and estimate wording, transition-log lines and invalid dates are skipped.
+
+HTML checks cover active `.html` links registered in the overview and resolved inside the data directory. They inspect the first 4,000 characters for the exact `Claude YYYY-MM-DD HH:MM` format and allow five minutes. Each file produces at most one issue. Correct a flagged authored timestamp to the actual completion time.
