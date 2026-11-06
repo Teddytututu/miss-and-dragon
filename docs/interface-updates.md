@@ -3,3 +3,7 @@
 ## Discussion history / 讨论室历史
 
 Discussion opens with the latest 18 messages. Load older messages explicitly. The first unread jump automatically expands to at most 120 messages. Manual source jumps load the target with nearby context. New messages at the bottom restore the compact view.
+
+## Private image cache / 图片私有缓存
+
+Avatars and reaction art use a private one-minute browser cache. Content-based ETags revalidate unchanged files and refresh replaced artwork after expiry. SVG restrictions continue to apply. Discussion records and document downloads use their existing response policies.

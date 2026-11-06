@@ -150,6 +150,13 @@ def create_server(root,port=8780,open_file=None):
             for key,val in headers:self.send_header(key,val)
             self.end_headers()
             if self.command!='HEAD':self.wfile.write(value)
+        def media(self,path,mime=None,headers=()):
+            value=path.read_bytes()
+            etag='"'+hashlib.sha256(value).hexdigest()+'"'
+            cache=[('Cache-Control','private, max-age=60'),('ETag',etag),*headers]
+            if etag in [part.strip() for part in self.headers.get('If-None-Match','').split(',')]:
+                return self.respond(304,b'',mime or 'application/octet-stream',headers=cache)
+            return self.respond(200,value,mime or mimetypes.guess_type(path.name)[0] or 'application/octet-stream',headers=cache)
         def body(self,limit=100_000):
             fields=self.headers.get_all('Content-Length',[])
             if len(fields)!=1 or not fields[0].isdigit() or self.headers.get('Transfer-Encoding'):raise ValueError('Fixed request length required')
@@ -251,27 +258,27 @@ def create_server(root,port=8780,open_file=None):
             if name in STATIC:return self.respond(200,(ASSETS/name).read_bytes(),mimetypes.guess_type(name)[0] or 'application/octet-stream')
             if re.fullmatch(r'/(?:art|reactions)/[a-z0-9_-]+\.(?:svg|png|json)',route):
                 path=contained(ASSETS,route[1:])
-                if path.is_file():return self.respond(200,path.read_bytes(),mimetypes.guess_type(path.name)[0] or 'application/octet-stream')
+                if path.is_file():return self.media(path)
             if re.fullmatch(r'/room-reactions/[0-9]+\.png',route):
                 name=route.rsplit('/',1)[1]
                 if name in {row['file'] for row in assets.emote_manifest()}:
                     path=contained(root/'emotes',name)
-                    if path.is_file():return self.respond(200,path.read_bytes(),'image/png')
+                    if path.is_file():return self.media(path,'image/png')
             if re.fullmatch(r'/generated/(?:owner|Claude|GPT)/(?:avatar|calm|surprised|wink|smile|shy|teary|happy|sleepy|proud|reading|heart|cheer|pout|confused|thinking|panic)(?:\.(?:png|svg))?',route):
                 who,mood=route.split('/')[-2:];mood=re.sub(r'\.(?:png|svg)$','',mood)
                 path=generated_asset(root,who,mood)
                 svg_headers=[('Content-Security-Policy',"sandbox; default-src 'none'; style-src 'unsafe-inline'")]
                 if path:
                     svg=path.suffix=='.svg'
-                    return self.respond(200,path.read_bytes(),'image/svg+xml' if svg else 'image/png',headers=svg_headers if svg else ())
+                    return self.media(path,'image/svg+xml' if svg else 'image/png',headers=svg_headers if svg else ())
                 who='user' if who=='owner' else who.lower()
                 bundled=ASSETS/'art'/(f'avatar-{who}.png' if mood=='avatar' else f'{who}-{mood}.png')
-                if bundled.is_file():return self.respond(200,bundled.read_bytes(),'image/png')
+                if bundled.is_file():return self.media(bundled,'image/png')
                 portrait=ASSETS/'art'/f'avatar-{who}.png'
-                if portrait.is_file():return self.respond(200,portrait.read_bytes(),'image/png')
+                if portrait.is_file():return self.media(portrait,'image/png')
                 fallback=ASSETS/'art'/(f'avatar-{who}.svg' if mood=='avatar' else f'{who}-{mood}.svg')
                 if not fallback.is_file():fallback=ASSETS/'art'/f'{who}-{MOOD_ALIASES.get(mood,"calm")}.svg'
-                return self.respond(200,fallback.read_bytes(),'image/svg+xml',headers=svg_headers)
+                return self.media(fallback,'image/svg+xml',headers=svg_headers)
             if re.fullmatch(r'/chat-img/[a-f0-9]{32}\.png',route):
                 if not any(route.rsplit('/',1)[1] in p.get('images',[]) for p in project.all_posts(root)):return self.respond(404,dict(error='Choose an active conversation image'))
                 path=contained(root/'attachments/discussion/images',route.rsplit('/',1)[1])
