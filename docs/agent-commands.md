@@ -46,7 +46,7 @@ It also returns `local_disk`: the available local volumes with `path`, `free_gib
 | `info TEXT` / `info TEXT --answer ID` | Ask or answer a factual question | coordination |
 | `decide TASK TEXT --why REASON` / `veto ID TEXT` | Record an execution choice or lead review | coordination |
 | `plan YYYY-MM-DD --at HH:MM --what TEXT [--kind TEXT]` | Upsert a dated schedule item | overview |
-| `progress LINE TEXT` / `tree NODE [--status todo\|doing\|done --summary TEXT --add-task ID --add-result TEXT]` | Update research progress and one result node | overview |
+| `progress LINE TEXT` / `tree NODE [--add-child TITLE --status todo\|doing\|done --summary TEXT --add-task ID --add-result TEXT]` | Update research progress and one result node | overview |
 | `finding TEXT [--task ID]` | Append a lead-owned conclusion | findings |
 | `retitle TASK TITLE` | Update a live task name within 16 characters, preserving its body and state | board, task |
 | `efficiency` | Question waits, blocked/returned work, stale state and owned GPU observations | overview |
@@ -55,6 +55,10 @@ It also returns `local_disk`: the available local volumes with `path`, `free_gib
 | `commands` | List the commands | — |
 
 Categories for `file add --cat`: 研究, 学习, 事务, 界面与设计, 项目, 其他.
+
+`tree PARENT --add-child TITLE` creates a child beneath the uniquely matched parent, or updates its exact-title child on a retry. Status, summary, task and result options apply to that child. Existing parent fields and child descendants stay available. Multiple same-title children require choosing a distinct title first.
+
+`tree 父节点 --add-child 子节点标题` 在唯一匹配的父节点下新增子节点，重试时复用同名子节点。状态、摘要、任务与结果选项作用于该子节点，原父节点字段和子树继续保留。同名子节点已有多项时，先为它们确定各自标题。
 
 `ask --kind` accepts `design`, `budget`, `conclusion`, `external`, `deletion`, or 设计、预算、结论、对外、删除. `file add` and `todo add` accept `--until` with an ISO date/time. Expiry archives cards and reminders while preserving referenced files. Past schedules use a complete ISO calendar date; relative demonstration dates keep their meaning.
 

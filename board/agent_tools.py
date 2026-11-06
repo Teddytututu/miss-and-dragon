@@ -93,19 +93,31 @@ def progress(root,line,text):
         if row is None:row=dict(line=line);rows.append(row)
         row.update(text=text,updated=stamp().isoformat())
     storage.update_json(root,'overview.json',update);return dict(line=line,text=text)
-def tree(root,title,*,status=None,summary=None,task=None,result=None):
+def tree(root,title,*,status=None,summary=None,task=None,result=None,add_child=None):
     if status is not None and status not in ('todo','doing','done'):raise ValueError('Use todo, doing or done')
     if task and not lifecycle.TASK.fullmatch(task):raise ValueError('Use a T-number')
     def update(d):
         found=[r for r in lifecycle.nodes(d) if r.get('title')==title]
         if len(found)!=1:raise ValueError('Choose one existing result-tree title')
         row=found[0]
+        if add_child is not None:
+            child_title=add_child.strip()
+            if not child_title:raise ValueError('Provide a child title')
+            children=row.setdefault('children',[])
+            matches=[child for child in children if child.get('title')==child_title]
+            if len(matches)>1:raise ValueError('Choose an unambiguous child title')
+            if matches:
+                row=matches[0]
+            else:
+                row=dict(title=child_title,status='todo')
+                children.append(row)
         if status is not None:row['status']=status
         if summary is not None:row['summary']=summary
         for key,value in [('tasks',task),('results',result)]:
             if value and value not in row.setdefault(key,[]):row[key].append(value)
         row['updated']=stamp().isoformat()
-    storage.update_json(root,'overview.json',update);return dict(node=title,status=status)
+    storage.update_json(root,'overview.json',update)
+    return dict(node=add_child.strip() if add_child is not None else title,status=status)
 def finding(root,who,body,task=None):
     if who!='Claude':raise ValueError('The lead (Claude) records research conclusions')
     if task and not lifecycle.TASK.fullmatch(task):raise ValueError('Use a T-number')

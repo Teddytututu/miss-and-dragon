@@ -186,7 +186,7 @@ def build_parser():
     q=add('retitle');q.add_argument('task');q.add_argument('title')
     q=add('plan');q.add_argument('date');q.add_argument('--at',required=True);q.add_argument('--what',required=True);q.add_argument('--kind',default='研究')
     q=add('progress');q.add_argument('line');q.add_argument('text')
-    q=add('tree');q.add_argument('node');q.add_argument('--status',choices=['todo','doing','done']);q.add_argument('--summary');q.add_argument('--add-task',dest='task');q.add_argument('--add-result',dest='result')
+    q=add('tree');q.add_argument('node');q.add_argument('--status',choices=['todo','doing','done']);q.add_argument('--summary');q.add_argument('--add-task',dest='task');q.add_argument('--add-result',dest='result');q.add_argument('--add-child')
     q=add('finding');q.add_argument('text');q.add_argument('--task')
     m = add('mood'); m.add_argument('mood'); m.add_argument('note', nargs='?', default='')
     return p
@@ -220,7 +220,7 @@ def main(argv=None):
         if a.command=='retitle':return emit(True,name,agent_tools.retitle(a.data_dir,a.task,a.title))
         if a.command=='plan':return emit(True,name,agent_tools.plan(a.data_dir,a.date,a.at,a.what,a.kind))
         if a.command=='progress':return emit(True,name,agent_tools.progress(a.data_dir,a.line,a.text))
-        if a.command=='tree':return emit(True,name,agent_tools.tree(a.data_dir,a.node,status=a.status,summary=a.summary,task=a.task,result=a.result))
+        if a.command=='tree':return emit(True,name,agent_tools.tree(a.data_dir,a.node,status=a.status,summary=a.summary,task=a.task,result=a.result,add_child=a.add_child))
         if a.command=='finding':return emit(True,name,agent_tools.finding(a.data_dir,a.who,a.text,a.task))
         if a.command=='events' and a.ack:return emit(True,name,agent_tools.acknowledge(a.data_dir,a.who,a.ack,a.result))
         if a.command=='patrol':
