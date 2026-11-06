@@ -60,3 +60,28 @@ for(const theme of ['default','pink'])for(const width of [320,390,768,1024,1440]
     }finally{await page.close();}
   });
 }
+
+
+test('member profiles retain keyboard focus through unchanged discussion refreshes',async t=>{
+  if(skipReason){t.skip(skipReason);return;}
+  const page=await browser.newPage({viewport:{width:390,height:844}});
+  try {
+    await page.setContent('<html class="theme-pink"><body><section id="msgs"><header class="room-header"><div class="room-members"></div><div class="room-heading"><span></span></div></header></section></body></html>');
+    for(const name of ['discussion.css','identity.css','room-collection.css'])await page.addStyleTag({content:fs.readFileSync(path.join(assets,name),'utf8')});
+    await page.evaluate(()=>{window.BoardIdentity={me:{id:'owner'},accounts:[{id:'owner',display_name:'Owner',avatar:{file:'owner.svg'}},{id:'assistant',display_name:'Assistant',avatar:{file:'assistant.svg'}}],name:id=>id,avatarURL:()=> 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"/>'};});
+    const source=fs.readFileSync(path.join(assets,'discussion.js'),'utf8').replace('return {init,update,cleanText,jumpTo,sizing};','return {syncAvatars};');
+    await page.addScriptTag({content:source});
+    await page.evaluate(()=>DiscussionRoom.syncAvatars());
+    const summary=page.locator('.identity-current');
+    await summary.focus();await page.keyboard.press('Enter');
+    assert.equal(await page.locator('.identity-controls').evaluate(n=>n.open),true);
+    await page.evaluate(()=>{window.savedSummary=document.activeElement;DiscussionRoom.syncAvatars();});
+    assert.equal(await page.evaluate(()=>document.activeElement===savedSummary),true);
+    await page.keyboard.press('Tab');await page.keyboard.press('Enter');
+    assert.equal(await page.locator('.room-avatar-dialog').evaluate(n=>n.open),true);
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(()=>document.activeElement?.classList.contains('identity-current'));
+    assert.equal(await summary.evaluate(n=>document.activeElement===n),true);
+    assert.equal(await page.locator('.room-members').getAttribute('aria-hidden'),null);
+  }finally{await page.close();}
+});

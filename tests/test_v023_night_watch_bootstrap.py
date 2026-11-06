@@ -38,7 +38,8 @@ class BootstrapNightWatchIntegration(unittest.TestCase):
                          'scripts/install_night_watch.py', 'scripts/install-night-watch.ps1',
                          'board/__init__.py', 'board/environment.py', 'board/storage.py',
                          'board/watch_rules.py', 'board/cadence.py', 'board/lifecycle.py', 'board/task_eta.py',
-                         'board/agent_tools.py', 'board/exchange.py', 'board/project.py'):
+                         'board/agent_tools.py', 'board/exchange.py', 'board/project.py',
+                         'board/note_schedule.py', 'board/plan_checks.py'):
             target = self.root / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / relative, target)

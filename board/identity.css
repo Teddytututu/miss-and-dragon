@@ -1,1 +1,20 @@
-/* Fixed single-user composer; presentation follows the selected board theme. */
+/* Member profiles share the board's notebook styling. */
+.identity-controls{position:relative;width:max-content;max-width:100%}
+.identity-current,.identity-option{display:flex;align-items:center;gap:10px;font:inherit;color:inherit;cursor:pointer}
+.identity-current{list-style:none;border:1px solid var(--line);border-radius:999px;background:var(--card);padding:5px 12px 5px 6px}
+.identity-current::-webkit-details-marker{display:none}
+.identity-current::after{content:'⌄';margin-left:4px}
+.identity-current .room-avatar,.identity-option .room-avatar{flex-shrink:0;pointer-events:none}
+.identity-options{position:absolute;top:calc(100% + 8px);left:0;z-index:10;min-width:180px;max-width:calc(100vw - 48px);border:1px solid var(--line);border-radius:16px;background:var(--card);padding:8px}
+.identity-option{width:100%;border:0;background:transparent;padding:8px;border-radius:12px;text-align:left;overflow-wrap:anywhere}
+.identity-option:hover{background:var(--bg)}
+.identity-controls button:focus-visible,.identity-current:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+html.theme-pink .identity-current{position:relative;border:1.5px dashed #f2a9c4;background:#fff8fb;color:#8a3b5c;box-shadow:0 1px 0 #f6d3e0}
+html.theme-pink .identity-current::before{content:'';position:absolute;top:-7px;left:14px;width:34px;height:12px;background:repeating-linear-gradient(45deg,#f9c9da 0 5px,#fde3ec 5px 10px);opacity:.9;rotate:-6deg;pointer-events:none}
+html.theme-pink .identity-current::after{content:'♡';color:#f08bb0}
+html.theme-pink .identity-controls[open] .identity-current::after{content:'♥'}
+html.theme-pink .identity-options{background:#fffafc;border:1.5px dashed #f2a9c4;border-radius:18px;box-shadow:0 6px 18px #e8a3bd33}
+html.theme-pink .identity-option{border-radius:999px;color:#7a4560}
+html.theme-pink .identity-option:hover{background:#fde9f1}
+
+.identity-current>span:last-of-type{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

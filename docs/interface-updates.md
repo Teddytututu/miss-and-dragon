@@ -39,3 +39,7 @@ Tree nodes show a one-sentence summary, direct report links and cause/effect jum
 ## Resizable detail drawer
 
 Drag the detail drawer edge or focus its separator and use arrow keys. Double-click restores 460px. Desktop widths stay between 320px and 80% of the window, and phones use the full width. The browser remembers the desktop preference and returns focus when closed.
+
+## Notebook member menu
+
+The composer shows the project owner in a compact member menu. Open it to view assistant profiles and enlarge their avatars. Pink mode uses a tape-and-dashed-paper treatment. Browser messages continue to use the authenticated owner identity.

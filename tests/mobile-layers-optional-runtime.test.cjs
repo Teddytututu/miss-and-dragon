@@ -32,7 +32,7 @@ function runFixture(moduleSource){
 
 function assertSkipped(result,reason){
   assert.equal(result.status,0,result.output);
-  assert.match(result.output,/# skipped 10/);
+  assert.match(result.output,/# skipped 11/);
   assert.match(result.output,/# fail 0/);
   assert.match(result.output,reason);
 }
@@ -72,5 +72,5 @@ test('real browser test assertions still fail',()=>{
     setContent:async()=>{},addStyleTag:async()=>{},close:async()=>{},evaluate:async()=>({hit:'wrong-layer'})
   })})};`);
   assertFailed(result,/metadata must stay inside the message scroll layer/);
-  assert.match(result.output,/# fail 10/);
+  assert.match(result.output,/# fail 11/);
 });

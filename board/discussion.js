@@ -159,10 +159,30 @@ window.DiscussionRoom = (() => {
       if (account.avatar) avatars[account.id] = {...account.avatar, label:account.display_name};
     }
     const members = document.querySelector('.room-members');
-    if (members) { members.replaceChildren();
-      for (const name of Object.keys(avatars)) {
-        const button = node('button','room-avatar '+name.toLowerCase(),name[0]); button.type='button';
-        decorateAvatar(button,name); members.append(button);
+    const identityKey = JSON.stringify([BoardIdentity.me.id,BoardIdentity.accounts]);
+    if (members && members.dataset.identityKey !== identityKey) {
+      members.dataset.identityKey = identityKey;
+      const expanded = members.querySelector('details')?.open || false;
+      members.replaceChildren();
+      const menu = node('details','identity-controls'); menu.open = expanded;
+      const current = node('summary','identity-current');
+      current.setAttribute('aria-label','成员资料');
+      const ownAvatar = node('span','room-avatar');
+      decorateAvatar(ownAvatar,BoardIdentity.me.id);
+      current.append(ownAvatar,node('span',null,BoardIdentity.name(BoardIdentity.me.id)));
+      const options = node('div','identity-options');
+      for (const account of BoardIdentity.accounts) {
+        const button = node('button','identity-option'); button.type='button';
+        const avatar = node('span','room-avatar'); decorateAvatar(avatar,account.id);
+        button.append(avatar,node('span',null,account.display_name || account.id));
+        button.setAttribute('aria-label','查看'+(account.display_name || account.id)+'的头像');
+        button.onclick=()=>{menu.open=false;showAvatar(account.id,current);};
+        options.append(button);
+      }
+      menu.append(current,options);members.append(menu);
+      for (const avatar of members.querySelectorAll('.room-avatar')) {
+        avatar.removeAttribute('tabindex');avatar.removeAttribute('role');avatar.removeAttribute('aria-haspopup');
+        avatar.setAttribute('aria-hidden','true');avatar.onclick=null;
       }
     }
     const heading=document.querySelector('.room-heading span');

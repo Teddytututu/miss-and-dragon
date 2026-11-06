@@ -5,7 +5,7 @@
   let config={},lastKey='',archive,announcementTimer;
   const make=(tag,cls,text)=>{const n=document.createElement(tag);if(cls)n.className=cls;if(text!=null)n.textContent=text;return n;};
   const uuid=()=>crypto.randomUUID();
-  const timeLabel=value=>new Date(value).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Taipei'});
+  const timeLabel=value=>new Date(value).toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
   async function send(payload) {
     const response=await fetch('/api/todo/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     const data=await response.json();if(!response.ok)throw Error(data.error||'请重试保存。');return data;

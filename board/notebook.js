@@ -18,13 +18,13 @@
     const cs = getComputedStyle(list);
     const padL = parseFloat(cs.paddingLeft) + 6, padR = parseFloat(cs.paddingRight) + 6;
     const width = list.clientWidth - padL - padR;
-    
-    
+
+
     const W = Math.floor(width), gapY = 18, gapX = 22;
-    const top = 16;            
+    const top = 16;
     const sky = new Array(W).fill(top);
     const single = W < 460, base = W >= 700 ? 232 : 210;
-    const placed = [];   
+    const placed = [];
     items.forEach((item, i) => {
       const text = (item.dataset.wallText || item.textContent).replace(/\s+/g, '');
       const seed = hash(text), len = text.length;
@@ -35,14 +35,14 @@
       item.style.width = w + 'px';
       const h = item.offsetHeight;
       const deg = (i % 2 ? 1 : -1) * (0.6 + rand(seed, 3) * (single ? 1.6 : 2.9));
-      const tilt = Math.ceil(w * Math.sin(Math.abs(deg) * Math.PI / 180) / 2);  
+      const tilt = Math.ceil(w * Math.sin(Math.abs(deg) * Math.PI / 180) / 2);
       let bestX = 0, bestY = Infinity, bestScore = Infinity;
-      
+
       const cands = new Set();
       for (let k = 0; k < W; ) {
         let e = k; while (e < W && sky[e] === sky[k]) e++;
         const jl = single ? Math.round(rand(seed, 21 + k) * (W - w)) : Math.round(rand(seed, 21 + k) * 14);
-        cands.add(Math.min(W - w, k ? k + gapX + jl : 0));   
+        cands.add(Math.min(W - w, k ? k + gapX + jl : 0));
         cands.add(Math.max(0, (e < W ? e - gapX : W) - w - Math.round(rand(seed, 31 + e) * 14)));
         k = e;
       }
@@ -50,7 +50,7 @@
         if (x < 0 || x + w > W) continue;
         let y = 0;
         for (let k = Math.max(0, x - gapX); k < Math.min(W, x + w + gapX); k++) if (sky[k] > y) y = sky[k];
-        const score = y + rand(seed, 11 + x) * (single ? 4 : 8) + x * 0.03;   
+        const score = y + rand(seed, 11 + x) * (single ? 4 : 8) + x * 0.03;
         if (score < bestScore) { bestScore = score; bestX = x; bestY = y; }
       }
       const y = bestY + (bestY > top ? gapY : 0) + Math.round(rand(seed, 2) * 12);
@@ -71,8 +71,8 @@
     setTimeout(() => { busy = false; }, 0);
   };
   let pending = 0;
-  const later = () => { clearTimeout(pending); pending = setTimeout(layout, 40); };  
-  
+  const later = () => { clearTimeout(pending); pending = setTimeout(layout, 40); };
+
   new MutationObserver(() => { if (!busy) { clearTimeout(pending); layout(); } }).observe(list, {childList: true, subtree: true, characterData: true});
   new MutationObserver(later).observe(document.documentElement, {attributes: true, attributeFilter: ['class']});
   addEventListener('resize', later);

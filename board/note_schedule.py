@@ -54,4 +54,3 @@ def place(value, note_id, note, index, client_id, stamp):
                                               checkable=True, scheduled_from_note=metadata))
     value.setdefault('note_schedule_operations', {})[client_id] = note_id
     value['todo'].pop(index)
-

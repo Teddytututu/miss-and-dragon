@@ -7,8 +7,8 @@ _lock=threading.RLock()
 @contextmanager
 def locked(root):
     root=Path(root);root.mkdir(parents=True,exist_ok=True)
-    with _lock,(root/'.write.lock').open('a+b') as f:
-        f.seek(0);f.write(b'0');f.flush();f.seek(0)
+    with _lock,os.fdopen(os.open(root/'.write.lock',os.O_CREAT|os.O_RDWR), 'r+b') as f:
+        f.seek(0)
         end=time.monotonic()+10
         while True:
             try:
@@ -20,6 +20,8 @@ def locked(root):
             except OSError:
                 if time.monotonic()>end:raise TimeoutError('Local workspace is busy')
                 time.sleep(.02)
+        if os.fstat(f.fileno()).st_size == 0:
+            f.write(b'0');f.flush();f.seek(0)
         try:yield
         finally:
             if os.name=='nt':
