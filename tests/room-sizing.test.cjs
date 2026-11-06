@@ -22,3 +22,11 @@ assert.equal(s.dismissDrawer(.45,81),true);
 assert.equal(s.dismissDrawer(.45,80),false);
 assert.equal(s.dismissDrawer(.75,250),false);
 console.log('18 sizing assertions passed');
+
+assert.equal(s.clampInputHeight(10,48,200),48);
+assert.equal(s.clampInputHeight(500,48,200),200);
+assert.equal(s.clampInputHeight('invalid',48,200),48);
+assert.deepEqual(JSON.parse(JSON.stringify(s.visibleFrame({height:400,offsetTop:20},800))),{height:400,top:20});
+assert.equal(s.visibleFrame({height:0,offsetTop:-2},700).height,700);
+assert.equal(s.visibleFrame({height:300,offsetTop:20,scale:1},500,500,800).height,480);
+assert.equal(s.visibleFrame({height:300,offsetTop:20,scale:2},500,500,800).height,300);

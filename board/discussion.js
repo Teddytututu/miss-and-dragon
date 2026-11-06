@@ -1,7 +1,7 @@
 
 window.DiscussionRoom = (() => {
   let key = '';
-  let items = [], limit = 18, sending = false, lastRevision = '', draft, expanded = new Set(), pending = [];
+  let items = [], limit = 18, sending = false, lastRevision = '', draft, expanded = new Set(), pending = [], inputHeightPreference=null;
   const $ = selector => document.querySelector(selector);
   const sizing = {
     clampScale(value) { const n=value==null?NaN:Number(value);return Number.isFinite(n)?Math.round(Math.max(.8,Math.min(1.6,n))*10)/10:1; },
@@ -10,7 +10,17 @@ window.DiscussionRoom = (() => {
       return ['=','+'].includes(event.key)?1:['-','_'].includes(event.key)?-1:event.key==='0'?0:null;
     },
     nearestStop(height,available) { return [.45,.75,1].reduce((best,n)=>Math.abs(height-available*n)<Math.abs(height-available*best)?n:best,.45); },
-    dismissDrawer(stop,delta) { return stop===.45&&delta>80; }
+    dismissDrawer(stop,delta) { return stop===.45&&delta>80; },
+    clampInputHeight(value,min,max) { const n=Number(value);return Math.round(Math.max(min,Math.min(max,Number.isFinite(n)?n:min))); },
+    visibleFrame(viewport,fallbackHeight,layoutHeight=0,baselineHeight=0) {
+      const height=Number(viewport?.height),top=Number(viewport?.offsetTop);
+      const frame={height:Number.isFinite(height)&&height>0?height:fallbackHeight,top:Number.isFinite(top)?Math.max(0,top):0};
+      // resizes-content browsers can shrink layout and visual viewports separately.
+      // Use the resized content bottom rather than subtracting browser chrome twice.
+      const contentResized=baselineHeight-layoutHeight>120&&Math.abs(layoutHeight-fallbackHeight)<2&&Math.abs((viewport?.scale??1)-1)<.01;
+      if(contentResized)frame.height=Math.max(frame.height,layoutHeight-frame.top);
+      return frame;
+    }
   };
   function initSizing() {
     const box=$('#msgs'),header=box.querySelector('.room-header'),root=document.documentElement;
@@ -24,7 +34,7 @@ window.DiscussionRoom = (() => {
       const logs=[...box.querySelectorAll('.room-threads,.private-log')];
       const anchors=logs.map(log=>({log,bottom:log.scrollHeight-log.scrollTop-log.clientHeight<36,top:log.scrollTop}));
       scale=sizing.clampScale(value);root.style.setProperty('--room-scale',scale);write('roomScale',scale);
-      if(announce){hint.textContent=(document.documentElement.lang.startsWith('en')?'Discussion ':'讨论室 ')+Math.round(scale*100)+'%';hint.classList.add('show');clearTimeout(hintTimer);hintTimer=setTimeout(()=>hint.classList.remove('show'),1000);}
+      if(announce){hint.textContent=(window.BoardI18n?.lang==='en'?'Discussion ':'讨论室 ')+Math.round(scale*100)+'%';hint.classList.add('show');clearTimeout(hintTimer);hintTimer=setTimeout(()=>hint.classList.remove('show'),1000);}
       requestAnimationFrame(()=>{resizeInput();for(const a of anchors)a.log.scrollTop=a.bottom?a.log.scrollHeight:a.top;});
     };
     changeScale(scale,false);
@@ -39,15 +49,26 @@ window.DiscussionRoom = (() => {
       if(!event.ctrlKey||(!scope(event.target)&&!scope(document.activeElement)))return;
       event.preventDefault();if(event.deltaY)changeScale(scale+(event.deltaY<0?.1:-.1));
     },{passive:false,capture:true});
-    const mobile=matchMedia('(max-width:719px)');
+    const mobile=matchMedia('(max-width:719px)'),phone=matchMedia('(max-width:600px)');
+    inputHeightPreference=Number(read('roomInputHeight','0'))||null;
     let stop=Number(read('roomDrawerStop','.75'));if(![.45,.75,1].includes(stop))stop=.75;
     let available=0,drag=null,keyboard=false,baseline=innerHeight;
     function fitDrawer() {
+      const full=phone.matches&&box.classList.contains('dock')&&!box.classList.contains('collapsed');
+      document.body.classList.toggle('room-mobile-open',full);
+      root.classList.toggle('room-mobile-open',full);
+      header.setAttribute('aria-label',phone.matches?'讨论室':'讨论室标题，手机可拖动调整高度');
       if(!mobile.matches){if(box.classList.contains('room-drawer-dragging'))box.classList.remove('room-drawer-dragging');return;}
-      const vv=window.visualViewport,vh=vv?.height||innerHeight,offset=vv?.offsetTop||0;
       const focused=scope(document.activeElement)&&document.activeElement.matches('textarea,input,[contenteditable="true"]');
       if(!focused)baseline=innerHeight;else baseline=Math.max(baseline,innerHeight);
+      const frame=sizing.visibleFrame(window.visualViewport,innerHeight,root.clientHeight,baseline),vh=frame.height,offset=frame.top;
       keyboard=!!focused&&baseline-vh>120;
+      if(phone.matches){
+        // Anchor directly to the visible top: mobile browsers resize innerHeight differently.
+        box.style.setProperty('--room-drawer-top',offset+'px');
+        box.style.setProperty('--room-drawer-height',Math.round(vh)+'px');
+        box.dataset.keyboard=String(keyboard);resizeInput();return;
+      }
       const nav=$('#nav'),r=nav?.getBoundingClientRect();
       const navHeight=r&&r.top>innerHeight/2?r.height:64;
       available=Math.max(160,vh-navHeight);
@@ -56,14 +77,14 @@ window.DiscussionRoom = (() => {
       box.dataset.drawerStop=String(stop);box.dataset.keyboard=String(keyboard);
     }
     const settle=value=>{stop=value;write('roomDrawerStop',stop);fitDrawer();};
-    header.tabIndex=0;header.setAttribute('aria-label',document.documentElement.lang.startsWith('en')?'Discussion header; drag on mobile to resize':'讨论室标题，手机可拖动调整高度');
+    header.tabIndex=0;header.setAttribute('aria-label','讨论室标题，手机可拖动调整高度');
     header.addEventListener('keydown',event=>{
-      if(!mobile.matches||event.target!==header||!['ArrowUp','ArrowDown','Home','End'].includes(event.key))return;
+      if(phone.matches||!mobile.matches||event.target!==header||!['ArrowUp','ArrowDown','Home','End'].includes(event.key))return;
       event.preventDefault();const stops=[.45,.75,1],i=stops.indexOf(stop);
       settle(event.key==='Home'?.45:event.key==='End'?1:stops[Math.max(0,Math.min(2,i+(event.key==='ArrowUp'?1:-1)))]);
     });
     header.addEventListener('pointerdown',event=>{
-      if(!mobile.matches||keyboard||event.button!==0||event.target.closest('button,a,input,select,textarea,[role="button"]'))return;
+      if(phone.matches||!mobile.matches||keyboard||event.button!==0||event.target.closest('button,a,input,select,textarea,[role="button"]'))return;
       event.preventDefault();drag={id:event.pointerId,y:event.clientY,height:box.getBoundingClientRect().height,stop};
       header.setPointerCapture(event.pointerId);box.classList.add('room-drawer-dragging');
     });
@@ -83,10 +104,35 @@ window.DiscussionRoom = (() => {
     };
     header.addEventListener('pointerup',event=>finish(event));header.addEventListener('pointercancel',event=>finish(event,true));
     header.addEventListener('lostpointercapture',event=>{if(drag)finish(event,true);});
+    const resizeHandle=node('button','room-input-resize','⤢');resizeHandle.type='button';
+    resizeHandle.setAttribute('aria-label','调整输入框高度，上下方向键也可调整');
+    resizeHandle.setAttribute('title','拖动调整输入框高度');$('#room-text').parentElement.append(resizeHandle);
+    let inputDrag=null;
+    const rememberInput=()=>write('roomInputHeight',inputHeightPreference||$('#room-text').getBoundingClientRect().height);
+    resizeHandle.addEventListener('pointerdown',event=>{
+      if(!phone.matches||event.button!==0)return;
+      event.preventDefault();inputDrag={id:event.pointerId,y:event.clientY,height:$('#room-text').getBoundingClientRect().height};
+      resizeHandle.setPointerCapture(event.pointerId);
+    });
+    resizeHandle.addEventListener('pointermove',event=>{
+      if(!inputDrag||inputDrag.id!==event.pointerId)return;
+      inputHeightPreference=inputDrag.height+inputDrag.y-event.clientY;resizeInput();
+      inputHeightPreference=$('#room-text').getBoundingClientRect().height;
+    });
+    const finishInput=event=>{
+      if(!inputDrag||inputDrag.id!==event.pointerId)return;inputDrag=null;rememberInput();
+      if(resizeHandle.hasPointerCapture(event.pointerId))resizeHandle.releasePointerCapture(event.pointerId);
+    };
+    for(const name of ['pointerup','pointercancel','lostpointercapture'])resizeHandle.addEventListener(name,finishInput);
+    resizeHandle.addEventListener('keydown',event=>{
+      if(!phone.matches||!['ArrowUp','ArrowDown','Home','End'].includes(event.key))return;
+      event.preventDefault();inputHeightPreference=event.key==='Home'?0:event.key==='End'?innerHeight:$('#room-text').getBoundingClientRect().height+(event.key==='ArrowUp'?24:-24);
+      resizeInput();inputHeightPreference=$('#room-text').getBoundingClientRect().height;rememberInput();
+    });
     box.addEventListener('focusin',fitDrawer);box.addEventListener('focusout',()=>requestAnimationFrame(fitDrawer));
     new MutationObserver(fitDrawer).observe(box,{attributes:true,attributeFilter:['class']});
     window.visualViewport?.addEventListener('resize',fitDrawer);window.visualViewport?.addEventListener('scroll',fitDrawer);
-    window.addEventListener('resize',fitDrawer);mobile.addEventListener('change',fitDrawer);fitDrawer();
+    window.addEventListener('resize',fitDrawer);mobile.addEventListener('change',fitDrawer);phone.addEventListener('change',()=>{resizeInput();fitDrawer();});fitDrawer();
   }
   const node = (tag, cls, text) => {
     const value = document.createElement(tag);
@@ -226,7 +272,16 @@ window.DiscussionRoom = (() => {
     $('#room-submit').setAttribute('aria-label', draft.parent_id ? '发送回复' : '发送消息');
   }
   function resizeInput() {
-    const input = $('#room-text'); input.style.height = 'auto';
+    const input = $('#room-text');
+    if(matchMedia('(max-width:600px)').matches){
+      const style=getComputedStyle(input),line=parseFloat(style.lineHeight)||parseFloat(style.fontSize)*1.5;
+      const min=Math.ceil(line+parseFloat(style.paddingTop)+parseFloat(style.paddingBottom)+2);
+      const frameHeight=parseFloat($('#msgs').style.getPropertyValue('--room-drawer-height'))||window.visualViewport?.height||innerHeight;
+      const max=Math.max(min,Math.floor(frameHeight/2));
+      const height=sizing.clampInputHeight(inputHeightPreference??min,min,max);
+      input.style.setProperty('--room-input-height',height+'px');input.style.height=height+'px';return;
+    }
+    input.style.removeProperty('--room-input-height');input.style.height = 'auto';
     input.style.height = Math.min(160, Math.max(52, input.scrollHeight))+'px';
   }
   function inCode(text) {
@@ -498,7 +553,7 @@ window.DiscussionRoom = (() => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || '发送遇到问题，草稿已保留。');
       draft = {body:'',parent_id:null}; save(); $('#room-text').value = ''; resizeInput(); composer(); status('已发送');
-      pending.forEach(p => URL.revokeObjectURL(p.url)); pending = []; showPending();
+      pending.forEach(p => URL.revokeObjectURL(p.url)); pending = [], inputHeightPreference=null; showPending();
       if (!items.some(item => item.id === data.post.id)) items.push(data.post);
       lastRevision = '';reader?.sync(items);reader?.mark();render({forceBottom:true});
       try { const board = await (await fetch('/api/board',{cache:'no-store'})).json(); if(submission.channel===BoardIdentity.channel)update((await (await fetch('/api/discussion')).json())); } catch (_) {}

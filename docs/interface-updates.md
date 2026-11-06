@@ -15,3 +15,7 @@ Use the visible Reply control beneath a message. The overflow menu contains the 
 ## Unread entry / 入口未读提示
 
 The discussion entry lights up for newer messages from other authors while closed. Timestamp offsets are compared as instants. Deleted entries and the current author are excluded.
+
+## Phone discussion / 手机讨论室
+
+On phones the discussion fills the visible screen and tracks the software keyboard. Drag the input handle or use its arrow keys to change input height. The preference survives reloads. Tablet drawers retain their height stops. Long filenames wrap inside the composer.

@@ -283,3 +283,22 @@ html body #msgs .room-threads{overflow-x:hidden}
   html body #msgs.dock .room-scale-hint{top:86px}
 }
 @media(prefers-reduced-motion:reduce){html body #msgs.dock,.room-scale-hint{transition:none}}
+
+.room-input-resize{display:none}
+@media(max-width:600px){
+  html.room-mobile-open{overflow:hidden;overscroll-behavior:none}
+  body.room-mobile-open{overflow:hidden}
+  html body.room-mobile-open nav#nav{display:none!important}
+  html body #msgs.dock{top:var(--room-drawer-top,0px)!important;bottom:auto!important;height:var(--room-drawer-height,100dvh)!important;max-height:none;padding:0;border-radius:0;transition:transform 260ms var(--ease)}
+  html body #msgs.dock .room-shell{border-radius:0}
+  html body #msgs.dock .room-header{cursor:default;touch-action:pan-y;padding-top:10px}
+  html body #msgs.dock .room-header::before{display:none}
+  html body #msgs.dock .room-input-wrap{position:relative}
+  html body #msgs.dock .room-compose textarea{height:var(--room-input-height,48px)!important;min-height:0!important;max-height:none!important;overflow-y:auto!important;resize:none;padding-right:44px!important;box-sizing:border-box}
+  html body #msgs.dock .room-input-resize{display:flex;position:absolute;right:2px;bottom:2px;align-items:center;justify-content:center;width:36px;height:36px;min-height:36px;padding:0;border:0;background:transparent;color:var(--muted);font:22px/1 sans-serif;cursor:ns-resize;touch-action:none}
+  html body #msgs.dock .room-compose{padding-bottom:max(10px,env(safe-area-inset-bottom))}
+  html body #msgs.dock[data-keyboard="true"] .room-compose{padding-bottom:10px}
+}
+
+
+.room-file{min-width:0;overflow-wrap:anywhere;white-space:normal}
