@@ -38,3 +38,18 @@ html body #files[data-index-tabs] .findex-course[aria-pressed=true]{background:v
 @media(prefers-reduced-motion:reduce){html body #files[data-index-tabs] .findex-tab,html body #files[data-index-tabs] .findex-course{transition-duration:0s}}
 
 html body #files[data-index-tabs] .findex-tab:focus-visible{outline:2px solid var(--index-ink);outline-offset:-3px}
+
+/* Keep course cards within their category panel, including narrow screens. */
+html body #files[data-index-tabs] .findex-pane{padding:14px 16px 16px;box-sizing:border-box;outline-color:var(--index-border)!important;outline-offset:-6px}
+html body #files[data-index-tabs] .findex-pane .findex-courses{margin:0 0 6px}
+html body #files[data-index-tabs] .fcourse{min-width:0}
+html body #files[data-index-tabs] .fcourse-label{color:var(--index-ink)!important;margin:12px 2px 8px}
+html body #files[data-index-tabs] .findex-pane:not([data-index-kind="研究"]) .fgrid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr))!important;gap:12px!important;padding:0!important;margin:0!important;min-width:0}
+html.theme-pink body #files[data-index-tabs] .findex-pane:not([data-index-kind="研究"]) .fcard{width:100%!important;min-width:0!important;box-sizing:border-box;margin:0!important;background:#fff!important;transform:none!important;rotate:none!important;border:1px solid var(--index-border)!important;box-shadow:0 1px 3px rgba(0,0,0,.05)!important;background-image:none!important}
+html.theme-pink body #files[data-index-tabs] .findex-pane:not([data-index-kind="研究"]) .fcard::before,html.theme-pink body #files[data-index-tabs] .findex-pane:not([data-index-kind="研究"]) .fcard::after{display:none!important}
+html.theme-pink body #files[data-index-tabs] .findex-pane:not([data-index-kind="研究"]) .fcard:hover{border-color:var(--index-ink)!important}
+html body #files[data-index-tabs] .findex-pane:not([data-index-kind="研究"]) .fcard .fname{color:var(--index-ink)}
+html body #files[data-index-tabs] .ftext{flex:1 1 0;min-width:0;max-width:100%}
+html body #files[data-index-tabs] .fname{display:block;min-width:0;max-width:100%;-webkit-line-clamp:unset;overflow:visible;overflow-wrap:anywhere;word-break:normal}
+html body #files[data-index-tabs] .fsub{min-width:0;max-width:100%;white-space:normal;overflow:visible;overflow-wrap:anywhere}
+html body #files[data-index-tabs] .fchip{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}
