@@ -34,7 +34,7 @@ window.DiscussionRoom = (() => {
       const logs=[...box.querySelectorAll('.room-threads,.private-log')];
       const anchors=logs.map(log=>({log,bottom:log.scrollHeight-log.scrollTop-log.clientHeight<36,top:log.scrollTop}));
       scale=sizing.clampScale(value);root.style.setProperty('--room-scale',scale);write('roomScale',scale);
-      if(announce){hint.textContent=(window.BoardI18n?.lang==='en'?'Discussion ':'讨论室 ')+Math.round(scale*100)+'%';hint.classList.add('show');clearTimeout(hintTimer);hintTimer=setTimeout(()=>hint.classList.remove('show'),1000);}
+      if(announce){hint.textContent=(window.BoardI18n?.language==='en'?'Discussion ':'讨论室 ')+Math.round(scale*100)+'%';hint.classList.add('show');clearTimeout(hintTimer);hintTimer=setTimeout(()=>hint.classList.remove('show'),1000);}
       requestAnimationFrame(()=>{resizeInput();for(const a of anchors)a.log.scrollTop=a.bottom?a.log.scrollHeight:a.top;});
     };
     changeScale(scale,false);

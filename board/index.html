@@ -891,6 +891,28 @@ html.theme-pink #nav .brand .brand-person img{transform:scale(1.45);transform-or
   html.theme-pink section{scroll-margin-top:76px}
 }
 #quota-fold>summary{list-style:none;cursor:pointer}#quota-fold>summary::-webkit-details-marker{display:none}#quota-fold>summary h2{display:inline-flex;align-items:center;gap:8px}
+#tree-body{--tree-accent:var(--blue);--tree-edge:var(--line);--tree-soft:var(--card)}
+#tree-body .nd{position:relative}
+#tree-body .tree-node-head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:26px;margin-bottom:3px}
+#tree-body .tree-node-head .st{margin:0;flex-shrink:0}
+#tree-body .tree-node-title{display:block;font-size:14px;font-weight:700;line-height:1.5}
+#tree-body .tree-node-summary{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.55;font-size:12px;color:var(--muted);font-weight:400;margin:5px 0}
+#tree-body .tree-page{display:inline-flex;align-items:center;white-space:nowrap;text-decoration:none;font-size:12px;font-weight:600;border:1px solid var(--tree-edge);border-radius:8px;padding:3px 6px;color:var(--tree-accent);background:var(--tree-soft)}
+#detail .tree-counts{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0;color:var(--muted);font-size:12px}
+#tree-body .tree-relations,#detail .tree-relations{display:flex;gap:5px;margin-top:8px;padding-top:7px;border-top:1px solid var(--line)}
+#detail .tree-relations{flex-wrap:wrap}
+#tree-body .tree-relation,#detail .tree-relation{font:inherit;font-size:11px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid var(--tree-edge);border-radius:8px;padding:3px 6px;color:var(--tree-accent);background:var(--tree-soft);cursor:pointer}
+#tree-body .tree-chain,#detail .tree-chain{font:inherit;font-size:12px;padding:3px 1px;border:0;background:transparent;color:var(--tree-accent);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+#tree-body .tree-chain-dim{opacity:.35}
+html body #tree-body .tree-chain-on{border-color:var(--tree-accent)}
+#tree-body .tree-unread{position:absolute;right:-7px;top:-10px;display:grid;place-items:center;min-width:22px;height:22px;padding:0 4px;font-size:10px;font-weight:600;color:#fff;background:var(--tree-accent);border:2px solid #fff;border-radius:999px;line-height:1}
+#tree-body .tree-unread[hidden],.tree-unread-count[hidden]{display:none!important}
+#tree-body .tree-unread-filter{display:inline-flex;align-items:center;gap:4px;color:var(--muted);font-size:12px;cursor:pointer}
+#tree-body .tree-unread-filter input{accent-color:var(--tree-accent)}
+#tree-body .nd:focus-visible,#tree-body button:focus-visible,#tree-body a:focus-visible{outline:2px solid var(--tree-accent);outline-offset:3px}
+#tree-body .nd.tree-jump{animation:tree-jump-glow .42s ease-in-out 2}
+@keyframes tree-jump-glow{50%{box-shadow:0 0 8px color-mix(in srgb,var(--tree-accent) 30%,transparent);outline:2px solid var(--tree-accent)}}
+@media(prefers-reduced-motion:reduce){#tree-body .nd.tree-jump{animation:none;outline:3px solid var(--tree-accent)}}
 </style>
 <script>addEventListener('DOMContentLoaded',()=>{const tag=()=>{const fs=document.querySelectorAll('.room-compose');const n=window.BoardIdentity&&BoardIdentity.name?BoardIdentity.name('owner'):'';if(fs.length&&n&&n!=='owner'){fs.forEach(f=>f.setAttribute('data-composer-name',n));return true}return false};if(!tag()){let k=0;const i=setInterval(()=>{if(tag()||++k>40)clearInterval(i)},250)}const d=document.getElementById('quota-fold');if(!d)return;try{d.open=localStorage.getItem('quota-fold')==='1'}catch(_){}d.addEventListener('toggle',()=>{try{localStorage.setItem('quota-fold',d.open?'1':'0')}catch(_){}})});</script>
 <link rel="stylesheet" href="/room-collection.css">
@@ -1110,6 +1132,18 @@ function showDetail(n, byTitle, key) {
   if (n.image) { const f = el('figure', 'dhero'), im = el('img'); im.src = '/chat-img/' + n.image; im.alt = n.title; im.loading = 'lazy';
     wireImageZoom(im, [n.image], 0); f.append(im); if (n.image_caption) f.append(el('figcaption', null, n.image_caption)); box.append(f); }
   if (n.summary) box.append(el('div', 'dsummary st-' + (n.status || 'doing'), n.summary));
+ const relations = el('div', 'tree-relations');
+ for (const [direction, label] of [['from', '← 起因：'], ['to', '引出 →：']]) {
+   for (const title of n[direction] || []) {
+     const jump = el('button', 'tree-relation', label + title); jump.type = 'button';
+     jump.onclick = () => { closeDrawer(); treeJump(title); }; relations.append(jump);
+   }
+ }
+ if(n.from?.length){
+   const chain = el('button', 'tree-chain', treeChainTitle === n.title ? '收起链条' : '看链条'); chain.type = 'button';
+   chain.onclick = () => { closeDrawer(); treeToggleChain(n); }; relations.append(chain);
+ }
+ if(relations.childElementCount)box.append(relations);
   const ts = (n.tasks || []).map(id => BOARD.tasks.find(t => t.id === id) || {id, status: ''});
   if (ts.length) { box.append(el('h4', null, '相关的活')); ts.forEach(t => { const r = el('div', 'dtask'), stt = plainStatus(t);
       r.append(el('span', 'chip ' + stt[1], stt[0]), el('span', null, BOARD.names[t.id] || t.title || t.id)); box.append(r); }); }
@@ -1118,40 +1152,165 @@ function showDetail(n, byTitle, key) {
   $('#drawer').classList.add('on'); $('#dbg').classList.add('on');
 }
 let TREE_O = null;
-function renderTree(o) {
-  TREE_O = o; const box = $('#tree-body'); box.replaceChildren();
-  const byTitle = {}; (o.results || []).forEach(r => byTitle[r.title] = r); const used = new Set();
+let treeRenderStamp = '';
+let treeUnreadOnly = false;
+let treeChainTitle = null;
+let treeReadVersions = {};
+try { treeReadVersions = JSON.parse(localStorage.getItem('result-tree-read-v1') || '{}') || {}; } catch (_) {}
+
+function treeNodes(o = TREE_O) {
+  const rows = [];
+  const walk = (nodes, parent = null) => nodes.forEach((node, i) => {
+    const key = parent ? parent.key + '.' + i : 'tree' + i;
+    const row = {node, key, parent}; rows.push(row);
+    walk(node.children || [], row);
+  });
+  walk(o?.tree || []);
+  return rows;
+}
+function treeVersion(node) {
+  const link = (TREE_O?.links || []).find(link => link.path === node.page);
+  return JSON.stringify([node.summary || '', node.page || '', link?.mtime_ns || link?.modified || link?.mtime || '', link?.size ?? '']);
+}
+function treeIsUnread(node) { return treeReadVersions[node.title] !== treeVersion(node); }
+function treeUpdateUnread() {
+  const rows = treeNodes();
+  for (const row of rows) {
+    const card = [...document.querySelectorAll('#tree-body .nd')].find(card => card.dataset.key === row.key);
+    if (!card) continue;
+    const unread = treeIsUnread(row.node), dot = card.querySelector('.tree-unread');
+    card.classList.toggle('tree-is-unread', unread);
+    if (dot) { dot.hidden = !unread; dot.textContent = unread && Object.hasOwn(treeReadVersions, row.node.title) ? '改过' : '新'; }
+  }
+  const count = rows.filter(row => treeIsUnread(row.node)).length;
+  const nav = document.querySelector('#nav a[href="#tree"]');
+  let badge = nav?.querySelector('.tree-unread-count');
+  if (nav && !badge) { badge = el('span', 'badge tree-unread-count'); nav.append(badge); }
+  if (badge) { badge.textContent = String(count); badge.hidden = count === 0; badge.setAttribute('aria-label', count + '项结果待看'); }
+}
+function treeMarkRead(node) {
+  treeReadVersions[node.title] = treeVersion(node);
+  try { localStorage.setItem('result-tree-read-v1', JSON.stringify(treeReadVersions)); } catch (_) {}
+  treeUpdateUnread();
+}
+function treeChainTitles(title) {
+  const byTitle = new Map(treeNodes().map(row => [row.node.title, row.node])), chain = new Set([title]);
+  // Follow each direction independently so siblings with a shared cause stay distinct.
+  for (const direction of ['from', 'to']) {
+    const visited = new Set(), pending = [title];
+    while (pending.length) {
+      const current = pending.pop();
+      if (visited.has(current)) continue;
+      visited.add(current); chain.add(current);
+      pending.push(...(byTitle.get(current)?.[direction] || []));
+    }
+  }
+  return chain;
+}
+function treeToggleChain(node) {
+  treeChainTitle = treeChainTitle === node.title ? null : node.title;
+  if (treeChainTitle) { treeUnreadOnly = false; treeReveal(treeChainTitles(treeChainTitle)); renderTree(TREE_O, true); }
+  else treePaintChain();
+}
+function treePaintChain() {
+  const chain = treeChainTitle ? treeChainTitles(treeChainTitle) : null;
+  document.querySelectorAll('#tree-body .nd').forEach(card => {
+    card.classList.toggle('tree-chain-dim', !!chain && !chain.has(card.dataset.title));
+    card.classList.toggle('tree-chain-on', !!chain && chain.has(card.dataset.title));
+  });
+}
+function treeReveal(titles) {
+  for (const row of treeNodes()) if (titles.has(row.node.title)) {
+    for (let parent = row.parent; parent; parent = parent.parent) collapsed.set(parent.key, false);
+  }
+}
+function treeJump(title) {
+  treeUnreadOnly = false;
+  treeReveal(new Set([title])); renderTree(TREE_O, true);
+  const target = [...document.querySelectorAll('#tree-body .nd')].find(card => card.dataset.title === title);
+  if (!target) return;
+  target.scrollIntoView({block:'center', inline:'nearest', behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
+  target.focus({preventScroll:true}); target.classList.add('tree-jump');
+  setTimeout(() => target.classList.remove('tree-jump'), 900);
+}
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && treeChainTitle) { treeChainTitle = null; treePaintChain(); }
+});
+
+function renderTree(o, force = false) {
+  TREE_O = o;
+  const stamp = JSON.stringify([o.tree, o.results, o.links, BOARD.tasks.map(task => [task.id, task.status])]);
+  if (!force && treeRenderStamp === stamp) return;
+  treeRenderStamp = stamp;
+  const box = $('#tree-body'), fragment = document.createDocumentFragment();
+  const byTitle = {}; (o.results || []).forEach(result => byTitle[result.title] = result);
   const isCollapsed = (key, depth) => collapsed.has(key) ? collapsed.get(key) : depth >= 2;
-  const card = (n, depth, key) => {
-    const st = ST[n.status] || ST.doing, c = el('div', 'nd st-' + (n.status || 'doing') + (depth === 0 ? ' lv0' : ''));
-    c.dataset.key = key;
-    if (depth > 0) c.append(el('span', 'st', st[0]));
-    c.append(el('span', null, n.title));
-    const k = (n.results || []).filter(t => byTitle[t]).length; (n.results || []).forEach(t => used.add(t));
-    const active = (n.tasks || []).filter(id => { const t = BOARD.tasks.find(x => x.id === id); return t && !/已完成|已收回/.test(plainStatus(t)[0]); }).length;
-    if (k || active) { c.append(el('br')); if (k) c.append(el('span', 'cnt', k + ' 组结果')); if (active) c.append(el('span', 'cnt', active + ' 个活')); }
-    if (selKey === key) c.classList.add('sel');
-    c.onclick = () => showDetail(n, byTitle, key);
-    const kids = n.children || [];
-    if (kids.length && depth > 0) { const shut = isCollapsed(key, depth), t = el('button', 'tog', shut ? '+' + kids.length : '−');
-      t.title = shut ? '展开' : '收起';
-      t.onclick = e => { e.stopPropagation(); collapsed.set(key, !shut); renderTree(TREE_O); }; c.append(t); }
-    return c;
+  const hasUnread = node => treeIsUnread(node) || (node.children || []).some(hasUnread);
+  const shortTitle = title => title.replace(/^主张[一二三]：|^普遍性：/, '');
+  const card = (node, depth, key) => {
+    const status = ST[node.status] || ST.doing;
+    const card = el('div', 'nd st-' + (node.status || 'doing') + (depth === 0 ? ' lv0' : ''));
+    card.dataset.key = key; card.dataset.title = node.title; card.tabIndex = 0;
+    card.setAttribute('role', 'group'); card.setAttribute('aria-label', node.title);
+    const dot = el('span', 'tree-unread'); dot.title = '这项结果有新内容'; card.append(dot);
+    const head = el('div', 'tree-node-head'); head.append(el('span', 'st', status[0]));
+    if (node.page) {
+      const link = (o.links || []).find(link => link.path === node.page);
+      if (link) {
+        const open = el('a', 'tree-page', '📄 结果页'); open.target = '_blank'; open.rel = 'noopener';
+        open.setAttribute('aria-label', '打开' + node.title + '的结果页');
+        resultReportURL(link).then(url => { open.href = url; }).catch(() => { open.textContent = '页面连接中'; });
+        open.onclick = event => { event.stopPropagation(); treeMarkRead(node); if (treeUnreadOnly) renderTree(TREE_O, true); };
+        head.append(open);
+      }
+    }
+    card.append(head, el('span', 'tree-node-title', node.title));
+    if (node.summary) {
+      const sentence = String(node.summary).match(/^[\s\S]*?[。！？!?](?:[”’])?|^[\s\S]+$/)?.[0] || node.summary;
+      const summary = el('span', 'tree-node-summary', sentence); summary.title = node.summary; card.append(summary);
+    }
+    const relations = el('div', 'tree-relations');
+    for (const [direction, label] of [['from', '← 起因：'], ['to', '引出 →：']]) {
+      for (const title of (node[direction] || []).slice(0, 1)) {
+        const jump = el('button', 'tree-relation', label + shortTitle(title)); jump.type = 'button'; jump.title = title;
+        jump.onclick = event => { event.stopPropagation(); treeJump(title); }; relations.append(jump);
+      }
+    }
+    if (relations.childElementCount) card.append(relations);
+    if (selKey === key) card.classList.add('sel');
+    card.onclick = () => { treeMarkRead(node); showDetail(node, byTitle, key); if (treeUnreadOnly) renderTree(TREE_O, true); };
+    card.onkeydown = event => { if (event.target === card && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); card.click(); } };
+    const children = node.children || [];
+    if (children.length && depth > 0) {
+      const shut = isCollapsed(key, depth), toggle = el('button', 'tog', shut ? '+' + children.length : '−');
+      toggle.type = 'button'; toggle.title = shut ? '展开' : '收起'; toggle.setAttribute('aria-expanded', String(!shut));
+      toggle.onclick = event => { event.stopPropagation(); collapsed.set(key, !shut); renderTree(TREE_O, true); }; card.append(toggle);
+    }
+    return card;
   };
-  const branch = (n, depth, key) => {
-    const wrap = el(depth === 0 ? 'div' : 'li', depth === 0 ? 'root' : null); wrap.append(card(n, depth, key));
-    const kids = n.children || [];
-    if (kids.length && !(depth > 0 && isCollapsed(key, depth))) { const ul = el('ul', 'kids'); kids.forEach((c, i) => ul.append(branch(c, depth + 1, key + '.' + i))); wrap.append(ul); }
+  const branch = (node, depth, key) => {
+    if (treeUnreadOnly && !hasUnread(node)) return null;
+    const wrap = el(depth === 0 ? 'div' : 'li', depth === 0 ? 'root' : null); wrap.append(card(node, depth, key));
+    const children = node.children || [];
+    if (children.length && (treeUnreadOnly || !(depth > 0 && isCollapsed(key, depth)))) {
+      const list = el('ul', 'kids'); children.forEach((child, i) => { const item = branch(child, depth + 1, key + '.' + i); if (item) list.append(item); });
+      if (list.childElementCount) wrap.append(list);
+    }
     return wrap;
   };
-  const tools = el('div', 'tools'), leg = el('div', 'legend');
-  [['已完成', 'done'], ['进行中', 'doing'], ['待做', 'todo']].forEach(([t, c]) => { const sp = el('span'), i = el('i'); i.className = 'legend-' + c; sp.append(i, t); leg.append(sp); });
-  const all = val => { const mark = (n, depth, key) => { if ((n.children || []).length && depth > 0) collapsed.set(key, val); (n.children || []).forEach((c, i) => mark(c, depth + 1, key + '.' + i)); };
-    (o.tree || []).forEach((n, i) => mark(n, 0, 'tree' + i)); renderTree(TREE_O); };
-  const b1 = el('button', null, '全部展开'), b2 = el('button', null, '全部收起'); b1.onclick = () => all(false); b2.onclick = () => all(true);
-  tools.append(leg, b1, b2); box.append(tools);
-  (o.tree || []).forEach((n, i) => { const m = el('div', 'mm'); m.append(branch(n, 0, 'tree' + i)); box.append(m); });
+  const tools = el('div', 'tools'), legend = el('div', 'legend');
+  [['已完成', 'done'], ['进行中', 'doing'], ['待做', 'todo']].forEach(([text, state]) => { const item = el('span'), icon = el('i'); icon.className = 'legend-' + state; item.append(icon, text); legend.append(item); });
+  const setCollapsed = value => { for (const row of treeNodes()) if (row.parent && row.node.children?.length) collapsed.set(row.key, value); renderTree(TREE_O, true); };
+  const expand = el('button', null, '全部展开'), collapse = el('button', null, '全部收起'); expand.type = collapse.type = 'button';
+  expand.onclick = () => setCollapsed(false); collapse.onclick = () => setCollapsed(true);
+  const filter = el('label', 'tree-unread-filter'), input = el('input'); input.type = 'checkbox'; input.checked = treeUnreadOnly;
+  input.onchange = () => { treeUnreadOnly = input.checked; renderTree(TREE_O, true); }; filter.append(input, '只看未读');
+  tools.append(legend, expand, collapse, filter); fragment.append(tools);
+  (o.tree || []).forEach((node, i) => { const item = branch(node, 0, 'tree' + i); if (item) { const map = el('div', 'mm'); map.append(item); fragment.append(map); } });
+  if (treeUnreadOnly && !treeNodes().some(row => treeIsUnread(row.node))) fragment.append(el('p', 'muted', '这些结果都看过了。'));
+  box.replaceChildren(fragment); treeUpdateUnread(); treePaintChain();
 }
+
 
 function taskState(t) { return LifecycleView.taskState(t); }
 

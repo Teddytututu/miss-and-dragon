@@ -53,7 +53,7 @@ def expiry(value):
     return at.isoformat()
 def expire_due(root,*,now=None):
     from . import note_schedule
-    note_schedule.rollover(root,(now or stamp()).date())
+    note_schedule.rollover(root,stamp(now).date())
     at=stamp(now);changed=[]
     def update(d):
         for row in d.get('links',[]):

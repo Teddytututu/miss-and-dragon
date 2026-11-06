@@ -31,3 +31,7 @@ Notes size themselves to their content and fill the available wall with staggere
 ## Notes in Today / 便利贴放进今天
 
 Drag the note handle into Today, click the handle, or choose Today from the touch menu. Unassigned notes show Pending. Checked tasks remain in place for the whole day and support undo through their checkbox. The next day, completed notes enter the archive and unfinished notes return in their original order. Dates follow the host workspace timezone.
+
+## Result tree
+
+Tree nodes show a one-sentence summary, direct report links and cause/effect jumps. Read markers follow summary and file versions. Filter unread results or highlight one causal chain. Detail views retain counts and full results.
