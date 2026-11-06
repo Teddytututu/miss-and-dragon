@@ -309,9 +309,17 @@ window.DiscussionRoom = (() => {
     draft.parent_id = item.id; draft.client_id = null; save(); composer();
     $('#room-text').focus({preventScroll:true});
   }
-  function jumpTo(id) {
+  function jumpTo(id, auto = false) {
     const target = Array.from($('#room-threads').children).find(item => item.dataset.discussionId === id);
-    if (!target) { if (limit < items.length) { limit = items.length; render({target:id}); } return; }
+    if (!target) {
+      const index = items.findIndex(item => item.id === id);
+      const needed = index < 0 ? 0 : items.length - index + 6;
+      if (needed > limit && (!auto || needed <= 120)) {
+        limit = needed;
+        render({target:id, auto});
+      } else if (auto) scrollLatest(false);
+      return;
+    }
     const log = $('#room-threads'); log.scrollTop = target.offsetTop - log.offsetTop - 20;
     target.classList.remove('room-highlight'); void target.offsetWidth; target.classList.add('room-highlight');
   }
@@ -403,6 +411,7 @@ window.DiscussionRoom = (() => {
     const restoreExpandFocus = active?.classList.contains('room-expand');
     const anchor = Array.from(log.children).find(item => item.dataset.discussionId && item.offsetTop+item.offsetHeight >= log.offsetTop+position);
     const anchorId = anchor?.dataset.discussionId, anchorOffset = anchor ? anchor.offsetTop-log.offsetTop-position : 0;
+    if (!options.older && !options.target && (options.forceBottom || nearBottom)) limit = Math.min(limit, 18);
     const byId = new Map(items.map(item => [item.id,item])), selected = items.slice(-limit);
     log.replaceChildren();
     if (items.length > selected.length) {
@@ -426,7 +435,7 @@ window.DiscussionRoom = (() => {
       log.append(article);previous=item;
     });
     composer();
-    if (options.target) jumpTo(options.target);
+    if (options.target) jumpTo(options.target, options.auto);
     else if (options.older) log.scrollTop = position+log.scrollHeight-before;
     else if (options.forceBottom || nearBottom || !before) scrollLatest(false);
     else {
@@ -449,7 +458,7 @@ window.DiscussionRoom = (() => {
     reader?.sync(items);if(readNow)reader?.mark();
     reactionEmoji=data.reaction_emoji || reactionEmoji;
     RoomExtras.setReactionCatalog?.(data.reaction_catalog || []);
-    render(firstLoad && reader?.unread.size ? {target:reader.boundary} : {});
+    render(firstLoad && reader?.unread.size ? {target:reader.boundary, auto:true} : {});
   }
   function showPending() {
     const box = $('#room-attach'); box.replaceChildren(); box.hidden = !pending.length;
