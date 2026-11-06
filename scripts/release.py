@@ -41,7 +41,7 @@ def files():
     names += ['tests/forecast.test.cjs','tests/file-groups.test.cjs']
     names += ['tests/lifecycle-view.test.cjs','tests/mobile-layers-optional-runtime.test.cjs']
     names += ['tests/room-collection.test.cjs','tests/eta-view.test.cjs','tests/identity-refresh.test.cjs','tests/quota-truth.test.cjs']
-    names += ['board/index-tabs.css', 'board/index-tabs.js']
+    names += ['board/index-tabs.css', 'board/index-tabs.js', 'tests/sticker-drag.test.cjs']
     names += ['board/private_notes.py','board/private-notes.css','board/private-notes.js','scripts/private_chat.py','docs/private-chat.md','tests/private-chat.browser.cjs']
     names += ['scripts/agent.py','docs/agent-commands.md','docs/optional-gpu-dispatcher.md','skills/board-agent/SKILL.md']
     names += ['docs/ARCHITECTURE.md','docs/architecture/index.html']
