@@ -893,6 +893,9 @@ html.theme-pink #nav .brand .brand-person img{transform:scale(1.45);transform-or
 #quota-fold>summary{list-style:none;cursor:pointer}#quota-fold>summary::-webkit-details-marker{display:none}#quota-fold>summary h2{display:inline-flex;align-items:center;gap:8px}
 #tree-body{--tree-accent:var(--blue);--tree-edge:var(--line);--tree-soft:var(--card)}
 #tree-body .nd{position:relative}
+#tree-body .tree-mark{position:absolute;right:10px;top:8px;opacity:0;pointer-events:none;transition:opacity .15s;border:1px dashed var(--line);background:var(--card);color:var(--ink);font-size:11px;line-height:18px;padding:0 8px;border-radius:999px;cursor:pointer}
+#tree-body .nd:hover .tree-mark,#tree-body .nd:focus-within .tree-mark{opacity:1;pointer-events:auto}
+#tree-body .tree-mark:hover{border-style:solid;border-color:var(--blue)}
 #tree-body .tree-node-head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:26px;margin-bottom:3px}
 #tree-body .tree-node-head .st{margin:0;flex-shrink:0}
 #tree-body .tree-node-title{display:block;font-size:14px;font-weight:700;line-height:1.5}
@@ -1208,6 +1211,11 @@ function treeMarkRead(node) {
   try { localStorage.setItem('result-tree-read-v1', JSON.stringify(treeReadVersions)); } catch (_) {}
   treeUpdateUnread();
 }
+function treeMarkUnread(node) {
+  delete treeReadVersions[node.title];
+  try { localStorage.setItem('result-tree-read-v1', JSON.stringify(treeReadVersions)); } catch (_) {}
+  treeUpdateUnread();
+}
 function treeChainTitles(title) {
   const byTitle = new Map(treeNodes().map(row => [row.node.title, row.node])), chain = new Set([title]);
   // Follow each direction independently so siblings with a shared cause stay distinct.
@@ -1268,6 +1276,11 @@ function renderTree(o, force = false) {
     card.dataset.key = key; card.dataset.title = node.title; card.tabIndex = 0;
     card.setAttribute('role', 'group'); card.setAttribute('aria-label', node.title);
     const dot = el('span', 'tree-unread'); dot.title = '这项结果有新内容'; card.append(dot);
+    const mark = el('button', 'tree-mark'); mark.type = 'button';
+    const paint = () => { const unread = treeIsUnread(node); mark.textContent = unread ? '标为已读' : '标为未读'; mark.setAttribute('aria-label', mark.textContent + '：' + node.title); };
+    paint(); card.addEventListener('mouseenter', paint);
+    mark.onclick = event => { event.stopPropagation(); if (treeIsUnread(node)) treeMarkRead(node); else treeMarkUnread(node); paint(); if (treeUnreadOnly) renderTree(TREE_O, true); };
+    card.append(mark);
     const head = el('div', 'tree-node-head'); head.append(el('span', 'st', status[0]));
     if (node.page) {
       const link = (o.links || []).find(link => link.path === node.page);
