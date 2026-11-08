@@ -1406,12 +1406,21 @@ function renderTasks(o, tasks) {
       target.append(group);
     }
   };
-  appendGroups(box, entries.filter(t => !t.waiting));
+  const listKey = 'task-list-open';
+  if (!openState.has('task-list')) {
+    let saved = '';
+    try { saved = localStorage.getItem(listKey) || ''; } catch (_) {}
+    openState.set('task-list', saved === '1');
+  }
+  const [listFold, listBody] = fold('task-list', '任务清单 · ' + entries.length, false, 'task-list');
+  listFold.addEventListener('toggle', () => { try { localStorage.setItem(listKey, listFold.open ? '1' : '0'); } catch (_) {} });
+  appendGroups(listBody, entries.filter(t => !t.waiting));
   const waiting = entries.filter(t => t.waiting);
   if (waiting.length) {
     const [folded, body] = fold('tasks-wait', '等条件 · ' + waiting.length, false, 'task-wait');
-    appendGroups(body, waiting); box.append(folded);
+    appendGroups(body, waiting); listBody.append(folded);
   }
+  box.append(listFold);
   if (!entries.length) box.append(el('div', 'muted', '这一轮任务已交齐。'));
 }
 
