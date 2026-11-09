@@ -8,6 +8,12 @@ def parse_args(argv=None):
     emotes=p.add_mutually_exclusive_group()
     emotes.add_argument('--download-emotes',dest='emotes',action='store_const',const='download',help='Record explicit permission and download optional local Bilibili emotes')
     emotes.add_argument('--unicode-emotes',dest='emotes',action='store_const',const='unicode',help='Record the Unicode-only choice')
+    voice=p.add_mutually_exclusive_group()
+    voice.add_argument('--enable-voice',dest='voice',action='store_const',const='enable',help='Enable the optional local voice reader when hardware qualifies')
+    voice.add_argument('--disable-voice',dest='voice',action='store_const',const='disable',help='Keep the optional voice reader disabled')
+    night_watch=p.add_mutually_exclusive_group()
+    night_watch.add_argument('--install-night-watch','--enable-night-watch',dest='night_watch',action='store_const',const='install',help='Install the optional ten-minute local night watch')
+    night_watch.add_argument('--disable-night-watch',dest='night_watch',action='store_const',const='disable',help='Keep the optional night watch disabled')
     a=p.parse_args(argv)
     if not 1024<=a.port<=65535:p.error('Choose a port between 1024 and 65535')
     return a
@@ -38,7 +44,20 @@ def setup_message(message, fallback=None):
         print(text.encode('ascii','backslashreplace').decode('ascii'),flush=True)
 
 
-def first_run_options(python,root,choice=None):
+def _voice_setup(root,choice=None):
+    sys.path.insert(0,str(ROOT))
+    from board import onboarding
+    voice=onboarding.configure_voice(root,choice)
+    if voice.get('show_prompt'):
+        setup_message(onboarding.VOICE_PROMPT+'？由部署助手询问；同意后传 --enable-voice，选择关闭传 --disable-voice。',
+                      'Enable optional local voice reading? The deployment assistant asks for your choice. Use --enable-voice or --disable-voice.')
+    if voice.get('mode')=='enabled':
+        setup_message('语音朗读推荐 CosyVoice（Apache-2.0）：'+voice['project_url']+'；安装说明：'+voice['install_url'],
+                      'Voice reader: CosyVoice (Apache-2.0) '+voice['project_url']+'; installation '+voice['install_url'])
+    return voice
+
+
+def first_run_options(python,root,choice=None,voice_choice=None,night_watch_choice=None,*,detect_voice=False):
     sys.path.insert(0,str(ROOT))
     from board import onboarding,storage
     def install_emotes(data):
@@ -51,12 +70,19 @@ def first_run_options(python,root,choice=None):
     if preferences.get('status')=='fallback':
         setup_message('表情下载已回退到 Unicode；选择与本机图片保存在项目内。',
                       'The emote download fell back to Unicode. Your choice and existing local images are retained.')
-    path=storage.relative_file(root,onboarding.PREFERENCES)
-    settings=storage.read(path,{})
-    watch=settings.get('night_watch',{})
-    if not watch:
+    voice=_voice_setup(root,voice_choice) if detect_voice else onboarding.voice_preferences(root,detect_hardware=False)
+    voice.setdefault('show_prompt',False)
+    watch=onboarding.configure_night_watch(root,night_watch_choice)
+    if watch.get('show_prompt'):
+        setup_message(onboarding.NIGHT_WATCH_PROMPT+'？由部署助手询问；同意后传 --install-night-watch，默认不安装。',
+                      'Install the optional night watch (checks every 10 minutes and can be disabled later)? The deployment assistant asks for your choice; use --install-night-watch to agree. It stays disabled by default.')
+    if watch.get('choice')=='install' and watch.get('status') not in ['installed','registered','manual','preview']:
+        show_prompt=watch.get('show_prompt',False)
         watch=register_night_watch(python,root)
+        watch.update(choice='install',prompt_shown=True)
         storage.update_json(root,onboarding.PREFERENCES,lambda settings:settings.update(night_watch=watch))
+        watch=onboarding.night_watch_preferences(root)
+        watch['show_prompt']=show_prompt
     if watch.get('status')=='manual':
         command=watch['manual_command']
         fallback='Night watch manual setup: '+command if command.isascii() else 'Night watch needs manual setup. The exact command is saved in the project data: attachments/onboarding.json -> night_watch.manual_command. Installer: scripts/install_night_watch.py --install.'
@@ -65,7 +91,7 @@ def first_run_options(python,root,choice=None):
         report=watch.get('report',{})
         for key in ['prepare_command','detail']:
             if report.get(key):setup_message(report[key])
-    return dict(emotes=preferences,night_watch=watch)
+    return dict(emotes=preferences,voice=voice,night_watch=watch)
 
 
 def main():
@@ -79,7 +105,7 @@ def main():
     if a.deliverable:command+=['--deliverable',a.deliverable]
     if a.user_name:command+=['--user-name',a.user_name]
     subprocess.run(command+['--init-only'],cwd=ROOT,check=True)
-    first_run_options(python,ROOT/'data',getattr(a,'emotes',None))
+    first_run_options(python,ROOT/'data',getattr(a,'emotes',None),getattr(a,'voice',None),getattr(a,'night_watch',None))
     subprocess.run([str(python),'-B',str(ROOT/'scripts/patrol.py'),a.agent,'--auto'],cwd=ROOT,check=True,stdout=subprocess.DEVNULL)
     def next_steps():
         subprocess.run([str(python),'-B',str(ROOT/'scripts/onboarding.py'),'status',a.agent],cwd=ROOT,check=True)
@@ -89,7 +115,7 @@ def main():
         if running.get('workspace_id')!=local.get('workspace_id'):raise SystemExit('Port belongs to another project; choose --port')
         with urllib.request.urlopen(url+'/api/me',timeout=2) as response:identity=json.load(response)
         if identity.get('listener')!='127.0.0.1':raise SystemExit('Restart this project with the current loopback-only entry')
-        print(url);next_steps();return
+        _voice_setup(root,getattr(a,'voice',None));print(url);next_steps();return
     except OSError:pass
     with (root/'server.log').open('ab') as log:
         child=subprocess.Popen(command,cwd=ROOT,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True,creationflags=subprocess.CREATE_NO_WINDOW if os.name=='nt' else 0)
@@ -99,7 +125,8 @@ def main():
         if child.poll() is not None:raise SystemExit('Read data/server.log to resolve startup')
         try:
             with urllib.request.urlopen(url+'/api/project',timeout=1) as response:running=json.load(response)
-            if running.get('workspace_id')==local.get('workspace_id'):print(url,flush=True);next_steps();return
+            if running.get('workspace_id')==local.get('workspace_id'):
+                _voice_setup(root,getattr(a,'voice',None));print(url,flush=True);next_steps();return
         except OSError:time.sleep(.1)
     raise SystemExit('Startup is taking longer; inspect data/server.log')
 

@@ -41,6 +41,11 @@ class CadenceTests(unittest.TestCase):
         for system in ['Windows','Linux']:
             plan=install_night_watch.build_plan(self.repo,system=system)
             self.assertEqual(plan['interval_minutes'],7)
+        plan=install_night_watch.build_plan(self.repo,system='Windows')
+        self.assertIn('-WindowStyle Hidden -Command',plan['action'])
+        self.assertIn('-WindowStyle Hidden -Command',plan['task_xml'])
+        self.assertNotIn('-EncodedCommand',plan['task_xml'])
+        self.assertNotIn('<Hidden>true</Hidden>',plan['task_xml'])
     def test_weekly_dedup_ack_and_rules_follow_tidy(self):
         at=datetime(2026,11,1,19,59).timestamp()
         night_watch.patrol(self.repo,now=at)

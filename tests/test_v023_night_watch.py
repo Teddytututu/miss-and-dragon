@@ -133,8 +133,9 @@ class NightWatchTests(unittest.TestCase):
         self.assertIn('schtasks.exe', plan['command'])
         self.assertIn('PT10M', plan['task_xml'])
         self.assertIn('Hidden', plan['action'])
-        invocation = base64.b64decode(plan['action'].split()[-1]).decode('utf-16le')
-        self.assertIn(str(self.root), invocation)
+        self.assertIn('-WindowStyle Hidden -Command', plan['action'])
+        self.assertNotIn('-EncodedCommand', plan['action'])
+        self.assertIn(str(self.root), plan['action'])
         with patch.object(install.subprocess, 'run') as run, contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(install.main(['--project-root', str(self.root), '--install', '--dry-run']), 0)
         run.assert_not_called()
@@ -233,9 +234,10 @@ class NightWatchTests(unittest.TestCase):
         ns = {'t': 'http://schemas.microsoft.com/windows/2004/02/mit/task'}
         self.assertEqual(xml.find('.//t:WorkingDirectory', ns).text, str(root))
         self.assertEqual(xml.find('.//t:Interval', ns).text, 'PT10M')
-        self.assertEqual(xml.find('.//t:Hidden', ns).text, 'true')
-        code = base64.b64decode(plan['action'].split()[-1]).decode('utf-16le')
-        self.assertIn("project ''& space", code)
+        self.assertIsNone(xml.find('.//t:Hidden', ns))
+        self.assertIn('-WindowStyle Hidden -Command', plan['action'])
+        self.assertNotIn('-EncodedCommand', plan['action'])
+        self.assertIn("project ''& space", plan['action'])
 
     def test_real_cli_queue_resume_and_quiet_watch_in_fixture(self):
         handler = self.root / 'work/handler.py'

@@ -60,7 +60,7 @@ class BootstrapBoundaries(unittest.TestCase):
         raw = io.BytesIO()
         stream = io.TextIOWrapper(raw, encoding='cp1252', errors='strict')
         with patch.object(self.bootstrap, 'register_night_watch', return_value={'status': 'registered'}), contextlib.redirect_stdout(stream):
-            result = self.bootstrap.first_run_options(sys.executable, self.root / 'data')
+            result = self.bootstrap.first_run_options(sys.executable, self.root / 'data', None, None, 'install')
         stream.flush()
         text = raw.getvalue().decode(stream.encoding)
         self.assertEqual(result['night_watch']['status'], 'registered')
@@ -73,7 +73,7 @@ class BootstrapBoundaries(unittest.TestCase):
     def test_first_run_utf8_preserves_chinese_prompt(self):
         stream = io.StringIO()
         with patch.object(self.bootstrap, 'register_night_watch', return_value={'status': 'registered'}), contextlib.redirect_stdout(stream):
-            self.bootstrap.first_run_options(sys.executable, self.root / 'data')
+            self.bootstrap.first_run_options(sys.executable, self.root / 'data', None, None, 'install')
         self.assertIn(onboarding.EMOTE_PROMPT, stream.getvalue())
 
     def test_cp1252_download_failure_and_manual_registration_remain_actionable(self):
@@ -83,7 +83,7 @@ class BootstrapBoundaries(unittest.TestCase):
                  'error': '调度错误', 'report': {'detail': '需手动接续'}}
         preferences = {'show_prompt': False, 'status': 'fallback', 'mode': 'unicode'}
         with patch.object(onboarding, 'configure_emotes', return_value=preferences), patch.object(self.bootstrap, 'register_night_watch', return_value=watch), contextlib.redirect_stdout(stream):
-            result = self.bootstrap.first_run_options(sys.executable, self.root / 'data')
+            result = self.bootstrap.first_run_options(sys.executable, self.root / 'data', None, None, 'install')
         stream.flush()
         text = raw.getvalue().decode(stream.encoding)
         self.assertEqual(result['night_watch']['status'], 'manual')
@@ -97,7 +97,7 @@ class BootstrapBoundaries(unittest.TestCase):
         watch = {'status': 'manual', 'manual_command': command}
         data = self.root / 'data'
         with patch.object(self.bootstrap, 'register_night_watch', return_value=watch), contextlib.redirect_stdout(stream):
-            self.bootstrap.first_run_options(sys.executable, data)
+            self.bootstrap.first_run_options(sys.executable, data, None, None, 'install')
         stream.flush()
         text = raw.getvalue().decode(stream.encoding)
         self.assertIn('attachments/onboarding.json', text)

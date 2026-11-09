@@ -2,7 +2,6 @@
 from pathlib import Path
 from datetime import datetime, timedelta
 import argparse
-import base64
 import getpass
 import hashlib
 import json
@@ -44,17 +43,17 @@ def build_plan(project_root=ROOT, *, system=None, python=None, data_dir='data'):
                     command=[], manual_command=cron, prepare_command=shlex.join(['mkdir', '-p', str(data / 'attachments/night-watch')]))
     log = data / 'attachments/night-watch/patrol.log'
     invocation = '& ' + ' '.join(ps_quote(arg) for arg in args) + ' *>> ' + ps_quote(log) + '; exit $LASTEXITCODE'
-    encoded = base64.b64encode(invocation.encode('utf-16le')).decode('ascii')
-    action = 'powershell.exe -NoProfile -NonInteractive -WindowStyle Hidden -EncodedCommand ' + encoded
+    action = 'powershell.exe -NoProfile -NonInteractive -WindowStyle Hidden -Command ' + invocation
+    command_text = escape(invocation)
     boundary = (datetime.now() + timedelta(minutes=1)).replace(microsecond=0).isoformat()
     xml = '''<?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <Triggers><TimeTrigger><Repetition><Interval>PT{interval}M</Interval><StopAtDurationEnd>false</StopAtDurationEnd></Repetition><StartBoundary>{boundary}</StartBoundary><Enabled>true</Enabled></TimeTrigger></Triggers>
   <Principals><Principal id="CurrentUser"><UserId>{user}</UserId><LogonType>InteractiveToken</LogonType><RunLevel>LeastPrivilege</RunLevel></Principal></Principals>
-  <Settings><MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy><DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries><StopIfGoingOnBatteries>false</StopIfGoingOnBatteries><StartWhenAvailable>true</StartWhenAvailable><Hidden>true</Hidden><ExecutionTimeLimit>PT5M</ExecutionTimeLimit><Enabled>true</Enabled></Settings>
-  <Actions Context="CurrentUser"><Exec><Command>powershell.exe</Command><Arguments>-NoProfile -NonInteractive -WindowStyle Hidden -EncodedCommand {encoded}</Arguments><WorkingDirectory>{root}</WorkingDirectory></Exec></Actions>
+  <Settings><MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy><DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries><StopIfGoingOnBatteries>false</StopIfGoingOnBatteries><StartWhenAvailable>true</StartWhenAvailable><ExecutionTimeLimit>PT5M</ExecutionTimeLimit><Enabled>true</Enabled></Settings>
+  <Actions Context="CurrentUser"><Exec><Command>powershell.exe</Command><Arguments>-NoProfile -NonInteractive -WindowStyle Hidden -Command {command_text}</Arguments><WorkingDirectory>{root}</WorkingDirectory></Exec></Actions>
 </Task>
-'''.format(interval=interval,boundary=boundary, user=escape(getpass.getuser()), encoded=encoded, root=escape(str(root)))
+'''.format(interval=interval,boundary=boundary, user=escape(getpass.getuser()), command_text=command_text, root=escape(str(root)))
     xml_path = data / 'attachments/night-watch/install-task.xml'
     command = ['schtasks.exe', '/Create', '/TN', task_name, '/XML', str(xml_path), '/F']
     # A directly executable manual retry also creates the exact XML after failure.

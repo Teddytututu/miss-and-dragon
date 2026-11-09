@@ -1,5 +1,4 @@
 """Exercise the actual bootstrap installer contract in isolated space-path copies."""
-import base64
 import contextlib
 import importlib.util
 import io
@@ -80,18 +79,19 @@ class BootstrapNightWatchIntegration(unittest.TestCase):
         xml = ET.parse(xml_path)
         ns = {'t': 'http://schemas.microsoft.com/windows/2004/02/mit/task'}
         self.assertEqual(xml.find('.//t:Interval', ns).text, 'PT10M')
-        self.assertEqual(xml.find('.//t:Hidden', ns).text, 'true')
+        self.assertIsNone(xml.find('.//t:Hidden', ns))
         self.assertEqual(xml.find('.//t:WorkingDirectory', ns).text, str(self.root))
         self.assertEqual(xml.find('.//t:MultipleInstancesPolicy', ns).text, 'IgnoreNew')
-        invocation = base64.b64decode(plan['action'].split()[-1]).decode('utf-16le')
-        self.assertIn("'--data-dir' '" + self.data_dir.replace("'", "''") + "'", invocation)
+        self.assertIn('-WindowStyle Hidden -Command', plan['action'])
+        self.assertNotIn('-EncodedCommand', plan['action'])
+        self.assertIn("'--data-dir' '" + self.data_dir.replace("'", "''") + "'", plan['action'])
         self.assertFalse((self.root / 'data').exists())
 
     def test_bootstrap_real_installer_dry_run_subprocess(self):
         result = self.bootstrap.register_night_watch(sys.executable, self.data, dry_run=True)
         self.assertEqual(result['status'], 'preview', result)
         self.assertEqual(result['report']['status'], 'preview')
-        self.assertIn('Hidden', result['report']['action'])
+        self.assertIn('-WindowStyle Hidden -Command', result['report']['action'])
         self.assertFalse(self.data.exists())
 
     def test_bootstrap_receives_manual_retry_after_mock_scheduler_failure(self):

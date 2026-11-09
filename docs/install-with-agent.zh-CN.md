@@ -12,7 +12,7 @@ README 里给用户的只是一句短提示，下面这些都按默认照做：
 - 用户已经说过的项目信息直接复用，其余一次问完：研究什么、想得到什么；希望怎么称呼（传给 Bootstrap 的 `--user-name`，默认大肥鱼）；GPT 和 Claude 各有几个订阅、什么档位。
 - 订阅档位决定巡检的额度档：两边各自按“有多个订阅或最高档 → `plenty`，普通付费档 → `normal`，免费或常常用完 → `tight`”选，写进 `data/attachments/onboarding.json` 的 `plans`，各自的 `scripts/patrol.py` 用对应的 `--tier`。
 - 用随包角色图和 Unicode 表情。B 站表情包下载、登录自启动各问一次，用户同意才装。
-- 守夜人装在当前用户账号下。
+- 部署助手会询问是否在当前用户账号下安装可选守夜人，默认保持关闭。
 - 用户说“演示项目”时，走第 2 节末尾的独立演示，不建正式项目。
 - 结束时交回两样：能打开的本机网址；项目文件夹的完整路径（用户会把它填进 README 里给 Claude 的那句话）。
 
@@ -41,7 +41,7 @@ python scripts/bootstrap.py "我的项目" --question "研究问题" --deliverab
 
 安装会话是 Claude 时使用 `--agent Claude`。Bootstrap 创建 `.venv`，通过随包依赖脚本安装 Pillow，初始化 `data/`，并在 `127.0.0.1` 启动后台服务。默认显示名是大肥鱼，初始主题是蓝色。身份菜单可改显示名，侧栏可改主题与语言。助手在首次对话里通过 `/api/project` 写入研究问题和成果；之后可在节奏设置底部修改。中文地址为 `http://127.0.0.1:8780/?lang=zh-CN`，英文使用 `?lang=en`。
 
-Bootstrap 也会尝试在当前 Windows 用户下注册本项目每十分钟一次的守夜人。macOS 与 Linux 会收到准备命令和 cron 命令。读取实际返回结果：手动注册状态附有可执行命令，看板本身可以继续启动。[启动与巡检](night-watch.md)说明完整接入与生命周期。
+Bootstrap 会询问是否在当前 Windows 用户下安装本项目每十分钟一次的可选守夜人，默认保持关闭；明确同意时传入 `--install-night-watch`。macOS 与 Linux 会收到准备命令和 cron 命令。读取实际返回结果：手动注册状态附有可执行命令，看板本身可以继续启动。计划任务使用明文参数与 `-WindowStyle Hidden` 启动 PowerShell，任务本身在任务计划程序中可见，随时可以在那里停用。[启动与巡检](night-watch.md)说明完整接入与生命周期。
 
 可选公开表情包询问一次，明确同意后才传 `--download-emotes`；等待选择时使用 Unicode 继续安装。随包角色图直接可用，换图从用户明确提出更换开始。登录自启动和可选的卫士（看板或服务挂了自动拉起）分别由用户选择，选定后通过 `scripts/install-startup.ps1` 安装。
 

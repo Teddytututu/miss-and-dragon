@@ -41,7 +41,7 @@ class FirstRunIntegration(unittest.TestCase):
             child=Mock(pid=12345)
             child.poll.return_value=None
             output=io.StringIO()
-            args=bootstrap.parse_args(['Fresh project','--question','Which workflow?','--deliverable','A local report','--port','8780'])
+            args=bootstrap.parse_args(['Fresh project','--question','Which workflow?','--deliverable','A local report','--port','8780','--install-night-watch'])
             watch=dict(status='manual',manual_command='python scripts/install_night_watch.py --install',error='Scheduler fixture error')
             with patch.object(bootstrap,'ROOT',package),patch.object(bootstrap,'parse_args',return_value=args),patch.object(bootstrap.subprocess,'run',side_effect=run),patch.object(bootstrap.subprocess,'Popen',return_value=child),patch.object(bootstrap,'register_night_watch',return_value=watch) as register,patch.object(bootstrap.urllib.request,'urlopen',side_effect=request),patch('builtins.input',side_effect=AssertionError('stdin read')),contextlib.redirect_stdout(output):
                 bootstrap.main()
@@ -58,7 +58,7 @@ class FirstRunIntegration(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder)
             with patch.object(bootstrap,'register_night_watch',return_value=dict(status='registered')) as register,patch.object(bootstrap.subprocess,'run',side_effect=AssertionError('External child command')),contextlib.redirect_stdout(io.StringIO()):
-                first=bootstrap.first_run_options(sys.executable,root,'unicode')
+                first=bootstrap.first_run_options(sys.executable,root,'unicode',None,'install')
                 again=bootstrap.first_run_options(sys.executable,root)
             register.assert_called_once()
             self.assertEqual(first['night_watch'],again['night_watch'])
@@ -75,8 +75,23 @@ class FirstRunIntegration(unittest.TestCase):
         bootstrap=load_bootstrap()
         self.assertEqual(bootstrap.parse_args(['--download-emotes']).emotes,'download')
         self.assertEqual(bootstrap.parse_args(['--unicode-emotes']).emotes,'unicode')
+        self.assertEqual(bootstrap.parse_args(['--install-night-watch']).night_watch,'install')
+        self.assertEqual(bootstrap.parse_args(['--disable-night-watch']).night_watch,'disable')
         with contextlib.redirect_stderr(io.StringIO()),self.assertRaises(SystemExit):
             bootstrap.parse_args(['--download-emotes','--unicode-emotes'])
+        with contextlib.redirect_stderr(io.StringIO()),self.assertRaises(SystemExit):
+            bootstrap.parse_args(['--install-night-watch','--disable-night-watch'])
+
+    def test_night_watch_defaults_to_disabled_and_records_the_question(self):
+        bootstrap=load_bootstrap()
+        with tempfile.TemporaryDirectory() as folder:
+            with patch.object(bootstrap,'register_night_watch',side_effect=AssertionError('default must stay disabled')):
+                result=bootstrap.first_run_options(sys.executable,Path(folder),'unicode')
+            self.assertEqual(result['night_watch']['choice'],'disable')
+            self.assertEqual(result['night_watch']['status'],'disabled')
+            self.assertTrue(result['night_watch']['show_prompt'])
+            again=bootstrap.first_run_options(sys.executable,Path(folder),'unicode')
+            self.assertFalse(again['night_watch']['show_prompt'])
 
     def test_saved_unicode_choice_can_be_recorded_from_noninteractive_cli(self):
         with tempfile.TemporaryDirectory() as folder:
