@@ -1,20 +1,14 @@
 {
   "owner": {
-    "file": "avatar-user.png",
-    "full": "avatar-user.png",
-    "cropWidth": "242.750000%",
-    "cropLeft": "-66.000000%",
-    "cropTop": "-9.000000%"
+    "file": "avatar-user.svg",
+    "full": "avatar-user.svg"
   },
   "Claude": {
-    "file": "avatar-claude.png",
-    "full": "avatar-claude-full.png"
+    "file": "avatar-claude.svg",
+    "full": "avatar-claude.svg"
   },
   "GPT": {
-    "file": "avatar-gpt.png",
-    "full": "avatar-gpt.png",
-    "cropWidth": "289.850746%",
-    "cropLeft": "-85.970149%",
-    "cropTop": "-22.089552%"
+    "file": "avatar-gpt.svg",
+    "full": "avatar-gpt.svg"
   }
 }

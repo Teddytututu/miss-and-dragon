@@ -40,7 +40,7 @@ class MediaCache(unittest.TestCase):
                 self.assertIn(b'Updated',body)
                 for url in ['/api/board','/api/discussion']:
                     self.assertEqual(request(url)[2]['Cache-Control'],'no-store, private')
-                self.assertEqual(request('/art/avatar-user.png')[2]['Cache-Control'],'private, max-age=60')
+                self.assertEqual(request('/art/avatar-user.svg')[2]['Cache-Control'],'private, max-age=60')
             finally:
                 server.shutdown();server.server_close();thread.join()
 

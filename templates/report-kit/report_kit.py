@@ -1,4 +1,4 @@
-"""Reusable offline report components. See example_build.py and check_report.py."""
+"""Reusable report components with stable semantic colors."""
 from pathlib import Path
 import base64, html, io
 
@@ -11,7 +11,7 @@ BASELINE = '#bdb3b9'   # “什么都不做”的基线固定用灰
 
 
 class Colors:
-    """identity = Colors({'新方法': '#c2477a', '基线': '#6f8496'})；没登记的名字按顺序自动发色。
+    """identity = Colors({'早筛': '#c2477a', '画完四张再挑': '#6f8496'})；没登记的名字按顺序自动发色。
     同一个颜色发给两个名字会直接报错。"""
     def __init__(self, fixed=None):
         self.map = {}
@@ -61,6 +61,37 @@ def page(title, sub, sections, lang='zh-CN', extra_css=''):
             f'<style>{CSS}{extra_css}</style></head><body><main>'
             f'<header class="top"><h1>{esc(title)}</h1><p class="sub">{esc(sub)}</p></header>'
             + ''.join(sections) + '</main></body></html>')
+
+
+def result_page(title, setup, summary, purpose, sections, limits, record='', done=True):
+    """实验结果页的标准骨架。少一样就报错，生成不出页面。
+    title: 一句结论；setup: 一行设置（模型、步数/帧、题数和来源、判分、日期）；
+    summary: 3–5 条已完成的结论，前面的结论各带数字；
+    purpose: dict(question=要回答的问题, cause=起因（含上一份结果页链接的 HTML）, method=做法, expect=事先预期)；
+    sections: 正文 section() 列表；limits: 局限与下一步（列表）；record: 折叠的方法与实现记录（HTML，可空）。"""
+    import re as _re
+    need = []
+    if done is not True: need.append('结果页要求本次实验完成')
+    if not (3 <= len(summary) <= 5): need.append('简要结论要 3–5 条')
+    if any(not _re.search(r'\d', x) for x in summary[:-1]): need.append('简要结论每条要带数字')
+    if summary and _re.search(r'还在跑|还在做|进行中|待补|还没开始|在等', summary[-1]): need.append('结论只放做完的，待做的放看板')
+    for k in ('question', 'cause', 'method', 'expect'):
+        if not purpose.get(k): need.append('实验目的缺 ' + k)
+    if 'href=' not in purpose.get('cause', ''): need.append('起因要链到上一份结果页（没有页先补一页）')
+    if not limits: need.append('局限与下一步不能空')
+    if not _re.search(r'\d', setup) or len(setup) < 15: need.append('设置行要写模型、题数、判分、日期')
+    if need:
+        raise ValueError('结果页不合格：' + '；'.join(need))
+    li = lambda xs: '<ul>' + ''.join(f'<li>{x}</li>' for x in xs) + '</ul>'
+    
+    parts = ['<section><h2>实验目的</h2>' + claim(purpose['question'])
+             + f"<p>起因：{purpose['cause']}</p><p>做法：{esc(purpose['method'])}</p><p>事先预期：{esc(purpose['expect'])}</p></section>"]
+    parts += list(sections)
+    parts.append(f'<section><h2>结论</h2>{li(summary)}</section>')
+    parts.append(f'<section><h2>局限与下一步</h2>{li(limits)}</section>')
+    if record:
+        parts.append(f'<section><h2>方法与实现记录</h2><details><summary>展开</summary>{record}</details></section>')
+    return page(title, setup, parts)
 
 
 def section(heading, claim_bold, claim_rest, *parts):
@@ -165,7 +196,7 @@ def diverging(rows, left, right, colors, aria='', W=760, unit_px=30):
 
 
 def lines(series, colors, xlabel, ylabel='', aria='', W=760, H=290, ymax=None, marks=()):
-    """曲线图。series = {名字: [(x, y), ...]}。marks = [(x, 文字, 名字)] 在某个 x 画竖虚线并标注关键时刻。
+    """曲线图。series = {名字: [(x, y), ...]}。marks = [(x, 文字, 名字)] 在某个 x 画竖虚线并标注（例如“转折点”）。
     曲线末端直接写名字，不用图例。"""
     xs = [x for pts in series.values() for x, _ in pts]
     ys = [y for pts in series.values() for _, y in pts]

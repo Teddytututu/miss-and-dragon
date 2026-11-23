@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.6.0
+
+- Rebuilt the board around one shared storage lock, a task registry and versioned delivery stages; a stage only opens once its upstream stages are accepted.
+- Manual question packets keep every answer version, attachment and review.
+- Result-tree read state is stored on the server, keyed by stable node identity, so it survives title changes and stays read-only in snapshots.
+- Queue submission is atomic and rejects a ticket whose id already exists in any queue folder.
+- New optional integrations, all off by default: queue protocol, voice backend, host hooks, explicit file import, mail tone check, process control, accounts and guests, local service observer, daily budget, GPU observer and avatar choices. See docs/integrations.md.
+- The report checker reads private names from project settings instead of shipping them; report categories use generic names.
+- Upgrade guide: docs/upgrade-0.6.md.
+
+## 0.5.0 candidate
+
+- Forecast whole measured jobs with dependencies; the board and CLI read one resource-plan file.
+- Keep each manual answer and attachment version with its lead review and successor task.
+- Preserve read states across report title changes and volatile metadata updates; board snapshots stay read-only across midnight.
+- Run the complete paired-cache example locally with zero model calls.
+- Package original SVG artwork and bilingual setup, workflow and upgrade guides.
+
+
 ## 0.4.3
 
 - Add a full-screen cadence panel with 13 ordered activities, subscription-aware suggestions and persistent overrides; move project details into the panel and display names into the identity menu.

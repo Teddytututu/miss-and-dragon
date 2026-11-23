@@ -11,7 +11,7 @@ The README gives the user a one-line prompt. Apply these defaults:
 - Install into a new folder and leave the user's existing projects and files as they are.
 - Reuse project details the user has already given and ask the rest in one go: what to research and what to deliver; what the user wants to be called (Bootstrap `--user-name`, default 大肥鱼 / Big Fish); how many GPT and Claude subscriptions they have and which plans.
 - Plans set each assistant's quota band: several subscriptions or the top plan → `plenty`, a regular paid plan → `normal`, free or often exhausted → `tight`. Record them under `plans` in `data/attachments/onboarding.json` and pass the matching `--tier` to that assistant's `scripts/patrol.py`.
-- Use the bundled character pictures and Unicode reactions. Ask once each about the optional emote download and login startup, and install them only with consent.
+- Use the bundled character pictures and Unicode reactions. Ask before enabling login startup.
 - Ask whether to install the optional night watch under the current user account; leave it disabled by default.
 - When the user asks for a demo project, use the isolated demo at the end of section 2 and create no real project.
 - Finish by returning the working local address and the full project folder path (the user puts it into the README line for Claude).
@@ -36,14 +36,16 @@ Read `AGENTS.md` for GPT / Codex or `CLAUDE.md` for Claude, the matching persona
 Reuse the project name, research question and desired deliverable already supplied. If the project name is given, collect just the two missing substantive answers together: the research question and the desired deliverable. Replace the example values below with those answers.
 
 ```sh
-python scripts/bootstrap.py "My project" --question "Research question" --deliverable "Desired deliverable" --agent GPT --port 8780 --unicode-emotes
+python scripts/bootstrap.py "My project" --question "Research question" --deliverable "Desired deliverable" --agent GPT --port 8780
 ```
 
 Use `--agent Claude` when the installing session is Claude. Bootstrap creates `.venv`, installs Pillow through the bundled dependency helper, initializes `data/`, and starts a detached service bound to `127.0.0.1`. The default display name is 大肥鱼 and the initial theme is blue. The identity menu changes the display name; the sidebar changes theme and language. The assistant writes the research question and deliverable during the first conversation through `/api/project`. Later edits live at the bottom of Cadence settings. English is available at `http://127.0.0.1:8780/?lang=en`; Chinese uses `?lang=zh-CN`.
 
 Bootstrap asks whether to install this project's optional ten-minute night watch under the current Windows user. The default keeps it disabled; pass `--install-night-watch` to consent. On macOS and Linux it returns preparation and cron commands. Read its actual result: a manual-registration outcome includes a runnable command, and the board can continue independently. The scheduled task runs PowerShell with plain-text arguments and `-WindowStyle Hidden`; the task itself remains visible in Task Scheduler and can be disabled there at any time. [Night watch](night-watch.md) describes installation and its lifecycle.
 
-Ask once about the optional public emote pack. Use `--download-emotes` only with explicit consent; Unicode keeps setup moving while the answer is pending. Packaged character images work immediately; custom pictures begin with an explicit replacement request. Login startup and its optional watchdog are separate choices, installed only when selected through `scripts/install-startup.ps1`.
+Ask whether to add local Bilibili reactions. Unicode is the default. If selected, pass `--download-emotes` and follow the [installer AI guide](local-emotes.md).
+
+Packaged character images work immediately; custom pictures begin with an explicit replacement request. Login startup and its optional watchdog are separate choices, installed only when selected through `scripts/install-startup.ps1`.
 
 For an isolated preview instead of a real project, install the dependency in a local environment and run:
 

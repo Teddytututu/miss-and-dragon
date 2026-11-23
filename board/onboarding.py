@@ -1,9 +1,10 @@
 """Observable assistant setup, distinct from a running HTTP service."""
 from pathlib import Path
 from . import storage, provider_bridge, scheduler, project, assets
-import shutil, subprocess, uuid
+import shutil, subprocess
 NAMES=('avatar','calm','surprised','wink','smile','shy','teary')
-EMOTE_PROMPT='要不要下载 B 站表情包（约 225 个，只存在你本机）'
+EMOTE_PROMPT='要不要加 B 站表情？默认使用 Unicode 表情。'
+EMOTE_GUIDE='docs/local-emotes.md'
 VOICE_PROMPT='要不要开启语音朗读（需要 NVIDIA 显卡、显存至少 6 GiB、磁盘余量至少 10 GiB）'
 NIGHT_WATCH_PROMPT='要不要装守夜人（每 10 分钟查一次，可随时关）'
 VOICE_PROJECT_URL='https://github.com/FunAudioLLM/CosyVoice'
@@ -29,43 +30,35 @@ def pillow_image():
     return Image
 
 
+def emote_choice(root):
+    saved = storage.read(storage.relative_file(root, PREFERENCES), {}).get('emotes', {})
+    return saved.get('choice') if saved.get('choice') in ('download', 'unicode') else None
+
+
 def emote_preferences(root):
-    saved=storage.read(storage.relative_file(root,PREFERENCES),{}).get('emotes',{})
-    choice=saved.get('choice') if saved.get('choice') in ['download','unicode'] else None
-    return dict(saved,choice=choice,mode='download' if choice=='download' and saved.get('mode')=='download' else 'unicode',
-                decision_required=choice is None,prompt=EMOTE_PROMPT)
+    choice = emote_choice(root)
+    ready = choice == 'download' and bool(assets.reaction_catalog(root))
+    return dict(choice=choice, mode='download' if ready else 'unicode',
+                status='ready' if ready else 'awaiting-local-files' if choice=='download' else 'selected',
+                decision_required=False, guide=EMOTE_GUIDE if choice=='download' else None)
 
 
-def configure_emotes(root,choice=None,*,installer=None):
-    """Only an explicit recorded answer enables the optional downloader; never read stdin."""
-    if choice not in [None,'download','unicode']:raise ValueError('Choose download or unicode')
-    root=Path(root);token=uuid.uuid4().hex
+def configure_emotes(root, choice=None):
+    """Record the installer's choice. The installer AI handles optional retrieval."""
+    if choice not in (None, 'download', 'unicode'):
+        raise ValueError('Choose download or unicode')
+    root = Path(root)
     with storage.locked(root):
-        path=storage.relative_file(root,PREFERENCES);settings=storage.read(path,{})
-        saved=settings.setdefault('emotes',{});show_prompt=choice is None and not saved.get('prompt_shown') and not saved.get('choice')
-        saved['prompt_shown']=True
-        if choice is not None:saved.update(choice=choice,source='explicit-cli')
-        download=saved.get('choice')=='download'
-        saved.update(mode='unicode',status='installing' if download else 'selected' if saved.get('choice') else 'awaiting-answer',attempt=token)
-        saved.pop('error',None)
-        storage.write(path,settings)
-    if download:
-        try:
-            if installer is None:
-                pillow_image()
-                from scripts.install_emotes import install
-                installer=install
-            report=installer(root)
-            if not isinstance(report,dict) or any(type(report.get(k)) is not int or report[k]<0 for k in ['downloaded','reused','failed']):
-                raise ValueError('Emote installer returned an invalid report')
-            success=report['failed']==0 and report['downloaded']+report['reused']>0
-            update=dict(report=report,mode='download' if success else 'unicode',status='ready' if success else 'fallback')
-        except (OSError,ValueError,subprocess.SubprocessError) as error:
-            update=dict(mode='unicode',status='fallback',error=str(error))
-        with storage.locked(root):
-            settings=storage.read(path,{});saved=settings.get('emotes',{})
-            if saved.get('attempt')==token:saved.update(update);storage.write(path,settings)
-    return dict(emote_preferences(root),show_prompt=show_prompt)
+        path = storage.relative_file(root, PREFERENCES)
+        settings = storage.read(path, {})
+        saved = settings.setdefault('emotes', {})
+        show_prompt = choice is None and not saved.get('prompt_shown') and emote_choice(root) is None
+        if show_prompt or choice is not None:
+            saved['prompt_shown'] = True
+            if choice is not None:
+                saved.update(choice=choice, source='explicit-cli')
+            storage.write(path, settings)
+    return dict(emote_preferences(root), show_prompt=show_prompt)
 
 
 def _nvidia_memory_mib():
@@ -192,24 +185,18 @@ def configure_night_watch(root,choice=None):
 
 
 def bundled_artwork():
-    """Packaged PNGs satisfy the normal setup; custom generation stays optional."""
-    try:
-        Image=pillow_image()
-    except ImageDependencyError as error:
-        Image=None;dependency_reason=str(error)
+    """Original bundled SVGs make setup independent of image generation."""
+    import xml.etree.ElementTree as ET
     rows=[]
     for role in ['Claude','GPT']:
-        name=assets.avatars().get(role,{}).get('file','');path=assets.ROOT/'board/art'/name;valid=False;reason='bundled character PNG'
-        if Image is None:
-            reason=dependency_reason
-        else:
-            try:
-                with Image.open(path) as image:
-                    valid=image.format=='PNG' and min(image.size)>0
-                    image.verify()
-            except (OSError,ValueError):pass
-        rows.append(dict(role=role,file='board/art/'+name,valid=valid,reason=reason))
+        name=assets.avatars().get(role,{}).get('file','');path=assets.ROOT/'board/art'/name
+        valid=False
+        try:
+            valid=path.is_file() and path.suffix=='.svg' and ET.parse(path).getroot().tag.endswith('svg')
+        except (OSError,ValueError,ET.ParseError):pass
+        rows.append(dict(role=role,file='board/art/'+name,valid=valid,reason='original bundled SVG'))
     return dict(mode='bundled',expected=len(rows),valid=sum(row['valid'] for row in rows),files=rows)
+
 
 def artwork(root,agent):
     import xml.etree.ElementTree as ET

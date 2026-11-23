@@ -1,8 +1,8 @@
 # Bundled artwork and optional replacements
 
-Character PNGs ship with the project and are ready on first run. Their fan-art rights are described in [image assets](../assets/README.md). The original SVG fallback set below is MIT licensed. Reactions use Unicode by default; the optional public pack is downloaded only after the user's explicit agreement, into local ignored `data/emotes/`.
+Original MIT SVG characters ship with this archive. Local custom artwork keeps priority. Reactions use Unicode.
 
-包内角色 PNG 首次运行即可使用，二创权利见[图片素材](../assets/README.md)。下列原创 SVG 备用图采用 MIT。表情回应默认 Unicode，可选公开表情包经用户明确同意后下载到本机已忽略目录 `data/emotes/`。
+本归档采用原创 MIT SVG 人物图，优先使用本地自定义图片。回应采用 Unicode 表情。
 
 Every bundled SVG below is an original geometric illustration created for this project, licensed under MIT.
 
@@ -68,6 +68,6 @@ Runtime file selection accepts `.png` and `.svg` for the same basename and choos
 
 ## Bundled character artwork
 
-The default character PNGs, atlases and fifteen desk moods live in board/art/. See [assets/README.md](../assets/README.md) for their separate rights, personal noncommercial usage and removal policy. Original SVGs remain available as fallbacks. Unicode reactions work immediately. After the user's explicit agreement to the optional pack of about 225 public emotes, the deployment assistant runs `python scripts/install_emotes.py` to download images into ignored local `data/emotes/`. Skipping the pack or a download failure keeps Unicode available.
+The release includes original MIT SVG character drawings. Historical image reactions display as 🙂.
 
-默认角色 PNG、图集与十五种趴桌心情图位于 `board/art/`，按[素材说明](../assets/README.md)中的独立权利、个人非商业使用及权利人移除条款使用；原创 SVG 保留为备用。Unicode 表情开箱可用。用户明确同意下载约 225 张公开表情后，部署助手执行 `python scripts/install_emotes.py`，保存到本机 `data/emotes/`；用户跳过或下载失败时继续使用 Unicode。
+发行包内含原创 MIT SVG 人物图。历史图片表情显示为 🙂。

@@ -6,8 +6,8 @@ ROOT=Path(__file__).resolve().parents[1]
 def parse_args(argv=None):
     p=argparse.ArgumentParser();p.add_argument('project',nargs='?');p.add_argument('--question',default='');p.add_argument('--deliverable',default='');p.add_argument('--user-name',default='大肥鱼');p.add_argument('--port',type=int,default=os.environ.get('RESEARCH_BOARD_PORT','8780'));p.add_argument('--agent',choices=['GPT','Claude'],default=os.environ.get('RESEARCH_BOARD_AGENT','GPT'))
     emotes=p.add_mutually_exclusive_group()
-    emotes.add_argument('--download-emotes',dest='emotes',action='store_const',const='download',help='Record explicit permission and download optional local Bilibili emotes')
-    emotes.add_argument('--unicode-emotes',dest='emotes',action='store_const',const='unicode',help='Record the Unicode-only choice')
+    emotes.add_argument('--download-emotes',dest='emotes',action='store_const',const='download',help='Enable the optional local emote guide')
+    emotes.add_argument('--unicode-emotes',dest='emotes',action='store_const',const='unicode',help='Use Unicode reactions (default)')
     voice=p.add_mutually_exclusive_group()
     voice.add_argument('--enable-voice',dest='voice',action='store_const',const='enable',help='Enable the optional local voice reader when hardware qualifies')
     voice.add_argument('--disable-voice',dest='voice',action='store_const',const='disable',help='Keep the optional voice reader disabled')
@@ -60,16 +60,13 @@ def _voice_setup(root,choice=None):
 def first_run_options(python,root,choice=None,voice_choice=None,night_watch_choice=None,*,detect_voice=False):
     sys.path.insert(0,str(ROOT))
     from board import onboarding,storage
-    def install_emotes(data):
-        result=subprocess.run([str(python),'-B',str(ROOT/'scripts/install_emotes.py'),'--data',str(data)],cwd=ROOT,check=True,capture_output=True,text=True,encoding='utf-8',timeout=60)
-        return json.loads(result.stdout)
-    preferences=onboarding.configure_emotes(root,choice,installer=install_emotes)
+    preferences=onboarding.configure_emotes(root,choice)
     if preferences['show_prompt']:
-        setup_message(onboarding.EMOTE_PROMPT+'？由部署助手询问；同意后传 --download-emotes，选择 Unicode 传 --unicode-emotes。当前使用 Unicode。',
-                      'Optional: download about 225 public emotes to this local project? The deployment assistant asks for your choice. After agreement use --download-emotes; choose --unicode-emotes to keep Unicode. Unicode is active now.')
-    if preferences.get('status')=='fallback':
-        setup_message('表情下载已回退到 Unicode；选择与本机图片保存在项目内。',
-                      'The emote download fell back to Unicode. Your choice and existing local images are retained.')
+        setup_message(onboarding.EMOTE_PROMPT+' 部署助手可用 --download-emotes 取得取用提示词，或用 --unicode-emotes 保持默认。',
+                      'Add optional Bilibili emotes? Unicode is the default. Use --download-emotes for the installer AI guide or --unicode-emotes to keep Unicode.')
+    if preferences['guide']:
+        setup_message('请安装者 AI 按 '+preferences['guide']+' 操作，本机数据目录：'+str(Path(root).resolve()),
+                      'Installer AI: follow '+preferences['guide']+' using this project data directory: '+str(Path(root).resolve()))
     voice=_voice_setup(root,voice_choice) if detect_voice else onboarding.voice_preferences(root,detect_hardware=False)
     voice.setdefault('show_prompt',False)
     watch=onboarding.configure_night_watch(root,night_watch_choice)

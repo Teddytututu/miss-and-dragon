@@ -24,19 +24,18 @@ class FirstRunDefaults(unittest.TestCase):
             result = onboarding.status(self.root, agent)
             self.assertTrue(result['checks']['artwork'])
             self.assertEqual(result['artwork']['mode'], 'bundled')
-            self.assertTrue(all(row['file'].endswith('.png') for row in result['artwork']['files']))
+            self.assertTrue(all(row['file'].endswith('.svg') for row in result['artwork']['files']))
         self.assertFalse((self.root/'attachments/generated').exists())
 
     def test_unanswered_prompt_uses_unicode_without_downloader_or_stdin(self):
-        installer = Mock(side_effect=AssertionError('External download'))
+
         with patch('builtins.input', side_effect=AssertionError('Interactive input')):
-            first = onboarding.configure_emotes(self.root, installer=installer)
-            again = onboarding.configure_emotes(self.root, installer=installer)
+            first = onboarding.configure_emotes(self.root)
+            again = onboarding.configure_emotes(self.root)
         self.assertTrue(first['show_prompt'])
         self.assertFalse(again['show_prompt'])
-        self.assertTrue(again['decision_required'])
+        self.assertFalse(again['decision_required'])
         self.assertEqual(again['mode'], 'unicode')
-        installer.assert_not_called()
 
     def test_decline_is_reused_and_existing_chat_artwork_bytes_survive(self):
         post = project.post(self.root, 'GPT', 'Existing opening')
@@ -44,39 +43,29 @@ class FirstRunDefaults(unittest.TestCase):
         art.parent.mkdir(parents=True)
         art.write_bytes(b'prior artwork')
         ledger = project.ledger(self.root).read_bytes()
-        installer = Mock()
-        onboarding.configure_emotes(self.root, 'unicode', installer=installer)
-        result = onboarding.configure_emotes(self.root, installer=installer)
+        onboarding.configure_emotes(self.root, 'unicode')
+        result = onboarding.configure_emotes(self.root)
         self.assertEqual((result['mode'], result['decision_required']), ('unicode', False))
-        installer.assert_not_called()
         self.assertEqual(project.ledger(self.root).read_bytes(), ledger)
         self.assertEqual(art.read_bytes(), b'prior artwork')
         self.assertEqual(conversation(self.root)['items'][0]['id'], post['id'])
 
-    def test_saved_permission_is_reused_and_failure_falls_back(self):
-        installer = Mock(return_value={'downloaded': 225, 'reused': 0, 'failed': 0})
-        result = onboarding.configure_emotes(self.root, 'download', installer=installer)
-        self.assertEqual(result['mode'], 'download')
-        result = onboarding.configure_emotes(self.root, installer=installer)
-        self.assertEqual(installer.call_count, 2)
-        self.assertEqual(result['choice'], 'download')
-        installer.side_effect = OSError('Fictional download failure')
-        result = onboarding.configure_emotes(self.root, installer=installer)
-        self.assertEqual((result['choice'], result['mode']), ('download', 'unicode'))
-        self.assertIn('Fictional download failure', result['error'])
+    def test_saved_opt_in_reuses_guide_and_falls_back_without_local_files(self):
+        result = onboarding.configure_emotes(self.root, 'download')
+        self.assertEqual((result['mode'], result['status']), ('unicode', 'awaiting-local-files'))
+        again = onboarding.configure_emotes(self.root)
+        self.assertEqual(again['guide'], 'docs/local-emotes.md')
+        self.assertEqual(again['choice'], 'download')
+        self.assertFalse((self.root/'emotes').exists())
 
-    def test_catalog_requires_both_permission_and_successful_local_install(self):
-        row = assets.emote_manifest()[0]
-        path = self.root/'emotes'/row['file']
-        path.parent.mkdir()
-        path.write_bytes(b'local fixture')
+    def test_invalid_manifest_entries_keep_unicode(self):
+        onboarding.configure_emotes(self.root, 'download')
+        manifest = self.root/'emotes/manifest.json'
+        storage.write(manifest, [{'id': '../other', 'label': 'Escape'}, {'id': 42, 'label': 'Missing'}, {'id': 7, 'label': 'Remote', 'url': 'https://example.org/image.png'}])
         self.assertEqual(conversation(self.root)['reaction_catalog'], [])
-        onboarding.configure_emotes(self.root, 'download', installer=lambda root: dict(downloaded=1, reused=0, failed=0))
-        self.assertEqual(conversation(self.root)['reaction_catalog'][0]['key'], row['key'])
-        onboarding.configure_emotes(self.root, 'download', installer=lambda root: dict(downloaded=1, reused=0, failed=1))
+        manifest.write_text('{', encoding='utf-8')
         self.assertEqual(conversation(self.root)['reaction_catalog'], [])
-        onboarding.configure_emotes(self.root, 'unicode')
-        self.assertTrue(path.exists())
+        self.assertEqual(onboarding.emote_preferences(self.root)['mode'], 'unicode')
 
     def test_night_watch_registration_is_injectable_and_failure_is_actionable(self):
         spec = importlib.util.spec_from_file_location('onboarding_bootstrap', ROOT/'scripts/bootstrap.py')

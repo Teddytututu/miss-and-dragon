@@ -27,7 +27,7 @@ def timestamp_issues(root,at,overview):
             path=life.data_file(root,path.relative_to(root))
             if path in seen or not path.is_file():continue
             seen.add(path)
-            modified=datetime.fromtimestamp(path.stat().st_mtime,life.TAIPEI)
+            modified=datetime.fromtimestamp(path.stat().st_mtime).astimezone()
             if (at-modified).total_seconds()>48*3600:continue
             with path.open(encoding='utf-8-sig') as stream:
                 text=stream.read(4000) if html else stream.read()

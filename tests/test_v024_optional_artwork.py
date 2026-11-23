@@ -45,12 +45,9 @@ class OptionalArtwork(unittest.TestCase):
         result = self.script('onboarding.py', 'status', 'GPT', '--data-dir', str(self.data))
         self.assertEqual(result.returncode, 0, result.stderr)
         status = json.loads(result.stdout)
-        self.assertFalse(status['checks']['artwork'])
-        self.assertIn('artwork', status['pending'])
-        for row in status['artwork']['files']:
-            self.assertIn('Pillow', row['reason'])
-            self.assertIn('python -m pip install -r requirements.txt', row['reason'])
-            self.assertFalse(row['valid'])
+        self.assertTrue(status['checks']['artwork'])
+        self.assertNotIn('artwork', status['pending'])
+        self.assertTrue(all(row['valid'] for row in status['artwork']['files']))
         custom = next(row for row in status['generated_artwork']['files'] if Path(row['file']).parts[-2:] == ('GPT', 'avatar.png'))
         self.assertIn('Pillow', custom['reason'])
         self.assertEqual(image.read_bytes(), raw)
@@ -75,15 +72,14 @@ class OptionalArtwork(unittest.TestCase):
         self.assertNotIn('Traceback', result.stderr)
         self.assertFalse(self.data.exists())
 
-    def test_optional_emotes_keep_unicode_and_report_missing_image_dependency(self):
-        # -I -S guarantees the dependency check runs before the real downloader.
+    def test_optional_emote_guide_works_without_image_dependency(self):
+        # Opt-in records the choice even with third-party Python packages disabled.
         result = self.script('onboarding.py', 'emotes', '--download-emotes', '--data-dir', str(self.data))
         self.assertEqual(result.returncode, 0, result.stderr)
         preferences = json.loads(result.stdout)
         self.assertEqual(preferences['mode'], 'unicode')
-        self.assertEqual(preferences['status'], 'fallback')
-        self.assertIn('Pillow', preferences['error'])
-        self.assertIn('python -m pip install -r requirements.txt', preferences['error'])
+        self.assertEqual(preferences['status'], 'awaiting-local-files')
+        self.assertEqual(preferences['guide'], 'docs/local-emotes.md')
         self.assertFalse((self.data / 'emotes').exists())
 
     def test_help_and_text_commands_use_actual_first_use_entries(self):

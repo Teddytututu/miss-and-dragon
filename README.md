@@ -1,7 +1,5 @@
 # Miss & Dragon
 
-![Miss & Dragon research desk](docs/images/readme-hero.png)
-
 Run your research like a GALGAME!
 
 [![MIT](docs/badges/license.svg)](LICENSE) ![Python 3.11+](docs/badges/python.svg)
@@ -9,6 +7,21 @@ Run your research like a GALGAME!
 <img src="docs/images/cast.svg" alt="Cast: Big Fish, the owner (direction, budget, final say); Miss, the lead (design, decide, review); Dragon, the executor (run, build, report)" width="760">
 
 [简体中文](README.zh-CN.md) · [Architecture](docs/ARCHITECTURE.md)
+
+## Try the complete local example
+
+See who owns the next action, when a resource becomes free and which answer the lead adopted. Run a fictional question through a measured trial, a returned answer, a revision, partial acceptance and a usable report.
+
+```sh
+python -m venv .venv
+.venv/Scripts/python -m pip install -r requirements.txt
+.venv/Scripts/python scripts/demo_research.py --data-dir work/my-study
+.venv/Scripts/python -m board start --data-dir work/my-study --port 18780
+```
+
+Open `http://127.0.0.1:18780`. On macOS or Linux use `.venv/bin/python`. This example uses local files, zero model calls and zero background-task registrations.
+
+[Walk through the example](docs/research-workflow.md) · [Multi-version manual packets](docs/manual-packets.md) · [Upgrade from 0.4.3](docs/upgrade-0.5.md)
 
 ## Install
 
@@ -40,18 +53,6 @@ Once Claude joins, the two start talking.
 Want a look first? Send Codex: `Using that guide, start a demo project for me first.` The demo keeps its data apart from real projects.
 
 ## Interface
-
-<img src="docs/images/screen-pink.en.png" alt="Pink notebook theme" width="920">
-
-[↗ Open full-size image](https://raw.githubusercontent.com/Teddytututu/miss-and-dragon/main/docs/images/screen-pink.en.png)
-
-<details><summary>Blue theme</summary>
-
-<img src="docs/images/screen-blue.en.png" alt="Blue workbench theme" width="920">
-
-[↗ Open full-size image](https://raw.githubusercontent.com/Teddytututu/miss-and-dragon/main/docs/images/screen-blue.en.png)
-
-</details>
 
 A day in a fictional student's project: notes to self, today's schedule, the research question and results tree, with Miss and Dragon talking in the room on the right. Pink notebook and blue workbench themes share the same data.
 

@@ -13,6 +13,8 @@ def build_parser():
     p.add_argument('--delete',metavar='MESSAGE_ID')
     p.add_argument('--data-dir',type=Path,default=ROOT/'data');p.add_argument('--port',type=int,default=os.environ.get('RESEARCH_BOARD_PORT','8780'))
     p.add_argument('--demo',action='store_true');p.add_argument('--init-only',action='store_true')
+    p.add_argument('--read-only',action='store_true',help='Serve existing data as a read-only preview')
+    p.add_argument('--accounts',action='store_true',help='Enable explicitly initialized local accounts')
     p.add_argument('--question',default='');p.add_argument('--deliverable',default='');p.add_argument('--user-name',default='大肥鱼')
     return p
 
@@ -32,6 +34,7 @@ def main():
     for module in ['PIL']:
         if importlib.util.find_spec(module) is None:p.error('Install dependencies: python -m pip install -r requirements.txt')
     existing=storage.read(root/'project.json')
+    if a.read_only and not existing:p.error('Initialize project data before previewing')
     if existing:
         if a.project and existing['name']!=a.project:p.error('Choose another --data-dir for a separate project')
     else:
@@ -43,10 +46,15 @@ def main():
         project.initialize(root,name,a.question,a.deliverable,a.user_name,a.demo)
         existing=None
     # A fresh demo keeps its seeded day; configure only updates real projects.
-    if a.question and a.deliverable and not (a.demo and existing is None):project.configure(root,a.question,a.deliverable)
-    scheduler.refresh(root)
+    if a.question and a.deliverable and not a.read_only and not (a.demo and existing is None):project.configure(root,a.question,a.deliverable)
+    if not a.read_only:scheduler.refresh(root)
     if a.init_only:print(json.dumps(dict(initialized=True,project=storage.read(root/'project.json')['name']),ensure_ascii=False));return
-    try:server=create_server(root,a.port)
+    try:
+        if a.accounts:
+            if a.read_only:p.error('Choose read-only preview or optional accounts')
+            from .plugins.account_server import create_server as account_server
+            server=account_server(root,a.port)
+        else:server=create_server(root,a.port,read_only=a.read_only)
     except OSError:p.error('Port is occupied; choose another --port')
     print(f'http://127.0.0.1:{a.port}',flush=True)
     try:server.serve_forever()

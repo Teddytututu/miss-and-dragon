@@ -1,0 +1,8 @@
+{
+  "cards": 4,
+  "jobs": [
+    {"id": "sample-trial", "task": "T001", "title": "Measure one batch", "unit": "batch", "units": 1, "measurement": {"unit": "batch", "seconds": 7200, "units": 1}},
+    {"id": "sample-comparison", "task": "T002", "title": "Compare after the trial", "unit": "batch", "units": 1, "measurement": {"unit": "batch", "seconds": 10800, "units": 1}, "depends_on": ["sample-trial"]},
+    {"id": "sample-new-model", "task": "T003", "title": "Measure the new model", "unit": "batch", "units": 1}
+  ]
+}

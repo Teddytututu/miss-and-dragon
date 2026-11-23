@@ -39,7 +39,7 @@
     '现在没有要你做的事。':'You have no actions right now.','今天没有排具体安排。':'No specific plans for today.',
     '现在':'Now','今天':'Today','明天':'Tomorrow','后面的安排':'Upcoming plans',
     '正在跑的实验':'Running experiments','已跑完的实验（':'Completed experiments (',
-    'DraCo 复现与判分':'DraCo reproduction & evaluation','提前读出':'Early readout','修改与回退':'Changes & rollback',
+    '复现与评测':'Reproduction & evaluation','提前读出':'Early readout','修改与回退':'Changes & rollback',
     '文献与代码':'Papers & code','界面与设计':'Interface & design','视频':'Video','其他':'Other',
     '已完成':'Completed','进行中':'In progress','待做':'To do','有效':'Effective','一般':'Mixed',
     '有短板':'Needs improvement','结论':'Conclusion','放大查看':'Enlarge ','图片':'Image',

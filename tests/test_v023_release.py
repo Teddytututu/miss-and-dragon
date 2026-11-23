@@ -25,7 +25,7 @@ class ReleaseBoundary(unittest.TestCase):
             self.assertIn(name, names)
         self.assertTrue(all((ROOT / name).is_file() for name in names))
         self.assertTrue(all(not name.startswith(('data/', 'work/', '.venv/')) for name in names))
-        self.assertEqual(sum(name.startswith('board/art/') and name.endswith('.png') for name in names), 33)
+        self.assertEqual(sum(name.startswith('board/art/') and name.endswith('.png') for name in names), 0)
 
     def test_public_optional_emote_documentation_is_allowed(self):
         for name in ['README.md', 'README.zh-CN.md', 'scripts/bootstrap.py']:

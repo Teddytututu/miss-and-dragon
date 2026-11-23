@@ -893,7 +893,7 @@ html.theme-pink #nav .brand .brand-person img{transform:scale(1.45);transform-or
 #quota-fold>summary{list-style:none;cursor:pointer}#quota-fold>summary::-webkit-details-marker{display:none}#quota-fold>summary h2{display:inline-flex;align-items:center;gap:8px}
 #tree-body{--tree-accent:var(--blue);--tree-edge:var(--line);--tree-soft:var(--card)}
 #tree-body .nd{position:relative}
-#tree-body .tree-mark{position:absolute;right:10px;top:8px;opacity:0;pointer-events:none;transition:opacity .15s;border:1px dashed var(--line);background:var(--card);color:var(--ink);font-size:11px;line-height:18px;padding:0 8px;border-radius:999px;cursor:pointer}
+#tree-body .tree-mark{position:relative;display:block;margin:0 0 5px auto;opacity:1;pointer-events:auto;transition:opacity .15s;border:1px dashed var(--line);background:var(--card);color:var(--ink);font-size:11px;line-height:18px;padding:0 8px;border-radius:999px;cursor:pointer}
 #tree-body .nd:hover .tree-mark,#tree-body .nd:focus-within .tree-mark{opacity:1;pointer-events:auto}
 #tree-body .tree-mark:hover{border-style:solid;border-color:var(--blue)}
 #tree-body .tree-node-head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:26px;margin-bottom:3px}
@@ -928,6 +928,7 @@ body.result-drawer-resizing iframe{pointer-events:none}
 <script>addEventListener('DOMContentLoaded',()=>{const tag=()=>{const fs=document.querySelectorAll('.room-compose');const n=window.BoardIdentity&&BoardIdentity.name?BoardIdentity.name('owner'):'';if(fs.length&&n&&n!=='owner'){fs.forEach(f=>f.setAttribute('data-composer-name',n));return true}return false};if(!tag()){let k=0;const i=setInterval(()=>{if(tag()||++k>40)clearInterval(i)},250)}const d=document.getElementById('quota-fold');if(!d)return;try{d.open=localStorage.getItem('quota-fold')==='1'}catch(_){}d.addEventListener('toggle',()=>{try{localStorage.setItem('quota-fold',d.open?'1':'0')}catch(_){}})});</script>
 <link rel="stylesheet" href="/room-collection.css">
 <link rel="stylesheet" href="/fanart.css">
+<link rel="stylesheet" href="/research-view.css">
 <link rel="stylesheet" href="/lifecycle-view.css">
 <script src="/lifecycle-view.js"></script>
 <link rel="stylesheet" href="/index-tabs.css">
@@ -935,8 +936,8 @@ body.result-drawer-resizing iframe{pointer-events:none}
 <link rel="stylesheet" href="/todo-notes.css">
 <link rel="stylesheet" href="/notebook.css">
 <link rel="stylesheet" href="/visual.css">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="/art/avatar-claude.svg">
+
 <link rel="stylesheet" href="/i18n.css">
 <script src="/i18n.js" defer></script>
 </head>
@@ -993,6 +994,8 @@ body.result-drawer-resizing iframe{pointer-events:none}
 <script src="/index-tabs.js"></script>
 <link rel="stylesheet" href="/plan-checks.css">
 <script src="/plan-checks.js"></script>
+<script src="/research-view.js"></script>
+<script src="/tree-read-sync.js"></script>
 <script>
 (async () => { await BoardIdentity.ready;
 const $ = s => document.querySelector(s);
@@ -1089,7 +1092,7 @@ function renderProgress(o) {
     x.append(el('span', null, r.label), bar, el('span', 'muted small', r.done + ' / ' + r.total)); if(r.eta){const detail=el('details','eta-run'+(r.eta.confidence==='低'?' eta-low':'')+(r.eta.overdue?' eta-overdue':''));detail.append(el('summary','eta-label',EtaView.label(r.eta)),el('p','eta-basis',EtaView.detail(r.eta)));x.append(detail);}return x; };
   if (active.length) { const c = el('div', 'card active-runs'); c.append(el('div', 'muted small', '正在跑的实验')); active.forEach(r => c.append(row(r))); R.append(c); }
   if (done.length) { const [d, b] = fold('runs-done', '已跑完的实验（' + done.length + '）', false);
-    const order = ['DraCo 复现与判分', '提前读出', '修改与回退', '视频', '文献与代码', '其他'], groups = {};
+    const order = ['复现与评测', '提前读出', '修改与回退', '视频', '文献与代码', '其他'], groups = {};
     done.forEach(r => (groups[r.line || '其他'] = groups[r.line || '其他'] || []).push(r));
     const keys = Object.keys(groups).sort((a, z) => (order.indexOf(a) + 99) % 99 - (order.indexOf(z) + 99) % 99);
     const wrap = el('div', 'rgroups');
@@ -1187,10 +1190,31 @@ function treeNodes(o = TREE_O) {
   return rows;
 }
 function treeVersion(node) {
-  const link = (TREE_O?.links || []).find(link => link.path === node.page);
-  return JSON.stringify([node.summary || '', node.page || '', link?.mtime_ns || link?.modified || link?.mtime || '', link?.size ?? '']);
+  const main = (node.reports || [])[0] || node.page || '';
+  return JSON.stringify(['tree-v2', node.summary || '', main, node.page || '', node.status || '']);
 }
-function treeIsUnread(node) { return treeReadVersions[node.title] !== treeVersion(node); }
+function treeReadKey(node) {
+  if (node.id) return 'id:' + node.id;
+  const main = (node.reports || [])[0] || node.page;
+  const path = typeof main === 'string' ? main : main?.path;
+  return path ? 'report:' + path : 'title:' + node.title;
+}
+function treeSavedVersion(node, versions = treeReadVersions) {
+  const key = treeReadKey(node);
+  if (Object.hasOwn(versions, key)) return versions[key];
+  // A title-only marker can migrate safely only when the title is unique.
+  return treeNodes().filter(row => row.node.title === node.title).length === 1 ? versions[node.title] : undefined;
+}
+function treeReadVersionMatches(saved, current) {
+  if (saved === current) return true;
+  try {
+    const a = JSON.parse(saved), b = JSON.parse(current);
+    if (!Array.isArray(a) || !Array.isArray(b) || b[0] !== 'tree-v2') return false;
+    // Historical records stored volatile timestamps and size after these fields.
+    return a[0] !== 'tree-v2' && a.length >= 2 && a[0] === b[1] && JSON.stringify(a[1]) === JSON.stringify(b[2]);
+  } catch (_) { return false; }
+}
+function treeIsUnread(node) { return !treeReadVersionMatches(treeSavedVersion(node), treeVersion(node)); }
 function treeUpdateUnread() {
   const rows = treeNodes();
   for (const row of rows) {
@@ -1198,7 +1222,7 @@ function treeUpdateUnread() {
     if (!card) continue;
     const unread = treeIsUnread(row.node), dot = card.querySelector('.tree-unread');
     card.classList.toggle('tree-is-unread', unread);
-    if (dot) { dot.hidden = !unread; dot.textContent = unread && Object.hasOwn(treeReadVersions, row.node.title) ? '改过' : '新'; }
+    if (dot) { dot.hidden = !unread; dot.textContent = unread && treeSavedVersion(row.node) != null ? '改过' : '新'; }
   }
   const count = rows.filter(row => treeIsUnread(row.node)).length;
   const nav = document.querySelector('#nav a[href="#tree"]');
@@ -1207,12 +1231,12 @@ function treeUpdateUnread() {
   if (badge) { badge.textContent = String(count); badge.hidden = count === 0; badge.setAttribute('aria-label', count + '项结果待看'); }
 }
 function treeMarkRead(node) {
-  treeReadVersions[node.title] = treeVersion(node);
+  treeReadVersions[treeReadKey(node)] = treeVersion(node);
   try { localStorage.setItem('result-tree-read-v1', JSON.stringify(treeReadVersions)); } catch (_) {}
   treeUpdateUnread();
 }
 function treeMarkUnread(node) {
-  delete treeReadVersions[node.title];
+  treeReadVersions[treeReadKey(node)] = null;
   try { localStorage.setItem('result-tree-read-v1', JSON.stringify(treeReadVersions)); } catch (_) {}
   treeUpdateUnread();
 }
@@ -1287,7 +1311,7 @@ function renderTree(o, force = false) {
       if (link) {
         const open = el('a', 'tree-page', '📄 结果页'); open.target = '_blank'; open.rel = 'noopener';
         open.setAttribute('aria-label', '打开' + node.title + '的结果页');
-        resultReportURL(link).then(url => { open.href = url; }).catch(() => { open.textContent = '页面连接中'; });
+        open.href = link.reader_url?.startsWith('/report/') ? link.reader_url : /^https?:\/\//i.test(link.path) ? link.path : '/files/' + link.path.split('/').map(encodeURIComponent).join('/');
         open.onclick = event => { event.stopPropagation(); treeMarkRead(node); if (treeUnreadOnly) renderTree(TREE_O, true); };
         head.append(open);
       }
@@ -1587,6 +1611,15 @@ DiscussionRoom.init();
   window.dockUnread = items => { const seen = lastSeen(), fresh = RoomExtras.hasUnread(items, seen, BoardIdentity.me.id);
     tab.querySelector('.dot').style.display = !open && fresh ? 'inline-block' : 'none'; if (open) localStorage.setItem('dockSeen', new Date().toISOString()); };
 })();
+const treeReadSync = BoardTreeReadSync.install({
+  render:renderTree, getOverview:() => TREE_O,
+  getVersions:() => treeReadVersions, setVersions:value => { treeReadVersions = value; },
+  nodes:treeNodes, savedVersion:treeSavedVersion, version:treeVersion,
+  key:treeReadKey, matches:treeReadVersionMatches
+});
+renderTree = treeReadSync.render;
+treeMarkRead = treeReadSync.markRead;
+treeMarkUnread = treeReadSync.markUnread;
 load().then(spy); setInterval(load, 20000); setInterval(() => { lastRev = ''; load(); }, 300000);
 })();
 </script>
@@ -1750,5 +1783,6 @@ load().then(spy); setInterval(load, 20000); setInterval(() => { lastRev = ''; lo
   applyWidth();
 })();
 </script>
+<script src="decisions.js"></script>
 </body>
 </html>

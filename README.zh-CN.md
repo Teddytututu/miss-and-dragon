@@ -1,7 +1,5 @@
 # Miss & Dragon
 
-![Miss & Dragon 研究手账](docs/images/readme-hero.png)
-
 像 GALGAME 一样推进你的研究！
 
 [![MIT](docs/badges/license.svg)](LICENSE) ![Python 3.11+](docs/badges/python.svg)
@@ -9,6 +7,21 @@
 <img src="docs/images/cast.zh-CN.svg" alt="登场人物：发起人大肥鱼（方向、预算、最终拍板）、主线大小姐（设计、决定、验收）、执行龙娘（执行、搭建、汇报）" width="760">
 
 [English](README.md) · [架构说明](docs/ARCHITECTURE.zh-CN.md)
+
+## 本地完整示例
+
+看清下一步由谁做、资源何时空出、哪版回答被采用。先跑一份完整虚构研究，沿提问、试跑、退回、改稿、部分采用走到报告和后续任务。
+
+```sh
+python -m venv .venv
+.venv/Scripts/python -m pip install -r requirements.txt
+.venv/Scripts/python scripts/demo_research.py --data-dir work/my-study
+.venv/Scripts/python -m board start --data-dir work/my-study --port 18780
+```
+
+打开 `http://127.0.0.1:18780`。macOS 和 Linux 使用 `.venv/bin/python`。示例全程本地文件，模型调用为零，后台任务注册为零。
+
+[逐步操作](docs/research-workflow.zh-CN.md) · [多版本手动研究包](docs/manual-packets.zh-CN.md) · [从 0.4.3 升级](docs/upgrade-0.5.zh-CN.md)
 
 ## 安装
 
@@ -40,18 +53,6 @@ Claude 加进来以后，两边就开始对话了。
 想先看看再装？发给 Codex：`按上面那份文件，先给我开一个演示项目。` 演示项目和正式项目的数据分开放。
 
 ## 界面
-
-<img src="docs/images/screen-pink.zh-CN.png" alt="粉色手账界面" width="920">
-
-[↗ 查看高清原图](https://raw.githubusercontent.com/Teddytututu/miss-and-dragon/main/docs/images/screen-pink.zh-CN.png)
-
-<details><summary>蓝色主题</summary>
-
-<img src="docs/images/screen-blue.zh-CN.png" alt="蓝色工作台界面" width="920">
-
-[↗ 查看高清原图](https://raw.githubusercontent.com/Teddytututu/miss-and-dragon/main/docs/images/screen-blue.zh-CN.png)
-
-</details>
 
 一个虚构学生的研究日常：要做的事、今天的安排、研究问题和结果树，右边是大小姐和龙娘在讨论室里的对话。粉色手账和蓝色工作台两套主题用同一份数据。
 

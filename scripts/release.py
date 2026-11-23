@@ -20,10 +20,10 @@ def write_report(path,value):
 def files():
     names=['.gitattributes','.gitignore','LICENSE','README.md','README.zh-CN.md','当前指令.md','AGENTS.md','CLAUDE.md','pyproject.toml','requirements.txt','发言.py']
     names += ['board/motion.css', 'board/motion.js','board/todo_notes.py','board/note_schedule.py','board/todo-notes.js','board/todo-notes.css']
-    names += ['templates/report-kit/report_kit.py', 'templates/report-kit/check_report.py', 'templates/report-kit/example_build.py', 'templates/report-kit/example.html', 'templates/report-kit/README.md', 'templates/report-kit/FORMAT.md', 'templates/report-kit/FORMAT.zh-CN.md', 'docs/writing-reports.md', 'docs/writing-reports.zh-CN.md']
+    names += ['templates/report-kit/report_kit.py', 'templates/report-kit/check_report.py', 'templates/report-kit/example_build.py', 'templates/report-kit/example.html', 'templates/report-kit/README.md', 'templates/report-kit/FORMAT.md', 'templates/report-kit/FORMAT.zh-CN.md', 'docs/writing-reports.md', 'docs/writing-reports.zh-CN.md', 'tests/test_report_kit_privacy.py']
     names += ['tests/room-sizing.test.cjs', 'tests/drawer-width.test.cjs', 'tests/result-tree.test.cjs', 'tests/interface-updates.test.cjs', 'tests/note-wall.test.cjs', 'docs/interface-updates.md', 'docs/interface-updates.zh-CN.md']
     names+=['board/'+n for n in ['__init__.py','__main__.py','app.py','contacts.py','project.py','maintenance.py','scheduler.py','provider_bridge.py','onboarding.py','artwork.py','assets.py','environment.py','storage.py','workers.py','task_eta.py','eta-view.js','eta-view.css','fanart.css','index.html','identity.js','identity.css','discussion.js','discussion.css','room-extras.js','room-markdown.js','room-features.css','v02.js','v02.css','room-collection.js','mood.js','room-collection.css','help.html']]
-    names+=['scripts/'+n for n in ['bootstrap.py','install_emotes.py','install_deps.py','verify.py','onboarding.py','provider_bridge.py','artwork.py','maintenance.py','task_number.py','workers.py','post_message.py','update_state.py','patrol.py','react.py','install-startup.ps1','watchdog.ps1','release.py','night_watch.py','run_queue.py','install_night_watch.py','install-night-watch.ps1']]
+    names+=['scripts/'+n for n in ['bootstrap.py','install_deps.py','verify.py','onboarding.py','provider_bridge.py','artwork.py','maintenance.py','task_number.py','workers.py','post_message.py','update_state.py','patrol.py','react.py','install-startup.ps1','watchdog.ps1','release.py','night_watch.py','run_queue.py','install_night_watch.py','install-night-watch.ps1']]
     names+=['docs/'+n for n in ['assets.md','agent-schedules.md','provider-bridge.md','patrol.md','quota.md','quota-scenarios.md','customization.md','private-repository.md','validation.md','third-party-notices.md','night-watch.md']]
     names+=['demo/overview.json','demo/board.md']
     names += [p.relative_to(ROOT).as_posix() for p in (ROOT/'tests').glob('test_v0*.py')]
@@ -65,13 +65,27 @@ def files():
     names += ['skills/research-report-writing/'+name for name in [
         'SKILL.md','README.md','references/writing.zh-CN.md','templates/report_helpers.py']]
     names += [p.relative_to(ROOT).as_posix() for p in (ROOT/'board/art').glob('*.svg') if p.name.startswith(('avatar-user','avatar-claude','avatar-gpt','claude-','gpt-','user-'))]
-    names += ['assets/README.md','assets/public-emotes.json','board/art/fanart.json']
+    names += ['assets/README.md','board/art/fanart.json']
     names += [p.relative_to(ROOT).as_posix() for p in (ROOT/'board/art').glob('*.png') if p.name in {'avatar-claude-full.png','avatar-claude.png','avatar-gpt.png','avatar-user.png','cell-01.png','cell-02.png','cell-03.png','cell-04.png','cell-05.png','cell-06.png','cell-07.png','cell-08.png','cell-09.png','cell-10.png','cell-11.png','cell-12.png','claude-calm.png','claude-cheer.png','claude-confused.png','claude-happy.png','claude-heart.png','claude-panic.png','claude-pout.png','claude-proud.png','claude-reading.png','claude-shy.png','claude-sleepy.png','claude-surprised.png','claude-teary.png','claude-thinking.png','claude-wink.png','emotion-atlas.png','trio-atlas.png'}]
     names += [p.relative_to(ROOT).as_posix() for p in (ROOT/'board/reactions').glob('*.svg')]
     names += [p.relative_to(ROOT).as_posix() for p in (ROOT/'docs').glob('v02-*.png')]
     names += ['board/plan_checks.py','board/plan-checks.js','board/plan-checks.css','tests/test_v031_plan_checks.py','tests/plan-checks.test.cjs']
     names += ['board/cadence.py','board/cadence.js','board/cadence.css','tests/test_v043_cadence.py','docs/report-tidy.md','docs/report-tidy.zh-CN.md','demo/cache-findings.html','demo/cache-results.csv','demo/cache-notes.md']
     names += ['docs/exchange-questions.md', 'docs/exchange-questions.zh-CN.md']
+    names += ['board/'+n for n in ['answer_versions.py','manual_packets.py','ticket_schedule.py','research_view.py','research-view.js','research-view.css']]
+    names += ['scripts/'+n for n in ['manual_packet.py','demo_manual_packet.py','resource_plan.py','demo_research.py']]
+    names += ['docs/'+n for n in ['manual-packets.md','manual-packets.zh-CN.md','research-workflow.md','research-workflow.zh-CN.md','upgrade-0.5.md','upgrade-0.5.zh-CN.md']]
+    names += ['tests/tree-read-identity.test.cjs']
+    names += [p.relative_to(ROOT).as_posix() for p in (ROOT/'demo/manual-packet').glob('*') if p.is_file()]
+    names += ['demo/resource-plan.json','docs/local-emotes.md']
+    names += ['board/'+n for n in ['watch_clock.py','delivery.py','publication.py','continuity.py','imports.py','tree_reads.py','tree-read-sync.js','decisions.py','decisions.js']]
+    names += ['board/events.py','board/reply.py']   # scripts/integrations.py 的 reply / events 子命令要用（11-23 Claude 补）
+    names += ['board/plugins/'+n for n in ['__init__.py','queue_protocol.py','voice_backend.py','host_hooks.py','file_import.py','mail_lint.py','process_control.py','account_roles.py','accounts.py','account_server.py','services.py','budget.py','gpu_observer.py','asset_choices.py']]
+    names += ['scripts/'+n for n in ['integrations.py','citation_check.py','arxiv_check.py','path_references.py']]
+    names += ['templates/report-kit/report_rules.json','docs/upgrade-0.6.md','docs/upgrade-0.6.zh-CN.md','docs/integrations.md','docs/integrations.zh-CN.md']
+    names += [p.relative_to(ROOT).as_posix() for p in (ROOT/'tests').glob('*.cjs')]
+    # Original SVGs carry the project's MIT license; local fan art stays local.
+    names = [n for n in names if not n.endswith('.png')]
     return sorted(set(names))
 
 def scan(blob,name=''):
@@ -81,6 +95,7 @@ def scan(blob,name=''):
         'private_key':r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----',
         'literal_credential':r'''(?i)(?:api[_-]?key|password|secret)\s*[:=]\s*["'][A-Za-z0-9+/=]{24,}["']''',
         'email':r'[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}',
+        'third_party_emote_source':r'(?i)https?://[^\s/]+[.]hdslb[.]com/[^\s]+|/bfs/emote/[a-f0-9]{40}',
         'private_media_reference':r'/chat-img/[a-f0-9]{32}\.',
     }
     problems=[k for k,p in rules.items() if re.search(p,text)]

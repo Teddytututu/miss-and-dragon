@@ -10,7 +10,7 @@
 
 ## Current artwork candidate
 
-The candidate includes the existing 33 character PNGs, a 225-item public emote source list, original SVG fallbacks and matching code/image license scopes. Runtime emote downloads belong to local data. The bundled Xiaolai subset retains its SIL OFL license. The notebook supports both themes and desktop/mobile layouts; the reaction dialog supports keyboard focus and Escape dismissal.
+The candidate includes original MIT SVG character art and Unicode reactions. The bundled Xiaolai subset retains its SIL OFL license. The notebook supports both themes and desktop/mobile layouts; the reaction dialog supports keyboard focus and Escape dismissal.
 
 ## 0.4 command acceptance
 

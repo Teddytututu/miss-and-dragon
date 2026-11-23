@@ -41,6 +41,8 @@ COMMANDS = {
     'mood': 'Register my mood using an expression already available for my role',
     'commands': 'List these commands',
     'checks': 'Run due process observations or show their consecutive success counts',
+    'resource-plan': 'Read the measured whole-job resource forecast',
+    'packet': 'Create, paste, review or show a named manual research packet',
 }
 COMMANDS.update(wake='Read actionable inbox changes and pending questions',answer='Answer a numbered question',
                 decide='Record an execution choice and its reason',veto='Lead review of an execution choice',
@@ -48,6 +50,7 @@ COMMANDS.update(wake='Read actionable inbox changes and pending questions',answe
                 progress='Update a research line',tree='Update one result-tree node',finding='Append a lead-owned conclusion',
                 efficiency='Summarize observed waiting and owned GPU idle time',retitle='Rename a live task within 16 characters',
                 **{'react-owed':'Acknowledge recent messages using a safe reaction'})
+COMMANDS['integrate']='Run explicit core and optional integration commands'
 
 
 def emit(ok, command, result=None, error=None):
@@ -162,6 +165,7 @@ def build_parser():
     sub = p.add_subparsers(dest='command', required=True)
     add = lambda name: sub.add_parser(name, parents=[common])
     add('checks').add_argument('op', choices=['run','show'], nargs='?', default='run'); add('status'); add('check'); add('commands');add('wake');add('efficiency');add('react-owed')
+    add('integrate').add_argument('arguments',nargs=argparse.REMAINDER)
     t = add('task'); t.add_argument('action', choices=TASK_ACTIONS); t.add_argument('task')
     for field in TASK_FIELDS:
         t.add_argument('--' + field.replace('_', '-'))
@@ -189,6 +193,8 @@ def build_parser():
     q=add('tree');q.add_argument('node');q.add_argument('--status',choices=['todo','doing','done']);q.add_argument('--summary');q.add_argument('--add-task',dest='task');q.add_argument('--add-result',dest='result');q.add_argument('--add-child')
     q=add('finding');q.add_argument('text');q.add_argument('--task')
     m = add('mood'); m.add_argument('mood'); m.add_argument('note', nargs='?', default='')
+    q=add('resource-plan');q.add_argument('--cards',type=int);q.add_argument('--now')
+    q=add('packet');q.add_argument('packet_name');q.add_argument('packet_args',nargs=argparse.REMAINDER)
     return p
 
 
@@ -202,6 +208,22 @@ def main(argv=None):
     a.data_dir = Path(a.data_dir).resolve()  # board helpers walk up to the data root, so it must be absolute
     data = str(a.data_dir)
     try:
+        if a.command=='integrate':
+            args=list(a.arguments)
+            if args and args[0] in {'stage','current','decision','voice','reply','event'}:
+                if '--actor' in args and args[args.index('--actor')+1]!=a.who:raise ValueError('Use the acting assistant identity')
+                if '--actor' not in args:args.extend(['--actor',a.who])
+            ok,out,err=run_script('integrations.py',['--data-dir',data,*args]);return emit(ok,name,out,err)
+        if a.command=='resource-plan':
+            from board import ticket_schedule
+            path=storage.relative_file(a.data_dir,'attachments/resource-plan.json')
+            return emit(True,name,ticket_schedule.from_file(path,cards=a.cards,now=a.now))
+        if a.command=='packet':
+            from board.research_view import packet_folder
+            folder=packet_folder(a.data_dir,a.packet_name)
+            if a.packet_args and a.packet_args[0]=='review' and a.who!='Claude':raise PermissionError('Lead review uses --as Claude')
+            ok,out,err=run_script('manual_packet.py',['--packet-dir',str(folder),*a.packet_args])
+            return emit(ok,name,out,err)
         if a.command=='checks':
             from board import checks
             return emit(True,name,checks.run(a.data_dir,show_only=a.op=='show'))

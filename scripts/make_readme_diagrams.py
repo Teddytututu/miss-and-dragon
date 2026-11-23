@@ -1,7 +1,7 @@
 """Generate the README flowcharts in the notebook (手账) style of the board:
 dot-grid paper, sticky notes with washi tape, highlighter titles and inked curved arrows.
 Role colors match the avatars: Owner rose, Lead orange, Executor lavender, programs teal, records sand."""
-import base64, io, re
+import re
 from pathlib import Path
 from fontTools import subset
 from fontTools.ttLib import TTFont
@@ -33,12 +33,11 @@ def note(x, y, w, h, color, title, lines=(), rot=0, title_size=27):
 
 
 def avatar(cx, cy, file, r=24):
-    """Small round character sticker (the real board avatars) embedded as PNG."""
-    from PIL import Image
-    im = Image.open(OUT / file).convert('RGBA').resize((192, 192), Image.LANCZOS)
-    buf = io.BytesIO(); im.save(buf, 'PNG', optimize=True)
-    data = base64.b64encode(buf.getvalue()).decode()
-    return f"<image x='{cx - r}' y='{cy - r}' width='{2 * r}' height='{2 * r}' href='data:image/png;base64,{data}'/>"
+    """Embed the original MIT vector character without a raster dependency."""
+    role='user' if 'owner' in file else 'claude' if 'lead' in file else 'gpt'
+    source=(OUT.parents[1]/'board/art'/('avatar-'+role+'.svg')).read_text('utf-8')
+    inner=source[source.index('>')+1:source.rindex('</svg>')]
+    return f"<svg x='{cx-r}' y='{cy-r}' width='{2*r}' height='{2*r}' viewBox='0 0 200 200'>{inner}</svg>"
 
 
 def curve(x1, y1, x2, y2, bend=-18, label='', ly=None, lx=None, color=INK, dash=False, anchor='middle'):
