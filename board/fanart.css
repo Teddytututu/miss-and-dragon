@@ -1,6 +1,6 @@
-/* Original MIT character drawings use the same theme geometry. */
-html.theme-pink{--character-sheet:url(/art/avatar-claude.svg)!important;--emotion-sheet:url(/art/avatar-claude.svg)!important}
-html.theme-pink nav .brand .logo{background-image:url(/art/avatar-claude.svg)}
+/* Bundled original character PNGs (project license); custom pictures in data/ still take priority. */
+html.theme-pink{--character-sheet:url(/art/avatar-claude.png)!important;--emotion-sheet:url(/art/avatar-claude.png)!important}
+html.theme-pink nav .brand .logo{background-image:url(/art/avatar-claude.png)}
 html.theme-pink .todo-item:first-child::after,
 html.theme-pink #plan-body::before,
 html.theme-pink #lines.card::after,
@@ -8,5 +8,5 @@ html.theme-pink #task-body.card::after,
 html.theme-pink #files .card.fgrid::after,
 html.theme-pink .dock-tab::before,
 html.theme-pink .character-sticker{background-size:contain;background-position:center bottom}
-html.theme-pink .character-sticker[data-character="owner"]{background-image:url(/art/avatar-user.svg)}
-html.theme-pink .character-sticker[data-character="GPT"]{background-image:url(/art/avatar-gpt.svg)}
+html.theme-pink .character-sticker[data-character="owner"]{background-image:url(/art/avatar-user.png)}
+html.theme-pink .character-sticker[data-character="GPT"]{background-image:url(/art/avatar-gpt.png)}

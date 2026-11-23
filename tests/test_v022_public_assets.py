@@ -1,4 +1,5 @@
 """Default artwork, optional emotes and release boundaries work together."""
+import re
 from pathlib import Path
 import http.client, io, json, runpy, tempfile, threading, unittest
 from PIL import Image
@@ -38,10 +39,10 @@ class PublicAssets(unittest.TestCase):
 
             try:
                 _,raw,_=request('/api/accounts')
-                self.assertEqual(next(x for x in json.loads(raw)['accounts'] if x['id']=='Claude')['avatar']['file'],'avatar-claude.svg')
+                self.assertEqual(next(x for x in json.loads(raw)['accounts'] if x['id']=='Claude')['avatar']['file'],'avatar-claude.png')
                 for url in ['/generated/Claude/calm','/art/avatar-claude.svg','/room-reactions/'+row['file']]:
                     code,raw,headers=request(url)
-                    expected = 'image/png' if url.startswith('/room-reactions/') else 'image/svg+xml'
+                    expected = 'image/svg+xml' if url.endswith('.svg') else 'image/png'
                     self.assertEqual((code,headers['Content-Type']),(200,expected))
                     self.assertTrue(raw.startswith(b'\x89PNG') if expected=='image/png' else b'<svg' in raw)
                 code,raw,_=request('/api/reaction',dict(message_id=message['id'],emoji=row['key'],active=True))
@@ -67,7 +68,9 @@ class PublicAssets(unittest.TestCase):
     def test_public_manifest_and_archive_keep_media_scopes(self):
         release=runpy.run_path(str(ROOT/'scripts/release.py'))
         names=release['files']()
-        self.assertEqual(sum(x.startswith('board/art/') and x.endswith('.png') for x in names),0)
+        art=[x for x in names if x.startswith('board/art/') and x.endswith('.png')]
+        self.assertEqual(len(art),51)   # three original characters: avatar + 16 moods each
+        self.assertTrue(all(re.fullmatch(r'(?:avatar-(?:user|claude|gpt)|(?:user|claude|gpt)-[a-z]+)\.png',x.rsplit('/',1)[1]) for x in art))
         self.assertTrue(all(not x.startswith('data/') for x in names))
         self.assertNotIn('assets/public-emotes.json',names)
         self.assertNotIn('scripts/install_emotes.py',names)

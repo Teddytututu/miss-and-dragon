@@ -8,6 +8,8 @@
 - Queue submission is atomic and rejects a ticket whose id already exists in any queue folder.
 - New optional integrations, all off by default: queue protocol, voice backend, host hooks, explicit file import, mail tone check, process control, accounts and guests, local service observer, daily budget, GPU observer and avatar choices. See docs/integrations.md.
 - The report checker reads private names from project settings instead of shipping them; report categories use generic names.
+- The three characters (owner, Claude, GPT) now ship as original PNG avatars and 16 mood pictures, ready after install; the simple SVGs stay as a fallback.
+- Queue submission sends its program as one base64 line, so it works under tcsh as well as bash, and rejects a ticket whose command is identical to one already pending or running.
 - Upgrade guide: docs/upgrade-0.6.md.
 
 ## 0.5.0 candidate

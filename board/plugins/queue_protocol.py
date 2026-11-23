@@ -102,6 +102,12 @@ with (root/'.submission.lock').open('a+b') as lock:
   fcntl.flock(lock,fcntl.LOCK_EX)
  if any((root/name/(job+'.json')).exists() for name in ('pending','running','done','failed')):
   print('已有同名作业：'+job);raise SystemExit(3)
+ # A ticket whose command is identical to one already pending or running is a duplicate; retry a failed ticket under a new id.
+ for name in ('pending','running'):
+  for other in (root/name).glob('*.json'):
+   try:same=json.loads(other.read_text(encoding='utf-8')).get('cmd')==value.get('cmd')
+   except (OSError,ValueError):same=False
+   if same:print('同一条命令已在排：'+name+'/'+other.name);raise SystemExit(3)
  temporary=None
  try:
   fd,temporary=tempfile.mkstemp(prefix='.'+job+'-',suffix='.tmp',dir=root/'pending')
@@ -115,4 +121,8 @@ with (root/'.submission.lock').open('a+b') as lock:
 
 
 def remote_command(queue_root,job_id):
-    return ' '.join(['python3','-c',shlex.quote(remote_python()),shlex.quote(posix_path(queue_root)),shlex.quote(identifier(job_id))])
+    # Login shells differ (tcsh rejects a multi-line quoted program), so ship the program as one base64 line and exec it remotely; sys.argv stays (root, job).
+    import base64
+    packed=base64.b64encode(remote_python().encode('utf-8')).decode('ascii')
+    return ' '.join(['python3','-c','"import base64;exec(base64.b64decode(\'%s\').decode(\'utf-8\'))"'%packed,
+                     shlex.quote(posix_path(queue_root)),shlex.quote(identifier(job_id))])

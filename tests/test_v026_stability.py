@@ -262,7 +262,7 @@ class StabilityTests(unittest.TestCase):
         self.assertEqual(value['claude_mood']['mood'], 'thinking')
         self.assertEqual([i['owner'] for i in self.issues('mood_stale')], ['GPT'])
         with self.assertRaises(ValueError):
-            stability.set_mood(self.root, 'GPT', 'thinking', now=AT)
+            stability.set_mood(self.root, 'GPT', 'dancing', now=AT)
         stability.set_mood(self.root, 'GPT', 'calm', now=AT)
         self.assertEqual(self.issues('mood_stale'), [])
 

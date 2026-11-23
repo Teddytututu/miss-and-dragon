@@ -24,7 +24,7 @@ class FirstRunDefaults(unittest.TestCase):
             result = onboarding.status(self.root, agent)
             self.assertTrue(result['checks']['artwork'])
             self.assertEqual(result['artwork']['mode'], 'bundled')
-            self.assertTrue(all(row['file'].endswith('.svg') for row in result['artwork']['files']))
+            self.assertTrue(all(row['file'].endswith(('.png', '.svg')) for row in result['artwork']['files']))
         self.assertFalse((self.root/'attachments/generated').exists())
 
     def test_unanswered_prompt_uses_unicode_without_downloader_or_stdin(self):

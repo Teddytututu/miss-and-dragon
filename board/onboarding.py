@@ -185,16 +185,17 @@ def configure_night_watch(root,choice=None):
 
 
 def bundled_artwork():
-    """Original bundled SVGs make setup independent of image generation."""
+    """Bundled original character pictures (PNG, or the SVG fallback) make setup independent of image generation."""
     import xml.etree.ElementTree as ET
     rows=[]
     for role in ['Claude','GPT']:
         name=assets.avatars().get(role,{}).get('file','');path=assets.ROOT/'board/art'/name
         valid=False
         try:
-            valid=path.is_file() and path.suffix=='.svg' and ET.parse(path).getroot().tag.endswith('svg')
+            if path.suffix=='.png':valid=path.is_file() and path.read_bytes()[:8]==b'\x89PNG\r\n\x1a\n'
+            else:valid=path.is_file() and path.suffix=='.svg' and ET.parse(path).getroot().tag.endswith('svg')
         except (OSError,ValueError,ET.ParseError):pass
-        rows.append(dict(role=role,file='board/art/'+name,valid=valid,reason='original bundled SVG'))
+        rows.append(dict(role=role,file='board/art/'+name,valid=valid,reason='original bundled character art'))
     return dict(mode='bundled',expected=len(rows),valid=sum(row['valid'] for row in rows),files=rows)
 
 

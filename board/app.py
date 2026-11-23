@@ -341,7 +341,10 @@ def create_server(root,port=8780,open_file=None,*,read_only=False):
                     svg=path.suffix=='.svg'
                     return self.media(path,'image/svg+xml' if svg else 'image/png',headers=svg_headers if svg else ())
                 who='user' if who=='owner' else who.lower()
-                fallback=ASSETS/'art'/(f'avatar-{who}.svg' if mood=='avatar' else f'{who}-{mood}.svg')
+                stem=f'avatar-{who}' if mood=='avatar' else f'{who}-{mood}'
+                bundled=ASSETS/'art'/(stem+'.png')
+                if bundled.is_file():return self.media(bundled,'image/png')
+                fallback=ASSETS/'art'/(stem+'.svg')
                 if not fallback.is_file():fallback=ASSETS/'art'/f'{who}-{MOOD_ALIASES.get(mood,"calm")}.svg'
                 return self.media(fallback,'image/svg+xml',headers=svg_headers)
             if re.fullmatch(r'/chat-img/[a-f0-9]{32}\.png',route):

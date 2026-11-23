@@ -1,14 +1,14 @@
 {
   "owner": {
-    "file": "avatar-user.svg",
-    "full": "avatar-user.svg"
+    "file": "avatar-user.png",
+    "full": "avatar-user.png"
   },
   "Claude": {
-    "file": "avatar-claude.svg",
-    "full": "avatar-claude.svg"
+    "file": "avatar-claude.png",
+    "full": "avatar-claude.png"
   },
   "GPT": {
-    "file": "avatar-gpt.svg",
-    "full": "avatar-gpt.svg"
+    "file": "avatar-gpt.png",
+    "full": "avatar-gpt.png"
   }
 }

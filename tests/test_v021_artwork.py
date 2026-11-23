@@ -48,8 +48,8 @@ class GeneratedArtwork(unittest.TestCase):
         self.assertEqual(self.request('/generated/Claude/happy.png')[1],SVG)
     def test_original_svg_covers_missing_mood_and_preserves_legacy_files(self):
         status,body,headers=self.request('/generated/GPT/calm')
-        self.assertEqual(status,200);self.assertIn(b'<svg',body)
-        self.assertEqual(headers['Content-Type'],'image/svg+xml')
+        self.assertEqual(status,200);self.assertTrue(body.startswith(b'\x89PNG'))   # bundled original PNG first
+        self.assertEqual(headers['Content-Type'],'image/png')
         self.assertTrue((Path(__file__).resolve().parents[1]/'board/art/gpt-calm.svg').is_file())
         self.assertEqual(self.request('/generated/Other/avatar.svg')[0],404)
 

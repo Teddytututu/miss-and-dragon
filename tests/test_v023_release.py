@@ -1,4 +1,5 @@
 """Release contains its offline setup and retains private-data boundaries."""
+import re
 from pathlib import Path
 import runpy
 import unittest
@@ -25,7 +26,8 @@ class ReleaseBoundary(unittest.TestCase):
             self.assertIn(name, names)
         self.assertTrue(all((ROOT / name).is_file() for name in names))
         self.assertTrue(all(not name.startswith(('data/', 'work/', '.venv/')) for name in names))
-        self.assertEqual(sum(name.startswith('board/art/') and name.endswith('.png') for name in names), 0)
+        art = [n for n in names if n.startswith('board/art/') and n.endswith('.png')]
+        self.assertTrue(art and all(re.fullmatch(r'(?:avatar-(?:user|claude|gpt)|(?:user|claude|gpt)-[a-z]+)\.png', n.rsplit('/', 1)[1]) for n in art))
 
     def test_public_optional_emote_documentation_is_allowed(self):
         for name in ['README.md', 'README.zh-CN.md', 'scripts/bootstrap.py']:

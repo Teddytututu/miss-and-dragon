@@ -66,7 +66,7 @@ def files():
         'SKILL.md','README.md','references/writing.zh-CN.md','templates/report_helpers.py']]
     names += [p.relative_to(ROOT).as_posix() for p in (ROOT/'board/art').glob('*.svg') if p.name.startswith(('avatar-user','avatar-claude','avatar-gpt','claude-','gpt-','user-'))]
     names += ['assets/README.md','board/art/fanart.json']
-    names += [p.relative_to(ROOT).as_posix() for p in (ROOT/'board/art').glob('*.png') if p.name in {'avatar-claude-full.png','avatar-claude.png','avatar-gpt.png','avatar-user.png','cell-01.png','cell-02.png','cell-03.png','cell-04.png','cell-05.png','cell-06.png','cell-07.png','cell-08.png','cell-09.png','cell-10.png','cell-11.png','cell-12.png','claude-calm.png','claude-cheer.png','claude-confused.png','claude-happy.png','claude-heart.png','claude-panic.png','claude-pout.png','claude-proud.png','claude-reading.png','claude-shy.png','claude-sleepy.png','claude-surprised.png','claude-teary.png','claude-thinking.png','claude-wink.png','emotion-atlas.png','trio-atlas.png'}]
+    names += [p.relative_to(ROOT).as_posix() for p in (ROOT/'board/art').glob('*.png') if re.fullmatch(r'(?:avatar-(?:user|claude|gpt)|(?:user|claude|gpt)-[a-z]+)\.png', p.name)]   # 随包原创人物 PNG（11-23）
     names += [p.relative_to(ROOT).as_posix() for p in (ROOT/'board/reactions').glob('*.svg')]
     names += [p.relative_to(ROOT).as_posix() for p in (ROOT/'docs').glob('v02-*.png')]
     names += ['board/plan_checks.py','board/plan-checks.js','board/plan-checks.css','tests/test_v031_plan_checks.py','tests/plan-checks.test.cjs']
@@ -85,7 +85,7 @@ def files():
     names += ['templates/report-kit/report_rules.json','docs/upgrade-0.6.md','docs/upgrade-0.6.zh-CN.md','docs/integrations.md','docs/integrations.zh-CN.md']
     names += [p.relative_to(ROOT).as_posix() for p in (ROOT/'tests').glob('*.cjs')]
     # Original SVGs carry the project's MIT license; local fan art stays local.
-    names = [n for n in names if not n.endswith('.png')]
+    names = [n for n in names if not n.endswith('.png') or n.startswith('board/art/')]
     return sorted(set(names))
 
 def scan(blob,name=''):
