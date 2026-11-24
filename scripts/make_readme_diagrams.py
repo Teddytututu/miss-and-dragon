@@ -33,7 +33,15 @@ def note(x, y, w, h, color, title, lines=(), rot=0, title_size=27):
 
 
 def avatar(cx, cy, file, r=24):
-    """Embed the original MIT vector character without a raster dependency."""
+    """Round character sticker: the real avatar PNG embedded (192 px). Falls back to the vector silhouette only when the PNG is absent."""
+    png = OUT / file
+    if png.exists():
+        import base64, io
+        from PIL import Image
+        im = Image.open(png).convert('RGBA').resize((192, 192), Image.LANCZOS)
+        buf = io.BytesIO(); im.save(buf, 'PNG', optimize=True)
+        data = base64.b64encode(buf.getvalue()).decode()
+        return f"<image x='{cx - r}' y='{cy - r}' width='{2 * r}' height='{2 * r}' href='data:image/png;base64,{data}'/>"
     role='user' if 'owner' in file else 'claude' if 'lead' in file else 'gpt'
     source=(OUT.parents[1]/'board/art'/('avatar-'+role+'.svg')).read_text('utf-8')
     inner=source[source.index('>')+1:source.rindex('</svg>')]
