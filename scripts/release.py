@@ -112,7 +112,7 @@ def main():
         if path.is_symlink() or not path.resolve().is_relative_to(ROOT):raise ValueError('Source boundary')
         raw=path.read_bytes();manifest.append(dict(path=name,bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest()))
         problems.extend(dict(path=name,rule=r) for r in scan(raw,name))
-        if name.startswith('docs/images/') and name.endswith('.svg') and b'avatar placeholder' in raw:problems.append(dict(path=name,rule='readme_avatar_placeholder'))   # 0.6.0 头像被换成剪影占位图，发布前拦下
+        if name.startswith('docs/') and name.endswith('.svg') and b'avatar placeholder' in raw:problems.append(dict(path=name,rule='readme_avatar_placeholder'))   # 0.6.0 头像被换成剪影占位图，发布前拦下
         scanned.append((name,raw))
     report=dict(version=VERSION,files=len(manifest),findings=problems,manifest=manifest)
     write_report(out/'privacy-scan.json',report)
