@@ -7,4 +7,4 @@ def allowed(role,method,path):
     if role=='owner':return True
     if role!='guest':return False
     if method in {'GET','HEAD'}:return path in {'/','/api/board','/api/me','/api/discussion','/api/avatar'}
-    return method=='POST' and path in {'/api/notes','/api/avatar'}
+    return method=='POST' and path in {'/api/avatar'}

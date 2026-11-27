@@ -3,12 +3,11 @@ from pathlib import Path
 from urllib.parse import urlsplit,unquote
 import base64
 import ipaddress
-import uuid
 from .. import app,project,storage
 from . import accounts,account_roles
 
 LOGIN='''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Sign in</title><style>body{font:18px system-ui;max-width:34rem;margin:12vh auto;padding:24px}input,button{font:inherit;padding:12px;margin:8px 0}label{display:block}</style><h1>Research board</h1><form><label>Account password <input type="password" autocomplete="current-password" required></label><button>Sign in</button><p role="status"></p></form><script>document.querySelector('form').onsubmit=async e=>{e.preventDefault();const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:document.querySelector('input').value})});if(r.ok)location.href='/';else document.querySelector('[role=status]').textContent='Please check your password and try again.'}</script></html>'''
-GUEST='''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Visitor board</title><style>body{font:17px system-ui;max-width:52rem;margin:4vh auto;padding:24px}textarea{box-sizing:border-box;width:100%;height:8rem}button{font:inherit;padding:10px}article{border-bottom:1px solid #aaa;padding:14px 0}p{overflow-wrap:anywhere;white-space:pre-wrap}</style><h1>Visitor board</h1><h2>Discussion</h2><section id="discussion"></section><h2>Leave a note</h2><form><label>Note<textarea maxlength="2000" required></textarea></label><button>Send note</button><p role="status"></p></form><button id="logout">Sign out</button><script>async function post(path,data){return fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})}fetch('/api/discussion').then(r=>r.json()).then(v=>{for(const x of v.items){const a=document.createElement('article'),h=document.createElement('strong'),p=document.createElement('p');h.textContent=x.author;p.textContent=x.body;a.append(h,p);document.querySelector('#discussion').append(a)}});document.querySelector('form').onsubmit=async e=>{e.preventDefault();const r=await post('/api/notes',{what:document.querySelector('textarea').value});document.querySelector('[role=status]').textContent=r.ok?'Note sent':'Please try again';if(r.ok)document.querySelector('textarea').value=''};document.querySelector('#logout').onclick=async()=>{await post('/api/logout',{});location.reload()}</script></html>'''
+GUEST='''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Visitor board</title><style>body{font:17px system-ui;max-width:52rem;margin:4vh auto;padding:24px}textarea{box-sizing:border-box;width:100%;height:8rem}button{font:inherit;padding:10px}article{border-bottom:1px solid #aaa;padding:14px 0}p{overflow-wrap:anywhere;white-space:pre-wrap}</style><h1>Visitor board</h1><h2>Discussion</h2><section id="discussion"></section><button id="logout">Sign out</button><script>async function post(path,data){return fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})}fetch('/api/discussion').then(r=>r.json()).then(v=>{for(const x of v.items){const a=document.createElement('article'),h=document.createElement('strong'),p=document.createElement('p');h.textContent=x.author;p.textContent=x.body;a.append(h,p);document.querySelector('#discussion').append(a)}});document.querySelector('#logout').onclick=async()=>{await post('/api/logout',{});location.reload()}</script></html>'''
 
 
 def guest_board(root):
@@ -64,13 +63,6 @@ def create_server(root,port=8780):
             if route=='/api/discussion':
                 items=[{k:row.get(k) for k in ('author','body','created_at')} for row in project.all_posts(root) if row.get('channel','main')=='main' and not row.get('deleted')]
                 return self.respond(200,dict(items=items))
-            if route=='/api/notes' and self.command=='POST':
-                body=self.body();what=body.get('what')
-                if set(body)!={'what'} or not isinstance(what,str) or not 1<=len(what.strip())<=2000:raise ValueError('Provide a note of 1 to 2000 characters')
-                note=dict(id=uuid.uuid4().hex,what=what.strip(),by=uid,kind='note')
-                with storage.locked(root):
-                    value=storage.read(root/'overview.json',{});value.setdefault('todo',[]).append(note);storage.write(root/'overview.json',value)
-                return self.respond(200,dict(note=note))
             return self.respond(404,dict(error='Choose a visitor action'))
     server.RequestHandlerClass=Handler
     return server

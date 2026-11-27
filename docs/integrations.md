@@ -85,7 +85,7 @@ python scripts/integrations.py --data-dir data accounts password --person visito
 python -m board start --data-dir data --accounts --port 8780
 ```
 
-Initialization creates `attachments/accounts.json` with one Owner and one visitor. Password commands prompt locally. Ordinary startup leaves account mode off; `--accounts` selects it after initialization. `accounts revoke --person visitor` invalidates the visitor's existing sessions. A guest sees the guest board and discussion and can leave notes or select their own avatar. The account server keeps the direct loopback boundary; enabling it creates no public listener or proxy deployment.
+Initialization creates `attachments/accounts.json` with one Owner and one visitor. Password commands prompt locally. Ordinary startup leaves account mode off; `--accounts` selects it after initialization. `accounts revoke --person visitor` invalidates the visitor's existing sessions. A guest sees the guest board and discussion and can select their own avatar. The account server keeps the direct loopback boundary; enabling it creates no public listener or proxy deployment.
 
 ## Service observation
 

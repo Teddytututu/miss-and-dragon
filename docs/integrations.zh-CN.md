@@ -85,7 +85,7 @@ python scripts/integrations.py --data-dir data accounts password --person visito
 python -m board start --data-dir data --accounts --port 8780
 ```
 
-初始化在 `attachments/accounts.json` 创建一位 Owner 和一位访客；密码命令在本机交互输入。普通启动默认关闭账号模式，初始化后用 `--accounts` 显式选择。`accounts revoke --person visitor` 使访客现有会话失效。访客可查看访客看板和讨论室、留便利贴、选择自己的头像。账号服务继续使用直连回环地址，公网监听和代理部署属于独立配置。
+初始化在 `attachments/accounts.json` 创建一位 Owner 和一位访客；密码命令在本机交互输入。普通启动默认关闭账号模式，初始化后用 `--accounts` 显式选择。`accounts revoke --person visitor` 使访客现有会话失效。访客可查看访客看板和讨论室、选择自己的头像。账号服务继续使用直连回环地址，公网监听和代理部署属于独立配置。
 
 ## 服务观察
 
