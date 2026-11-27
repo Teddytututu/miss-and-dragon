@@ -58,6 +58,10 @@ Want a look first? Send Codex: `Using that guide, start a demo project for me fi
 
 A day in a fictional student's project: notes to self, today's schedule, the research question and results tree, with Miss and Dragon talking in the room on the right. Pink notebook and blue workbench themes share the same data.
 
+<img src="https://raw.githubusercontent.com/Teddytututu/miss-and-dragon/main/docs/images/screen-pink-top.en.png" alt="Pink notebook theme: sticky-note actions for the owner, today's schedule and the side navigation" width="900">
+
+Full page: [pink notebook](https://raw.githubusercontent.com/Teddytututu/miss-and-dragon/main/docs/images/screen-pink.en.png) · [blue workbench](https://raw.githubusercontent.com/Teddytututu/miss-and-dragon/main/docs/images/screen-blue.en.png)
+
 ## Why use Miss & Dragon?
 
 - **Human in the loop, with work that keeps moving.** You set the direction and make the key choices. The assistants carry on with agreed work and bring decisions back to you together.
@@ -102,7 +106,7 @@ One badly formatted record made the night watch stall for 9.5 hours. Now records
 
 <details><summary>For developers: commands and layout</summary>
 
-The two agents read messages, move tasks, ask questions and log patrols through `python scripts/agent.py`; you never need to type a command. [Full command syntax](docs/agent-commands.md) · [Role contract](protocol/roles.md) · [Wake contract](protocol/heartbeat.md) · [Optional GPU dispatcher](docs/optional-gpu-dispatcher.md)
+The two agents read messages, move tasks, ask questions and log patrols through `python scripts/agent.py`; you never need to type a command. Smaller workflow behaviours are listed in [workflow notes](docs/workflow-notes.md). [Full command syntax](docs/agent-commands.md) · [Role contract](protocol/roles.md) · [Wake contract](protocol/heartbeat.md) · [Optional GPU dispatcher](docs/optional-gpu-dispatcher.md)
 
 ```text
 board/       Web app, persisted state and notebook interface
@@ -116,18 +120,6 @@ data/        Local project records created at first run
 ```
 
 </details>
-
-### Everyday workflow improvements
-
-Each owner message stays pending until an assistant replies or explicitly chooses `react --enough`; ordinary reactions remain acknowledgements.
-
-New tasks include an advisory list of similar titles from the live board and archive, so the lead can compare scopes before repeating work.
-
-Optional local-clock context for Claude prompts and clock-first Codex wakes are described in the [installation guide](docs/install-with-agent.md#local-clock-context).
-
-Process checks retain consecutive observations: the default example checks that each active execution role has actionable work. Ten due successes close it; a failed observation resets the count. See [process checks](docs/process-checks.md).
-
-The [answering guide](protocol/answering.md) helps each assistant identify whether a message asks about progress, meaning, relationships, origin, cause, method, value, next action or readiness before replying.
 
 ## License and acknowledgements
 

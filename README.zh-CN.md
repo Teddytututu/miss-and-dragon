@@ -58,6 +58,10 @@ Claude 加进来以后，两边就开始对话了。
 
 一个虚构学生的研究日常：要做的事、今天的安排、研究问题和结果树，右边是大小姐和龙娘在讨论室里的对话。粉色手账和蓝色工作台两套主题用同一份数据。
 
+<img src="https://raw.githubusercontent.com/Teddytututu/miss-and-dragon/main/docs/images/screen-pink-top.zh-CN.png" alt="粉色手账主题：需要你做的便利贴、今天的安排和左侧导航" width="900">
+
+完整页面：[粉色手账](https://raw.githubusercontent.com/Teddytututu/miss-and-dragon/main/docs/images/screen-pink.zh-CN.png) · [蓝色工作台](https://raw.githubusercontent.com/Teddytututu/miss-and-dragon/main/docs/images/screen-blue.zh-CN.png)
+
 ## 为什么选 Miss & Dragon
 
 - **人在环中，任务持续推进。** 你把握方向和关键选择，AI 接着做已经约定好的工作，把真正需要你决定的事情集中带回来。
@@ -102,7 +106,7 @@ Claude 加进来以后，两边就开始对话了。
 
 <details><summary>给开发者：命令与目录</summary>
 
-两个 AI 通过 `python scripts/agent.py` 读消息、流转任务、提问和记巡检，你不需要敲命令。 [完整命令](docs/agent-commands.md) · [角色约定](protocol/roles.md) · [醒来流程](protocol/heartbeat.zh-CN.md) · [可选 GPU 调度器](docs/optional-gpu-dispatcher.md)
+两个 AI 通过 `python scripts/agent.py` 读消息、流转任务、提问和记巡检，你不需要敲命令。较小的流程功能见[日常流程说明](docs/workflow-notes.zh-CN.md)。 [完整命令](docs/agent-commands.md) · [角色约定](protocol/roles.md) · [醒来流程](protocol/heartbeat.zh-CN.md) · [可选 GPU 调度器](docs/optional-gpu-dispatcher.md)
 
 ```text
 board/       网页应用、持久化状态和手账界面
@@ -116,18 +120,6 @@ data/        首次启动创建的本地项目记录
 ```
 
 </details>
-
-### 日常流程改进
-
-每条发起人消息由助手逐条决定答法：文字回复，或用 `react --enough` 明确选择表情就够；普通表情保留待办。
-
-新建任务时会提示看板和归档中的相似名字，方便主线先核对旧任务的范围。
-
-Claude 的可选消息时间提示与 Codex 醒来先看钟，见[安装说明](docs/install-with-agent.zh-CN.md#本机时间提示)。
-
-流程检查按连续达标次数收口：示例核对每个执行角色都有能开工的活，连续十次达标后解决，失败归零。详见[连续检查](docs/process-checks.zh-CN.md)。
-
-[答问指引](protocol/answering.zh-CN.md)帮助助手先认清进展、概念、关系、来源、原因、方法、价值、安排与交付这九类问题，再给直接回答。
 
 ## 许可与致谢
 
