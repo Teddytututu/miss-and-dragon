@@ -1482,10 +1482,11 @@ function renderFiles(links) {
   (links || []).forEach((l, i) => { if (!l.path) return;
     if (l.under && !l.archived && liveParents.has(l.under)) return;
     const [label, cls] = kind(l.path), card = el('div', 'fcard ' + cls), tile = el('span', 'ftile', label);
-    const text = el('div', 'ftext'), name = el('div', 'fname', l.title), sub = el('div', 'fsub', tail(l.path));
+    const description = typeof l.summary === 'string' ? l.summary : typeof l.description === 'string' ? l.description : '';
+    const text = el('div', 'ftext'), name = el('div', 'fname', l.title), sub = el('div', 'fsub', description);
     text.append(name, sub); card.title = l.path; card.tabIndex = 0; card.setAttribute('role', 'button');
     const flash = (msg, ok) => { sub.textContent = msg; sub.classList.toggle('ok', ok); sub.classList.toggle('bad', !ok);
-      setTimeout(() => { sub.textContent = tail(l.path); sub.classList.remove('ok', 'bad'); }, 1600); };
+      setTimeout(() => { sub.textContent = description; sub.classList.remove('ok', 'bad'); }, 1600); };
     const open = opener(l, i, cls, flash);
     const attached = l.archived ? [] : (kids.get(l.path) || []);
     if (attached.length) {
@@ -1499,9 +1500,7 @@ function renderFiles(links) {
       text.append(row);card.dataset.attached=attached.map(([c])=>c.title).join(' ');
     }
     card.onclick = open; card.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } };
-    const copy = el('button', 'fcopy', '⧉'); copy.type = 'button'; copy.title = '复制路径'; copy.setAttribute('aria-label', '复制路径');
-    copy.onclick = e => { e.stopPropagation(); navigator.clipboard.writeText(l.path).then(() => { copy.textContent = '✓'; flash('路径已复制', true); setTimeout(() => copy.textContent = '⧉', 1600); }); };
-    card.append(tile, text, copy);
+    card.append(tile, text);
     if (l.archived) (groups[l.cat || '其他'] = groups[l.cat || '其他'] || []).push(card); else {
       const category = l.cat || '其他';
       if (!active.has(category)) active.set(category, []);

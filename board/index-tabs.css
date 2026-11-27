@@ -53,3 +53,31 @@ html body #files[data-index-tabs] .ftext{flex:1 1 0;min-width:0;max-width:100%}
 html body #files[data-index-tabs] .fname{display:block;min-width:0;max-width:100%;-webkit-line-clamp:unset;overflow:visible;overflow-wrap:anywhere;word-break:normal}
 html body #files[data-index-tabs] .fsub{min-width:0;max-width:100%;white-space:normal;overflow:visible;overflow-wrap:anywhere}
 html body #files[data-index-tabs] .fchip{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+
+/* A single report list: titles first, attached files directly underneath. */
+html body #files#files[data-index-tabs] .findex-tabs{flex-wrap:wrap;overflow:visible;gap:4px;padding:0}
+html body #files#files[data-index-tabs] .findex-bar{gap:12px;align-items:center;margin-bottom:12px}
+html body #files#files[data-index-tabs] .findex-tab{padding:7px 12px;border-radius:6px;min-height:36px;transition:background-color .15s,color .15s}
+html body #files#files[data-index-tabs] .findex-tab::before{content:none}
+html body #files#files[data-index-tabs] .findex-tab.is-selected{padding:7px 12px;border-bottom-color:var(--index-border)}
+html body #files#files[data-index-tabs] #file-filter{flex:0 1 220px;width:220px;max-width:100%;height:36px;align-self:center}
+html body #files#files[data-index-tabs] .findex-pane{padding:4px 0;background:transparent;border:0;outline:0!important;box-shadow:none}
+html body #files#files[data-index-tabs] .findex-pane .fgrid,
+html body #files#files[data-index-tabs] #file-archive .fgrid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:0!important;margin:0!important;padding:0!important}
+html body #files#files[data-index-tabs] .fcard{display:flex!important;align-items:flex-start;gap:12px;width:100%!important;min-width:0!important;margin:0!important;padding:12px 8px!important;box-sizing:border-box;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:transparent!important;background-image:none!important;box-shadow:none!important;transform:none!important;rotate:none!important}
+html body #files#files[data-index-tabs] .fcard::before,
+html body #files#files[data-index-tabs] .fcard::after{display:none!important}
+html body #files#files[data-index-tabs] .fcard:hover{background:var(--paper,var(--card))!important;transform:none!important}
+html body #files#files[data-index-tabs] .fcard:focus-visible{outline:2px solid var(--ink);outline-offset:-2px}
+html body #files#files[data-index-tabs] .ftile{position:static!important;flex:0 0 auto;width:auto!important;min-width:34px;height:auto!important;padding:3px 5px!important;margin:1px 0 0!important;border:0!important;border-radius:4px!important;font-size:10px!important;line-height:1.5!important;transform:none!important;box-shadow:none!important}
+html body #files#files[data-index-tabs] .fname{font-size:14px!important;line-height:1.65!important;color:var(--ink)!important;white-space:normal!important;overflow-wrap:anywhere}
+html body #files#files[data-index-tabs] .fsub{font-size:12px;line-height:1.6;margin-top:3px;white-space:normal!important;overflow-wrap:anywhere}
+html body #files#files[data-index-tabs] .fsub:empty{display:none}
+html body #files#files[data-index-tabs] .fattach{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+html body #files#files[data-index-tabs] .fchip{position:static!important;font-size:11px;white-space:normal;transform:none!important}
+html body #files#files[data-index-tabs] .fcourse-label{font-size:12px;margin:12px 8px 4px}
+html body #files#files[data-index-tabs] .findex-courses{margin:4px 8px 8px}
+@media(width < 600px){html body #files#files[data-index-tabs] .findex-bar{align-items:stretch}html body #files#files[data-index-tabs] #file-filter{width:100%;flex-basis:auto;align-self:stretch}html body #files#files[data-index-tabs] .fcard{gap:8px;padding:10px 4px!important}}
+
+html body #files#files[data-index-tabs] .fcard[hidden]{display:none!important}
+html body #files#files[data-index-tabs] .fcard{min-height:0!important}

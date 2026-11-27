@@ -1,4 +1,4 @@
-/* enhance the existing existing renderer category summaries; cards and archive stay owned by existing renderer. */
+/* Flat report navigation preserves the renderer-owned cards and opening handlers. */
 (() => {
   'use strict';
   const memories = new WeakMap();
@@ -33,7 +33,7 @@
     tabs.setAttribute('role', 'tablist');
     tabs.setAttribute('aria-label', '文件分类');
     const filter = document.getElementById('file-filter');
-    if (filter) { bar.append(filter); filter.placeholder = '筛选…'; }
+    if (filter) { bar.append(filter); filter.placeholder = '搜索报告与文件'; }
     const memory = memories.get(box) || {preferred: savedTab() || '研究', course: '全部', searchTab: null, searchCourse: '全部'};
     memories.set(box, memory);
     const existing = new Map();
@@ -56,8 +56,8 @@
       }));
       existing.set(category, {category, group, head, records});
     });
-    const names = order.filter(name => name !== '其他' || existing.has(name));
-    for (const category of existing.keys()) if (!names.includes(category)) names.push(category);
+    const names = order.filter(name => existing.get(name)?.records.length);
+    for (const category of existing.keys()) if (!names.includes(category) && existing.get(category).records.length) names.push(category);
     const empty = box.querySelector('.file-empty');
     const states = names.map((category, index) => {
       const state = existing.get(category) || (() => {
@@ -79,7 +79,7 @@
       state.count = make('span', 'findex-count', state.records.length);
       head.replaceChildren(label, state.count); tabs.append(head);
       state.courses = Array.from(group.querySelectorAll(':scope > .fcourse'));
-      if (category === '学习') {
+      if (category === '学习' && state.courses.length > 1) {
         state.chips = make('div', 'findex-courses');
         state.chips.setAttribute('role', 'group'); state.chips.setAttribute('aria-label', '课程筛选');
         const courseNames = ['全部'];
