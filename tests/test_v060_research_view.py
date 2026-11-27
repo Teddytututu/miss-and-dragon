@@ -9,7 +9,7 @@ ROOT=Path(__file__).resolve().parents[1]
 
 class ResearchView(unittest.TestCase):
     def setUp(self):
-        self.tmp=tempfile.TemporaryDirectory(dir=ROOT/'work/tests');self.addCleanup(self.tmp.cleanup)
+        self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup)
         self.root=Path(self.tmp.name);project.initialize(self.root,'Fictional cache study')
         self.packet=self.root/'attachments/manual-packets/example'
         manual_packets.create(self.packet,'Cache study','Compare the same two batches')
@@ -54,6 +54,18 @@ class ResearchView(unittest.TestCase):
         code,raw=self.get('/api/board');self.assertEqual(code,200)
         data=json.loads(raw);self.assertIn('tasks',data)
         self.assertEqual(len(data['overview']['research_issues']),2)
+
+    def test_legacy_input_attachment_objects_remain_readable_without_migration(self):
+        meta=storage.read(self.packet/'meta.json')
+        meta['attachments']=[{'file':'ask.md'},{'file':'materials.zip'}]
+        storage.write(self.packet/'meta.json',meta)
+        before=self.files()
+        code,raw=self.get('/api/board');self.assertEqual(code,200)
+        packets=json.loads(raw)['overview']['manual_packets']
+        self.assertEqual(packets[0]['attachments'],['ask.md','materials.zip'])
+        code,raw=self.get('/manual-packets/example/ask.md');self.assertEqual(code,200)
+        self.assertIn(b'Compare the same two batches',raw)
+        self.assertEqual(self.files(),before)
 
 
 if __name__=='__main__':unittest.main()

@@ -21,7 +21,9 @@ python -m venv .venv
 
 Open `http://127.0.0.1:18780`. On macOS or Linux use `.venv/bin/python`. This example uses local files, zero model calls and zero background-task registrations.
 
-[Walk through the example](docs/research-workflow.md) · [Multi-version manual packets](docs/manual-packets.md) · [Upgrade from 0.4.3](docs/upgrade-0.5.md)
+[Guided demo and safe reset](docs/portfolio-demo.md) · [Walk through the example](docs/research-workflow.md) · [Multi-version manual packets](docs/manual-packets.md) · [Upgrade from 0.4.3](docs/upgrade-0.5.md)
+
+For the reusable portfolio launcher, run `.venv/Scripts/python scripts/portfolio_demo.py` after installing dependencies. It creates or reuses a marked synthetic workspace. The guide includes two implementation cases: [shared reading state](docs/case-shared-reading.md) and [task claims](docs/case-task-claims.md).
 
 ## Install
 

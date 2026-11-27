@@ -9,6 +9,16 @@ def packet_folder(root, name):
     return storage.relative_file(Path(root), 'attachments/manual-packets/' + name)
 
 
+def _attachment_names(meta):
+    """Project legacy {file: name} inputs without changing saved metadata."""
+    names = []
+    for item in meta.get('attachments', []):
+        name = item.get('file') if isinstance(item, dict) else item
+        if isinstance(name, str):
+            names.append(name)
+    return names
+
+
 def packets(root, issues=None):
     base = Path(root) / 'attachments/manual-packets'
     result = []
@@ -20,6 +30,7 @@ def packets(root, issues=None):
         try:
             folder = packet_folder(root, item.name)
             row = manual_packets.snapshot(folder)
+            row['attachments'] = _attachment_names(row)
             row['name'] = item.name
             row['question'] = storage.relative_file(folder, 'ask.md').read_text('utf-8')
             result.append(row)
@@ -34,7 +45,7 @@ def packets(root, issues=None):
 def packet_file(root, name, filename):
     folder = packet_folder(root, name)
     meta = manual_packets.snapshot(folder)
-    allowed = set(meta.get('attachments', []))
+    allowed = set(_attachment_names(meta))
     for row in meta['answer_versions']:
         allowed.add(row['answer'])
         allowed.update(row.get('files', []))

@@ -84,7 +84,7 @@ def conversation(root,channel=None):
     result=dict(items=items,channel=channel,unified=unified,max_text=6000,reaction_emoji=[*REACTIONS,*local_keys],reaction_catalog=catalog,sticker_catalog=[])
     result['revision']=hashlib.sha256(json.dumps(result,sort_keys=True).encode()).hexdigest();return result
 
-def snapshot(root,channel=None):
+def snapshot(root,channel=None,*,read_only=False):
     overview=storage.read(root/'overview.json',{});state=storage.read(root/'attachments/state.json',{});tasks=[]
     if overview.get('patrols'):
         from .lifecycle import check
@@ -106,7 +106,8 @@ def snapshot(root,channel=None):
     from . import research_view
     overview.update(research_view.view(root))
     from . import tree_reads
-    overview['tree_reads']=tree_reads.snapshot(root)
+    overview['tree_reads']=(storage.read(tree_reads.state_path(root), {'revision':0,'versions':{}})
+                            if read_only else tree_reads.snapshot(root))
     from .report_reader import catalog
     readers={str(path):url for url,path in catalog(root).items()}
     for row in overview.get('links',[]):
@@ -307,7 +308,7 @@ def create_server(root,port=8780,open_file=None,*,read_only=False):
             if route=='/favicon.ico':return self.respond(204,b'','image/x-icon')
             if route=='/api/me':return self.respond(200,dict(id='owner',local=local,listener=self.server.server_address[0],channel='main',channels=list(project.CHANNELS),conversations=True))
             if route=='/api/accounts':return self.respond(200,dict(accounts=accounts(root)))
-            if route=='/api/board':return self.respond(200,snapshot(root,channel if 'channel' in query else None))
+            if route=='/api/board':return self.respond(200,snapshot(root,channel if 'channel' in query else None,read_only=read_only))
             if route=='/api/discussion':return self.respond(200,conversation(root,channel if 'channel' in query else None))
             if route=='/api/conversations':
                 seen=json.loads((query.get('seen') or ['{}'])[0]);rows=[]

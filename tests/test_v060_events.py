@@ -6,6 +6,21 @@ from board import project,storage,events
 
 
 class EventTests(unittest.TestCase):
+    def test_archived_task_holds_dispatch_even_with_stale_running_state(self):
+        for status in (None, '1/2 · Running'):
+            with self.subTest(status=status), tempfile.TemporaryDirectory() as directory:
+                root=Path(directory);project.initialize(root,'Events','Question','Report',demo=False)
+                row=events.enqueue(root,'GPT','T001','implement','v1','Implement current assignment',authorization='Assignment')
+                archive=root/'tasks/archive.md';archive.parent.mkdir(exist_ok=True)
+                archive.write_text('| T001 | Finished task | accepted | GPT |\n',encoding='utf-8')
+                if status:
+                    storage.write(root/'attachments/state.json',dict(tasks=dict(T001=dict(status=status))))
+                before=(root/events.PATH).read_bytes()
+                self.assertIsNone(events.claim(root,row['id']))
+                self.assertEqual((root/events.PATH).read_bytes(),before)
+                active=events.enqueue(root,'GPT','T002','implement','v1','Current next task',authorization='Assignment')
+                self.assertTrue(events.claim(root,active['id']))
+
     def test_single_flight_and_independent_consumers(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory);project.initialize(root,'Events','Question','Report',demo=False)

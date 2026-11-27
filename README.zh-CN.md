@@ -21,7 +21,9 @@ python -m venv .venv
 
 打开 `http://127.0.0.1:18780`。macOS 和 Linux 使用 `.venv/bin/python`。示例全程本地文件，模型调用为零，后台任务注册为零。
 
-[逐步操作](docs/research-workflow.zh-CN.md) · [多版本手动研究包](docs/manual-packets.zh-CN.md) · [从 0.4.3 升级](docs/upgrade-0.5.zh-CN.md)
+[演示导览与安全重置](docs/portfolio-demo.zh-CN.md) · [逐步操作](docs/research-workflow.zh-CN.md) · [多版本手动研究包](docs/manual-packets.zh-CN.md) · [从 0.4.3 升级](docs/upgrade-0.5.zh-CN.md)
+
+安装依赖后运行 `.venv/Scripts/python scripts/portfolio_demo.py`，即可创建或继续使用带标记的合成演示。导览还包含两篇代码级案例：[共享阅读状态](docs/case-shared-reading.md)和[任务认领](docs/case-task-claims.md)。
 
 ## 安装
 

@@ -4,6 +4,7 @@ import hashlib
 import json
 import uuid
 from . import continuity,delivery,lifecycle,storage
+from .workers import archived_task
 
 PATH='attachments/host-events.json'
 
@@ -27,6 +28,7 @@ def enqueue(root,actor,task,stage,version,body,*,authorization):
 def claim(root,identifier):
     with storage.locked(root):
         rows=read(root);row=rows[identifier]
+        if archived_task(root,row['task']):return None
         state=storage.read(Path(root)/'attachments/state.json',{}).get('tasks',{}).get(row['task'],{}).get('status')
         if state is None:
             file=Path(root)/'board.md'

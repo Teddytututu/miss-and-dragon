@@ -92,7 +92,13 @@ def dispatch(handler, root, route):
         mime = 'text/html; charset=utf-8'
     elif target.suffix.lower() in {'.html', '.htm', '.css'}:
         rewrite = reader_assets.rewrite_css if target.suffix.lower() == '.css' else reader_assets.rewrite_html
-        content = rewrite(target.read_text(encoding='utf-8-sig'), target, prefix, allowed, aliases).encode()
+        text = rewrite(target.read_text(encoding='utf-8-sig'), target, prefix, allowed, aliases)
+        if target.suffix.lower() in {'.html', '.htm'}:
+            from .paired_report import reader_notice
+            notice = reader_notice(root, target)
+            if notice:
+                text = text.replace('<main>', '<main>' + notice, 1) if '<main>' in text else notice + text
+        content = text.encode()
         mime += '; charset=utf-8'
     else:
         # Keep large report downloads bounded in memory, including HEAD.
